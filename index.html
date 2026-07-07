@@ -1,0 +1,1371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flexible Label Group | Custom Labels, Stickers &amp; Specialty Products Since 1951 | Memphis, TN</title>
+  <meta name="description" content="75 years of precision label and sticker manufacturing in Memphis. Real-time visibility, instant proofs, practical AI tools. Roll labels, die-cuts, bumper stickers, magnets, packaging tape, foil, variable data &amp; parking decals.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600&amp;display=swap');
+    
+    body { font-family: 'Inter', system_ui, sans-serif; }
+    .heading-font { font-family: 'Space Grotesk', 'Inter', system_ui, sans-serif; font-weight: 600; letter-spacing: -0.025em; }
+
+    .page-section { display: none; }
+    .page-section.active { display: block; }
+
+    .nav-link { transition: all 0.1s ease; }
+    .nav-link.active { color: #0EA47A; font-weight: 600; }
+    .nav-link:hover { color: #0EA47A; }
+
+    .story-card, .capability-card, .product-card { transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0.0, 0.2, 1); }
+    .story-card:hover, .capability-card:hover, .product-card:hover { transform: translateY(-3px); box-shadow: 0 20px 25px -5px rgb(15 23 42 / 0.1), 0 8px 10px -6px rgb(15 23 42 / 0.1); }
+
+    .label-preview { background: linear-gradient(145deg, #f8fafc 0%, #e2e8f0 100%); box-shadow: 0 10px 15px -3px rgb(15 23 42 / 0.15), 0 4px 6px -4px rgb(15 23 42 / 0.15), inset 0 1px 0 rgba(255,255,255,0.6); }
+    
+    .timeline-item::before { content: ''; position: absolute; left: 11px; top: 28px; bottom: -4px; width: 2px; background: #cbd5e1; }
+    .timeline-item:last-child::before { display: none; }
+
+    .status-pill { font-size: 0.75rem; font-weight: 600; padding: 1px 9px; border-radius: 9999px; letter-spacing: -.3px; }
+
+    .chat-bubble-user { background: #0F172A; color: white; border-bottom-right-radius: 4px; }
+    .chat-bubble-bot { background: #f1e7ff; color: #0F172A; border-bottom-left-radius: 4px; }
+
+    .modal { animation: modalPop 0.2s cubic-bezier(0.32, 0.72, 0, 1); }
+    @keyframes modalPop { from { opacity: 0; transform: scale(0.96) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+
+    .trust-pill { background: white; box-shadow: 0 1px 2px rgb(15 23 42 / 0.06); }
+
+    .product-card img { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+    .product-card:hover img { transform: scale(1.03); }
+
+    .gantt-bar { transition: left 0.1s ease, width 0.1s ease; cursor: grab; }
+    .gantt-bar:active { cursor: grabbing; box-shadow: 0 10px 15px -3px rgb(15 23 42 / 0.3); }
+
+    .gantt-day { font-size: 10px; font-weight: 600; color: #64748b; }
+    
+    .view-toggle-active { background: #0F172A; color: white; box-shadow: 0 1px 3px rgba(15,23,42,0.2); }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased">
+  <!-- HEADER / NAV -->
+  <header class="sticky top-0 z-50 bg-white border-b border-slate-200">
+    <div class="max-w-screen-2xl mx-auto">
+      <div class="px-5 md:px-8 h-16 flex items-center justify-between">
+        <!-- Logo -->
+        <div class="flex items-center gap-x-3">
+          <div class="flex items-center gap-x-2.5">
+            <div class="w-9 h-9 bg-[#0F172A] rounded-xl flex items-center justify-center shadow-inner">
+              <svg width="21" height="21" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 7H20M4 12H20M4 17H14" stroke="#0EA47A" stroke-width="2.25" stroke-linecap="round"/>
+                <path d="M19 15.5L21.5 18L19 20.5" stroke="#F97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div>
+              <div class="font-semibold tracking-tighter text-xl leading-none heading-font">Flexible Label Group</div>
+              <div class="text-[10px] text-slate-500 font-medium -mt-0.5">EST 1951 • MEMPHIS</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Desktop Navigation -->
+        <nav class="hidden md:flex items-center gap-x-1 text-sm">
+          <a href="#home" onclick="showPage('home'); return false;" class="nav-link px-4 py-1.5 text-slate-700 hover:text-slate-900 font-medium">Home</a>
+          <a href="#capabilities" onclick="showPage('capabilities'); return false;" class="nav-link px-4 py-1.5 text-slate-700 hover:text-slate-900 font-medium">Capabilities</a>
+          <a href="#products" onclick="showPage('products'); return false;" class="nav-link px-4 py-1.5 text-slate-700 hover:text-slate-900 font-medium">Products</a>
+          <a href="#ai-tools" onclick="showPage('ai-tools'); return false;" class="nav-link px-4 py-1.5 text-slate-700 hover:text-slate-900 font-medium">AI Tools</a>
+          <a href="#portal" onclick="showPage('portal'); return false;" class="nav-link px-4 py-1.5 text-slate-700 hover:text-slate-900 font-medium">Customer Portal</a>
+          <a href="#about" onclick="showPage('about'); return false;" class="nav-link px-4 py-1.5 text-slate-700 hover:text-slate-900 font-medium">About</a>
+          <a href="#contact" onclick="showPage('contact'); return false;" class="nav-link px-4 py-1.5 text-slate-700 hover:text-slate-900 font-medium">Contact</a>
+        </nav>
+
+        <!-- Desktop CTAs -->
+        <div class="hidden md:flex items-center gap-x-2">
+          <button onclick="openChatbot()" class="flex items-center gap-x-2 px-4 py-2 text-sm font-semibold rounded-xl border border-slate-200 hover:border-slate-300 transition-colors text-slate-700 hover:bg-slate-50">
+            <i class="fa-solid fa-robot text-[#0EA47A]"></i>
+            <span>Talk to AI</span>
+          </button>
+          <button onclick="showPage('portal'); document.getElementById('portal-login-teaser').classList.add('hidden'); document.getElementById('portal-dashboard').classList.remove('hidden');"
+                  class="flex items-center gap-x-2 px-4 py-2 text-sm font-semibold rounded-xl bg-[#0F172A] text-white hover:bg-slate-800 transition-colors">
+            <span>Try Portal Demo</span>
+          </button>
+        </div>
+
+        <!-- Mobile Hamburger -->
+        <button id="mobile-menu-btn" class="md:hidden w-10 h-10 flex items-center justify-center text-slate-700 hover:bg-slate-100 rounded-xl transition-colors" aria-label="Toggle menu">
+          <i class="fa-solid fa-bars text-xl"></i>
+        </button>
+      </div>
+
+      <!-- Mobile Menu -->
+      <div id="mobile-menu" class="hidden md:hidden border-t bg-white px-5 py-3">
+        <div class="flex flex-col text-sm">
+          <a href="#home" onclick="showPage('home'); closeMobileMenu(); return false;" class="py-2.5 text-slate-700 font-medium">Home</a>
+          <a href="#capabilities" onclick="showPage('capabilities'); closeMobileMenu(); return false;" class="py-2.5 text-slate-700 font-medium">Capabilities</a>
+          <a href="#products" onclick="showPage('products'); closeMobileMenu(); return false;" class="py-2.5 text-slate-700 font-medium">Products</a>
+          <a href="#ai-tools" onclick="showPage('ai-tools'); closeMobileMenu(); return false;" class="py-2.5 text-slate-700 font-medium">AI Tools</a>
+          <a href="#portal" onclick="showPage('portal'); closeMobileMenu(); return false;" class="py-2.5 text-slate-700 font-medium">Customer Portal</a>
+          <a href="#about" onclick="showPage('about'); closeMobileMenu(); return false;" class="py-2.5 text-slate-700 font-medium">About</a>
+          <a href="#contact" onclick="showPage('contact'); closeMobileMenu(); return false;" class="py-2.5 text-slate-700 font-medium">Contact</a>
+          
+          <div class="flex flex-col gap-y-2 pt-3 mt-2 border-t">
+            <button onclick="openChatbot(); closeMobileMenu();" class="flex items-center justify-center gap-x-2 w-full py-2.5 rounded-xl border text-slate-700 font-semibold">
+              <i class="fa-solid fa-robot"></i> <span>Talk to AI Assistant</span>
+            </button>
+            <button onclick="showPage('portal'); closeMobileMenu(); document.getElementById('portal-login-teaser').classList.add('hidden'); document.getElementById('portal-dashboard').classList.remove('hidden');" 
+                    class="flex items-center justify-center w-full py-2.5 rounded-xl bg-[#0F172A] text-white font-semibold">
+              Try Customer Portal Demo
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-screen-2xl mx-auto">
+
+    <!-- HOME -->
+    <section id="home" class="page-section active pt-8 md:pt-10 pb-16">
+      <div class="max-w-screen-xl mx-auto px-5 md:px-8">
+        <div class="grid md:grid-cols-12 gap-8 md:gap-10 items-center">
+          <div class="md:col-span-7">
+            <div class="inline-flex items-center gap-x-2 bg-white shadow-sm border border-slate-200 rounded-full px-4 py-1 mb-6 text-sm">
+              <div class="flex -space-x-1 items-center">
+                <div class="w-2 h-2 bg-[#0EA47A] rounded-full"></div>
+                <div class="w-2 h-2 bg-[#F97316] rounded-full"></div>
+              </div>
+              <span class="font-medium text-slate-700">Trusted by procurement &amp; brand teams across North America</span>
+            </div>
+            
+            <h1 class="heading-font text-5xl md:text-6xl tracking-tighter leading-[1.05] font-semibold text-[#0F172A]">
+              Stop chasing your label supplier.<br>Get control instead.
+            </h1>
+            <p class="mt-5 text-xl text-slate-600 max-w-[42ch]">
+              75-year Memphis manufacturer with modern tools that give you speed, clarity, and the right material the first time.
+            </p>
+            
+            <div class="flex flex-wrap gap-3 mt-8">
+              <button onclick="showPage('portal'); document.getElementById('portal-login-teaser').classList.add('hidden'); document.getElementById('portal-dashboard').classList.remove('hidden');"
+                      class="px-8 h-12 flex items-center justify-center rounded-2xl font-semibold bg-[#F97316] text-white hover:bg-orange-600 transition-colors text-base shadow-sm">
+                Open the Customer Portal
+              </button>
+              <button onclick="openChatbot()" class="px-8 h-12 flex items-center justify-center gap-x-2 rounded-2xl font-semibold border-2 border-[#0F172A] hover:bg-slate-50 transition-colors text-base">
+                <i class="fa-solid fa-comments"></i>
+                <span>Ask our AI Assistant</span>
+              </button>
+            </div>
+
+            <div class="mt-6 flex items-center gap-x-5 text-sm">
+              <div class="flex items-center text-slate-500">
+                <i class="fa-solid fa-check text-[#0EA47A] mr-1.5"></i>
+                <span>Real Memphis manufacturing</span>
+              </div>
+              <div class="text-slate-400 hidden sm:block">•</div>
+              <div class="text-slate-500 text-sm">Lead time: <span class="font-semibold text-slate-700">5–7 business days</span></div>
+            </div>
+          </div>
+
+          <div class="md:col-span-5">
+            <div class="relative rounded-3xl overflow-hidden shadow-2xl ring-1 ring-slate-900/5">
+              <img src="images/hero.jpg" alt="High-quality custom roll labels produced by Flexible Label Group" class="w-full h-auto object-cover aspect-[16/10]">
+              <div class="absolute inset-0 bg-gradient-to-tr from-[#0F172A]/30 via-transparent to-transparent"></div>
+              <div class="absolute bottom-5 left-5 bg-white/95 backdrop-blur px-4 py-2 rounded-2xl shadow flex items-center gap-x-3 text-sm">
+                <div><div class="font-semibold text-sm tracking-tight">Spring 2026 run</div><div class="text-xs text-slate-600">48,500 labels • On schedule</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TRUST BAR -->
+      <div class="mt-14 border-y border-slate-200 bg-white">
+        <div class="max-w-screen-xl mx-auto px-5 md:px-8 py-5">
+          <div class="flex flex-wrap justify-center md:justify-between items-center gap-x-8 gap-y-4 text-sm">
+            <div class="flex items-center gap-x-2"><span class="font-semibold text-xl text-[#0F172A]">75</span> <span class="text-slate-600">years in continuous production</span></div>
+            <div class="trust-pill px-4 py-1 rounded-full text-xs font-medium flex items-center gap-x-1.5 text-slate-700 border border-slate-100"><i class="fa-solid fa-female text-[#0EA47A]"></i> <span><strong>78%</strong> women-owned</span></div>
+            <div class="trust-pill px-4 py-1 rounded-full text-xs font-medium flex items-center gap-x-1.5 text-slate-700 border border-slate-100"><span>HUBZONE CERTIFIED</span></div>
+            <div class="trust-pill px-4 py-1 rounded-full text-xs font-medium flex items-center gap-x-1.5 text-slate-700 border border-slate-100"><span>MADE IN MEMPHIS, TN</span></div>
+            <div class="trust-pill px-4 py-1 rounded-full text-xs font-medium flex items-center gap-x-1.5 text-slate-700 border border-slate-100"><i class="fa-solid fa-robot text-[#0EA47A]"></i> <span>AI-ENABLED OPERATIONS</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VALUE PROPS -->
+      <div class="max-w-screen-xl mx-auto px-5 md:px-8 pt-14">
+        <div class="text-center mb-8">
+          <div class="uppercase tracking-[1.5px] text-xs font-semibold text-[#0EA47A]">WHAT THIS MEANS FOR YOU</div>
+          <h2 class="heading-font text-3xl md:text-4xl tracking-tighter font-semibold mt-2">The old way wastes your time.<br>The better way gives it back.</h2>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-5">
+          <div class="story-card bg-white border border-slate-200 p-7 rounded-3xl">
+            <div class="w-10 h-10 bg-[#0EA47A]/10 text-[#0EA47A] flex items-center justify-center rounded-2xl mb-5"><i class="fa-solid fa-sync fa-lg"></i></div>
+            <h3 class="font-semibold text-xl tracking-tight">Right material. First time.</h3>
+            <p class="mt-3 text-slate-600">No more guessing substrates. Our AI + real press experts recommend the exact construction that performs on your line and in your environment.</p>
+            <button onclick="showPage('products')" class="mt-5 text-sm font-semibold text-[#F97316] flex items-center gap-x-1">Explore all products →</button>
+          </div>
+          <div class="story-card bg-white border border-slate-200 p-7 rounded-3xl">
+            <div class="w-10 h-10 bg-[#0EA47A]/10 text-[#0EA47A] flex items-center justify-center rounded-2xl mb-5"><i class="fa-solid fa-clock fa-lg"></i></div>
+            <h3 class="font-semibold text-xl tracking-tight">No more email loops.</h3>
+            <p class="mt-3 text-slate-600">Instant material guidance and quotes. Approve proofs in one click. Track real production status without calling anyone.</p>
+            <button onclick="showPage('ai-tools')" class="mt-5 text-sm font-semibold text-[#F97316] flex items-center gap-x-1">Try the AI assistant →</button>
+          </div>
+          <div class="story-card bg-white border border-slate-200 p-7 rounded-3xl">
+            <div class="w-10 h-10 bg-[#0EA47A]/10 text-[#0EA47A] flex items-center justify-center rounded-2xl mb-5"><i class="fa-solid fa-eye fa-lg"></i></div>
+            <h3 class="font-semibold text-xl tracking-tight">Full visibility. Real control.</h3>
+            <p class="mt-3 text-slate-600">See exactly where every order is on the floor. Know your ship date. Approve or request changes instantly.</p>
+            <button onclick="showPage('portal'); document.getElementById('portal-login-teaser').classList.add('hidden'); document.getElementById('portal-dashboard').classList.remove('hidden');" class="mt-5 text-sm font-semibold text-[#F97316] flex items-center gap-x-1">Open live portal demo →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- THE PLAN -->
+      <div class="max-w-screen-xl mx-auto px-5 md:px-8 pt-14">
+        <div class="bg-[#0F172A] text-white rounded-3xl px-8 py-10 md:py-12 md:px-12">
+          <div class="max-w-xl"><div class="uppercase text-[#0EA47A] tracking-[1.5px] text-sm font-semibold mb-1">THE SIMPLE PLAN</div>
+            <h3 class="text-3xl md:text-4xl tracking-tight font-semibold leading-tight">How we remove the friction from label buying.</h3></div>
+          <div class="grid md:grid-cols-3 gap-7 mt-9">
+            <div class="flex gap-4"><div class="flex-shrink-0 w-8 h-8 rounded-full border border-white/30 flex items-center justify-center font-mono text-sm font-medium">1</div>
+              <div><div class="font-semibold text-lg">Tell us what you need</div><div class="text-white/70 text-[15px] mt-1">Use our AI or a specialist. Get an accurate quote and material recommendation in minutes.</div></div></div>
+            <div class="flex gap-4"><div class="flex-shrink-0 w-8 h-8 rounded-full border border-white/30 flex items-center justify-center font-mono text-sm font-medium">2</div>
+              <div><div class="font-semibold text-lg">Approve your proof online</div><div class="text-white/70 text-[15px] mt-1">Review high-resolution proofs. Comment or approve directly. No PDF back-and-forth.</div></div></div>
+            <div class="flex gap-4"><div class="flex-shrink-0 w-8 h-8 rounded-full border border-white/30 flex items-center justify-center font-mono text-sm font-medium">3</div>
+              <div><div class="font-semibold text-lg">Track it to your dock</div><div class="text-white/70 text-[15px] mt-1">Watch every stage in real time. Know the exact ship date before anyone asks.</div></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CAPABILITIES -->
+    <section id="capabilities" class="page-section pt-8 pb-20 px-5 md:px-8 bg-white">
+      <div class="max-w-screen-xl mx-auto">
+        <div class="flex flex-col md:flex-row md:items-end md:justify-between mb-9">
+          <div><div class="text-[#0EA47A] font-semibold text-sm tracking-widest">WHAT WE PRODUCE</div>
+            <h2 class="heading-font text-4xl md:text-5xl tracking-tighter font-semibold">Precision capabilities.<br>Practical expertise.</h2></div>
+          <p class="mt-2 md:mt-0 max-w-md text-slate-600">Every job is built on 75 years of real press experience. We know what actually works.</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <!-- Simplified capability cards for overview - full details on Products page -->
+          <div class="capability-card border border-slate-200 bg-white p-6 rounded-3xl">
+            <img src="images/rolls.jpg" alt="Roll Labels" class="rounded-2xl w-full aspect-video object-cover mb-4">
+            <div class="uppercase text-xs font-semibold tracking-wider text-[#0EA47A]">PRIMARY</div>
+            <h3 class="font-semibold text-2xl tracking-tight mt-1">Roll Labels</h3>
+            <p class="mt-2 text-sm text-slate-600">High-speed prime labels, liners, tamper-evident. BOPP, PET, paper up to 10 colors.</p>
+          </div>
+          <div class="capability-card border border-slate-200 bg-white p-6 rounded-3xl">
+            <img src="images/hero.jpg" alt="Die Cut Stickers" class="rounded-2xl w-full aspect-video object-cover mb-4">
+            <div class="uppercase text-xs font-semibold tracking-wider text-[#0EA47A]">PRODUCT &amp; PROMO</div>
+            <h3 class="font-semibold text-2xl tracking-tight mt-1">Custom Die-Cut Stickers</h3>
+            <p class="mt-2 text-sm text-slate-600">Any shape, quantity, or substrate. Perfect for packaging, retail, and campaigns.</p>
+          </div>
+          <div class="capability-card border border-slate-200 bg-white p-6 rounded-3xl flex items-center justify-center bg-slate-50">
+            <div class="text-center">
+              <div class="text-5xl mb-2">🛠️</div>
+              <div class="font-semibold">Full catalog on the Products page</div>
+              <button onclick="showPage('products')" class="mt-4 px-6 py-2 bg-[#0F172A] text-white rounded-2xl text-sm font-semibold">View all 8 product lines →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Material Selector -->
+        <div class="mt-12 border border-slate-200 bg-white p-8 rounded-3xl">
+          <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+            <div><div class="font-semibold text-xl">Find the right material fast</div><div class="text-slate-600 text-sm">Three questions. Practical recommendation backed by 75 years of production.</div></div>
+            <button onclick="showPage('ai-tools')" class="text-sm mt-3 md:mt-0 font-semibold text-[#0EA47A]">Or ask the full AI →</button>
+          </div>
+          <div class="grid md:grid-cols-5 gap-4">
+            <div><label class="block text-xs font-semibold text-slate-500 mb-1">APPLICATION</label>
+              <select id="mat-app" class="w-full border border-slate-300 rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#0EA47A]">
+                <option value="beverage">Beverage / Bottles</option><option value="food">Food Packaging</option><option value="industrial">Industrial / Chemical</option>
+                <option value="retail">Retail &amp; Promo</option><option value="pharma">Pharma / Medical</option><option value="outdoor">Outdoor / Equipment</option>
+              </select></div>
+            <div><label class="block text-xs font-semibold text-slate-500 mb-1">ENVIRONMENT</label>
+              <select id="mat-env" class="w-full border border-slate-300 rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#0EA47A]">
+                <option value="indoor">Indoor / Ambient</option><option value="fridge">Refrigerated / Cold</option><option value="heat">High Heat</option>
+                <option value="uv">Outdoor / UV</option><option value="chem">Chemical exposure</option>
+              </select></div>
+            <div><label class="block text-xs font-semibold text-slate-500 mb-1">QUANTITY</label>
+              <select id="mat-qty" class="w-full border border-slate-300 rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#0EA47A]">
+                <option value="low">&lt; 2,500</option><option value="med">2,500 – 15,000</option><option value="high">15,000 – 50,000</option><option value="bulk">50,000+</option>
+              </select></div>
+            <div class="md:col-span-2 flex items-end">
+              <button onclick="getMaterialRecommendation()" class="w-full md:w-auto h-11 px-9 rounded-2xl font-semibold bg-[#0F172A] text-white flex items-center justify-center gap-x-2 text-sm">Show Recommendation</button>
+            </div>
+          </div>
+          <div id="material-result" class="hidden mt-6 border-t pt-6">
+            <div class="flex flex-col md:flex-row gap-6 items-start">
+              <div class="flex-1"><div class="uppercase text-xs font-semibold text-[#0EA47A]">RECOMMENDED</div>
+                <div id="rec-title" class="text-2xl font-semibold tracking-tight"></div><div id="rec-why" class="text-sm text-slate-600 mt-1.5"></div></div>
+              <button onclick="askAIAboutMaterial()" class="px-5 py-2 text-sm font-semibold rounded-2xl border bg-white hover:bg-slate-50 border-[#0EA47A] text-[#0EA47A]">Discuss with AI</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- PRODUCTS PAGE (NEW RICH SECTION) -->
+    <!-- ============================================ -->
+    <section id="products" class="page-section pt-8 pb-16 px-5 md:px-8 bg-white">
+      <div class="max-w-screen-xl mx-auto">
+        <div class="mb-9">
+          <div class="text-[#0EA47A] font-semibold text-sm tracking-widest">OUR FULL CATALOG</div>
+          <h2 class="heading-font text-4xl md:text-5xl tracking-tighter font-semibold mt-1">Exactly what your project needs.<br>No compromises.</h2>
+          <p class="text-slate-600 mt-3 max-w-2xl">Every category below is produced in our Memphis facility with the same 75-year standard of precision. Click any card for fast AI guidance or to speak with a specialist.</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          <!-- Roll Labels -->
+          <div class="product-card border border-slate-200 rounded-3xl overflow-hidden bg-white flex flex-col">
+            <img src="images/rolls.jpg" alt="Custom Roll Labels" class="w-full aspect-video object-cover">
+            <div class="p-5 flex-1 flex flex-col">
+              <div><span class="uppercase text-[10px] tracking-widest font-semibold text-[#0EA47A]">PRIMARY PACKAGING</span></div>
+              <h3 class="text-xl font-semibold tracking-tight mt-1">Roll Labels</h3>
+              <p class="text-sm text-slate-600 mt-1.5">High-speed flexo and digital. Prime labels, tamper-evident, linerless.</p>
+              <div class="mt-3 text-xs flex flex-wrap gap-1">
+                <span class="px-2 py-0.5 bg-slate-100 rounded">BOPP • PET • Paper</span><span class="px-2 py-0.5 bg-slate-100 rounded">Up to 10 colors</span>
+              </div>
+              <div class="text-xs mt-3 text-slate-500">Ideal for: Food &amp; beverage, CPG, industrial, pharma.</div>
+              <div class="mt-auto pt-4 flex gap-2">
+                <button onclick="getQuoteWithAI('Roll Labels - BOPP or PET for beverage or CPG')" class="flex-1 text-sm font-semibold bg-[#F97316] text-white py-2 rounded-2xl">Get Quote with AI</button>
+                <button onclick="showPage('contact')" class="flex-1 text-sm font-semibold border py-2 rounded-2xl">Discuss with Specialist</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Custom Die-Cut Stickers -->
+          <div class="product-card border border-slate-200 rounded-3xl overflow-hidden bg-white flex flex-col">
+            <img src="images/hero.jpg" alt="Custom Die-Cut Stickers" class="w-full aspect-video object-cover">
+            <div class="p-5 flex-1 flex flex-col">
+              <div><span class="uppercase text-[10px] tracking-widest font-semibold text-[#0EA47A]">PRODUCT &amp; PROMO</span></div>
+              <h3 class="text-xl font-semibold tracking-tight mt-1">Custom Die-Cut Stickers</h3>
+              <p class="text-sm text-slate-600 mt-1.5">Any shape or size. Kiss-cut or through-cut on dozens of materials.</p>
+              <div class="mt-3 text-xs flex flex-wrap gap-1"><span class="px-2 py-0.5 bg-slate-100 rounded">Vinyl • Poly • Kraft • Clear</span></div>
+              <div class="text-xs mt-3 text-slate-500">Ideal for: Retail packaging, electronics, events, product branding.</div>
+              <div class="mt-auto pt-4 flex gap-2">
+                <button onclick="getQuoteWithAI('Custom Die-Cut Stickers - any shape, short or long run')" class="flex-1 text-sm font-semibold bg-[#F97316] text-white py-2 rounded-2xl">Get Quote with AI</button>
+                <button onclick="showPage('contact')" class="flex-1 text-sm font-semibold border py-2 rounded-2xl">Discuss with Specialist</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bumper Stickers -->
+          <div class="product-card border border-slate-200 rounded-3xl overflow-hidden bg-white flex flex-col">
+            <img src="images/bumper.jpg" alt="Custom Bumper Stickers" class="w-full aspect-video object-cover">
+            <div class="p-5 flex-1 flex flex-col">
+              <div><span class="uppercase text-[10px] tracking-widest font-semibold text-[#0EA47A]">OUTDOOR &amp; PROMO</span></div>
+              <h3 class="text-xl font-semibold tracking-tight mt-1">Bumper Stickers</h3>
+              <p class="text-sm text-slate-600 mt-1.5">Heavy-duty 3–4 mil vinyl with UV laminate. Weatherproof for years.</p>
+              <div class="mt-3 text-xs flex flex-wrap gap-1"><span class="px-2 py-0.5 bg-slate-100 rounded">UV laminate • Removable or permanent</span></div>
+              <div class="text-xs mt-3 text-slate-500">Ideal for: Vehicles, political, events, outdoor equipment branding.</div>
+              <div class="mt-auto pt-4 flex gap-2">
+                <button onclick="getQuoteWithAI('Bumper Stickers - 3-4 mil vinyl with UV protection')" class="flex-1 text-sm font-semibold bg-[#F97316] text-white py-2 rounded-2xl">Get Quote with AI</button>
+                <button onclick="showPage('contact')" class="flex-1 text-sm font-semibold border py-2 rounded-2xl">Discuss with Specialist</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Custom Magnets -->
+          <div class="product-card border border-slate-200 rounded-3xl overflow-hidden bg-white flex flex-col">
+            <img src="images/magnets.jpg" alt="Custom Magnets" class="w-full aspect-video object-cover">
+            <div class="p-5 flex-1 flex flex-col">
+              <div><span class="uppercase text-[10px] tracking-widest font-semibold text-[#0EA47A]">REUSABLE &amp; RETAIL</span></div>
+              <h3 class="text-xl font-semibold tracking-tight mt-1">Custom Magnets</h3>
+              <p class="text-sm text-slate-600 mt-1.5">Vehicle magnets, fridge magnets, and industrial strength options.</p>
+              <div class="mt-3 text-xs flex flex-wrap gap-1"><span class="px-2 py-0.5 bg-slate-100 rounded">0.020" or 0.030" • Full color</span></div>
+              <div class="text-xs mt-3 text-slate-500">Ideal for: Vehicles, retail displays, calendars, industrial equipment.</div>
+              <div class="mt-auto pt-4 flex gap-2">
+                <button onclick="getQuoteWithAI('Custom Magnets - vehicle or fridge strength')" class="flex-1 text-sm font-semibold bg-[#F97316] text-white py-2 rounded-2xl">Get Quote with AI</button>
+                <button onclick="showPage('contact')" class="flex-1 text-sm font-semibold border py-2 rounded-2xl">Discuss with Specialist</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Printed Packaging Tape -->
+          <div class="product-card border border-slate-200 rounded-3xl overflow-hidden bg-white flex flex-col">
+            <img src="images/tape.jpg" alt="Printed Packaging Tape" class="w-full aspect-video object-cover">
+            <div class="p-5 flex-1 flex flex-col">
+              <div><span class="uppercase text-[10px] tracking-widest font-semibold text-[#0EA47A]">BRANDED SHIPPING</span></div>
+              <h3 class="text-xl font-semibold tracking-tight mt-1">Printed Packaging Tape</h3>
+              <p class="text-sm text-slate-600 mt-1.5">Custom 2" and 3" tape with your logo and message. Kraft or white.</p>
+              <div class="mt-3 text-xs flex flex-wrap gap-1"><span class="px-2 py-0.5 bg-slate-100 rounded">Up to 3 colors • 1,000+ yard rolls</span></div>
+              <div class="text-xs mt-3 text-slate-500">Ideal for: E-commerce, fulfillment centers, branded unboxing experience.</div>
+              <div class="mt-auto pt-4 flex gap-2">
+                <button onclick="getQuoteWithAI('Printed Packaging Tape - custom logo tape')" class="flex-1 text-sm font-semibold bg-[#F97316] text-white py-2 rounded-2xl">Get Quote with AI</button>
+                <button onclick="showPage('contact')" class="flex-1 text-sm font-semibold border py-2 rounded-2xl">Discuss with Specialist</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Foil Embossing -->
+          <div class="product-card border border-slate-200 rounded-3xl overflow-hidden bg-white flex flex-col">
+            <img src="images/facility.jpg" alt="Foil Embossing &amp; Specialty Finishes" class="w-full aspect-video object-cover">
+            <div class="p-5 flex-1 flex flex-col">
+              <div><span class="uppercase text-[10px] tracking-widest font-semibold text-[#0EA47A]">PREMIUM FINISHES</span></div>
+              <h3 class="text-xl font-semibold tracking-tight mt-1">Foil Embossing &amp; Specialty</h3>
+              <p class="text-sm text-slate-600 mt-1.5">Hot foil, blind emboss, soft-touch, high-build varnish, spot UV.</p>
+              <div class="mt-3 text-xs flex flex-wrap gap-1"><span class="px-2 py-0.5 bg-slate-100 rounded">Metallic &amp; matte foils</span></div>
+              <div class="text-xs mt-3 text-slate-500">Ideal for: Spirits, cosmetics, premium CPG, awards &amp; certificates.</div>
+              <div class="mt-auto pt-4 flex gap-2">
+                <button onclick="getQuoteWithAI('Foil Embossing and specialty finishes')" class="flex-1 text-sm font-semibold bg-[#F97316] text-white py-2 rounded-2xl">Get Quote with AI</button>
+                <button onclick="showPage('contact')" class="flex-1 text-sm font-semibold border py-2 rounded-2xl">Discuss with Specialist</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Variable Data -->
+          <div class="product-card border border-slate-200 rounded-3xl overflow-hidden bg-white flex flex-col">
+            <img src="images/prepress.jpg" alt="Variable Data and Serialized Labels" class="w-full aspect-video object-cover">
+            <div class="p-5 flex-1 flex flex-col">
+              <div><span class="uppercase text-[10px] tracking-widest font-semibold text-[#0EA47A]">DATA &amp; COMPLIANCE</span></div>
+              <h3 class="text-xl font-semibold tracking-tight mt-1">Variable Data / QR / Serialized</h3>
+              <p class="text-sm text-slate-600 mt-1.5">Sequential numbering, QR codes, barcodes, batch coding at full production speed.</p>
+              <div class="mt-3 text-xs flex flex-wrap gap-1"><span class="px-2 py-0.5 bg-slate-100 rounded">Serialization • UID • Pharma ready</span></div>
+              <div class="text-xs mt-3 text-slate-500">Ideal for: Medical devices, traceability, promotions, asset tracking.</div>
+              <div class="mt-auto pt-4 flex gap-2">
+                <button onclick="getQuoteWithAI('Variable data, QR codes, serialized labels')" class="flex-1 text-sm font-semibold bg-[#F97316] text-white py-2 rounded-2xl">Get Quote with AI</button>
+                <button onclick="showPage('contact')" class="flex-1 text-sm font-semibold border py-2 rounded-2xl">Discuss with Specialist</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Parking Decals -->
+          <div class="product-card border border-slate-200 rounded-3xl overflow-hidden bg-white flex flex-col">
+            <img src="images/bumper.jpg" alt="Parking Decals and Permits" class="w-full aspect-video object-cover">
+            <div class="p-5 flex-1 flex flex-col">
+              <div><span class="uppercase text-[10px] tracking-widest font-semibold text-[#0EA47A]">VEHICLE &amp; ACCESS</span></div>
+              <h3 class="text-xl font-semibold tracking-tight mt-1">Parking Decals &amp; Permits</h3>
+              <p class="text-sm text-slate-600 mt-1.5">Durable window decals, hang tags, and serialized permits. Tamper-evident options.</p>
+              <div class="mt-3 text-xs flex flex-wrap gap-1"><span class="px-2 py-0.5 bg-slate-100 rounded">Static cling • Serial numbers • UV stable</span></div>
+              <div class="text-xs mt-3 text-slate-500">Ideal for: Universities, apartments, municipalities, corporate fleets.</div>
+              <div class="mt-auto pt-4 flex gap-2">
+                <button onclick="getQuoteWithAI('Parking decals and permits - serialized')" class="flex-1 text-sm font-semibold bg-[#F97316] text-white py-2 rounded-2xl">Get Quote with AI</button>
+                <button onclick="showPage('contact')" class="flex-1 text-sm font-semibold border py-2 rounded-2xl">Discuss with Specialist</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-8 text-center">
+          <button onclick="openChatbot()" class="px-8 py-3 font-semibold border-2 border-[#0F172A] rounded-2xl text-sm">Not sure what you need? Ask our AI right now →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- AI TOOLS -->
+    <section id="ai-tools" class="page-section pt-8 pb-16 px-5 md:px-8 bg-slate-50">
+      <div class="max-w-screen-xl mx-auto">
+        <div class="max-w-2xl">
+          <div class="uppercase text-[#0EA47A] tracking-widest text-sm font-semibold">PRACTICAL AI THAT WORKS</div>
+          <h2 class="heading-font text-4xl md:text-5xl tracking-tighter font-semibold mt-1">Less email. Better decisions. Faster.</h2>
+          <p class="text-lg text-slate-600 mt-3">Our AI assistant gives instant, realistic answers based on 75 years of actual production experience.</p>
+        </div>
+
+        <!-- CHATBOT -->
+        <div class="mt-8 bg-white border border-slate-200 rounded-3xl shadow-sm p-1 max-w-4xl interactive-demo">
+          <div class="flex items-center justify-between px-6 pt-5 pb-3">
+            <div class="flex items-center gap-x-3">
+              <div class="w-8 h-8 bg-[#0EA47A] rounded-2xl flex items-center justify-center"><i class="fa-solid fa-robot text-white"></i></div>
+              <div><div class="font-semibold">FLG Assistant</div><div class="text-xs text-[#0EA47A]">Online • Backed by real production data</div></div>
+            </div>
+            <button onclick="resetChat()" class="text-xs px-3 py-1 rounded-full border hover:bg-slate-100 text-slate-500">Reset</button>
+          </div>
+
+          <div id="chat-window" class="h-[380px] md:h-[420px] bg-slate-50 mx-1 rounded-2xl overflow-y-auto p-4 space-y-4 text-sm border"></div>
+
+          <div class="px-4 pt-4 pb-1 flex flex-wrap gap-2">
+            <button onclick="sendQuickReply('Material recommendation for beverage labels in refrigeration?')" class="text-xs bg-white border hover:bg-slate-100 px-4 py-1.5 rounded-2xl text-slate-700">Beverage material</button>
+            <button onclick="sendQuickReply('Quote estimate for 10,000 2x3 roll labels')" class="text-xs bg-white border hover:bg-slate-100 px-4 py-1.5 rounded-2xl text-slate-700">Quick quote</button>
+            <button onclick="sendQuickReply('Current status of order FLG-48219?')" class="text-xs bg-white border hover:bg-slate-100 px-4 py-1.5 rounded-2xl text-slate-700">Order status</button>
+            <button onclick="sendQuickReply('Do you support variable data and QR codes?')" class="text-xs bg-white border hover:bg-slate-100 px-4 py-1.5 rounded-2xl text-slate-700">Variable data</button>
+          </div>
+
+          <div class="p-4 flex gap-2">
+            <input id="chat-input" type="text" placeholder="Ask about materials, pricing, lead times, or products..." class="flex-1 border border-slate-200 focus:border-[#0EA47A] outline-none rounded-2xl px-4 py-3 text-sm" onkeydown="if (event.key === 'Enter') sendChatMessage()">
+            <button onclick="sendChatMessage()" class="bg-[#0F172A] text-white px-6 rounded-2xl text-sm font-semibold hover:bg-black">Send</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CUSTOMER PORTAL -->
+    <section id="portal" class="page-section pt-8 pb-20 px-5 md:px-8">
+      <div class="max-w-screen-2xl mx-auto">
+        <div class="flex items-start justify-between mb-6 px-1">
+          <div>
+            <div class="flex items-center gap-x-3"><h2 class="heading-font text-4xl tracking-tighter font-semibold">Customer Portal</h2><span class="text-xs px-3 py-px bg-emerald-100 text-emerald-700 font-medium rounded-full">LIVE DEMO</span></div>
+            <p class="text-slate-600">The exact tools your team will use daily. Clean, fast, and transparent.</p>
+          </div>
+        </div>
+
+        <!-- Login Teaser -->
+        <div id="portal-login-teaser" class="max-w-lg mx-auto bg-white border border-slate-200 shadow-sm rounded-3xl px-8 py-9 text-center">
+          <div class="mx-auto w-14 h-14 rounded-2xl bg-[#0F172A] flex items-center justify-center mb-6"><i class="fa-solid fa-user-lock text-white text-3xl"></i></div>
+          <div class="font-semibold text-xl">Demo Customer Access</div>
+          <div class="text-sm text-slate-600 mt-1">Acme Brands — Procurement &amp; Operations</div>
+          <button onclick="loginAsDemoCustomer()" class="mt-6 w-full bg-[#0F172A] hover:bg-black transition-colors h-12 rounded-2xl text-white font-semibold">Login as Demo Customer</button>
+          <div class="mt-4 text-xs text-slate-500">Explore every feature. No credentials needed.</div>
+        </div>
+
+        <!-- PORTAL DASHBOARD -->
+        <div id="portal-dashboard" class="hidden">
+          <div class="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
+            
+            <!-- Portal Header -->
+            <div class="border-b px-6 py-4 bg-slate-50">
+              <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-y-3">
+                <div class="flex items-center gap-x-4">
+                  <div><div class="font-semibold">Acme Brands</div><div class="text-xs text-emerald-600 flex items-center gap-x-1"><i class="fa-solid fa-circle text-[9px]"></i> <span>Active • 8 open orders</span></div></div>
+                </div>
+                <div class="flex items-center gap-x-3">
+                  <div class="px-4 py-1 bg-white rounded-2xl text-xs border flex items-center gap-x-2"><span class="font-medium">Jenna Torres</span> <span class="text-slate-400">•</span> <span class="text-slate-500">Procurement</span></div>
+                  <button onclick="logoutDemo()" class="px-4 py-1 rounded-2xl text-xs border hover:bg-slate-100">Sign out</button>
+                </div>
+              </div>
+
+              <!-- VIEW TOGGLE -->
+              <div class="mt-3 flex items-center justify-between border-t pt-3">
+                <div>
+                  <span class="text-xs font-semibold text-slate-500 mr-2">VIEW MODE</span>
+                  <div class="inline-flex rounded-2xl border p-0.5 bg-white text-sm">
+                    <button onclick="switchPortalView('customer')" id="view-customer-btn"
+                            class="px-4 py-1 rounded-[14px] text-xs font-semibold view-toggle-active">Customer View</button>
+                    <button onclick="switchPortalView('business')" id="view-business-btn"
+                            class="px-4 py-1 rounded-[14px] text-xs font-semibold text-slate-600 hover:text-slate-900">Business Operations</button>
+                  </div>
+                </div>
+                <div class="text-xs px-3 py-1 bg-amber-50 text-amber-700 rounded-full hidden md:block" id="view-indicator">Customers only see simplified status. This is your internal tool.</div>
+              </div>
+            </div>
+
+            <!-- CUSTOMER TABS (visible in customer view) -->
+            <div id="customer-tabs-wrapper">
+              <div class="px-2 pt-2 border-b bg-white flex flex-wrap gap-x-1" id="customer-tabs">
+                <button data-tab="proofing" onclick="showPortalTab('proofing')" class="portal-tab px-5 py-3 text-sm font-semibold rounded-t-2xl border-b-2 border-transparent text-slate-600 hover:text-slate-900 active-tab" id="tab-proofing">Print Proofing</button>
+                <button data-tab="tracking" onclick="showPortalTab('tracking')" class="portal-tab px-5 py-3 text-sm font-semibold rounded-t-2xl border-b-2 border-transparent text-slate-600 hover:text-slate-900" id="tab-tracking">Order Tracking</button>
+                <button data-tab="payments" onclick="showPortalTab('payments')" class="portal-tab px-5 py-3 text-sm font-semibold rounded-t-2xl border-b-2 border-transparent text-slate-600 hover:text-slate-900" id="tab-payments">Account Payments</button>
+                <button data-tab="history" onclick="showPortalTab('history')" class="portal-tab px-5 py-3 text-sm font-semibold rounded-t-2xl border-b-2 border-transparent text-slate-600 hover:text-slate-900" id="tab-history">Order History</button>
+              </div>
+
+              <!-- TAB CONTENTS -->
+              <!-- Proofing -->
+              <div id="tab-content-proofing" class="portal-tab-content p-6 md:p-8">
+                <div class="flex items-center justify-between mb-5">
+                  <div><span class="font-semibold">Proof Review — Spring Refresh 2026</span> <span class="text-sm ml-3 px-2.5 py-px bg-amber-100 text-amber-700 rounded">3 of 4 approved</span></div>
+                  <div class="text-xs text-slate-500">Last updated today 9:41am</div>
+                </div>
+                <div class="grid lg:grid-cols-5 gap-6">
+                  <div class="lg:col-span-3">
+                    <div class="text-xs font-semibold text-slate-500 mb-2">CURRENT PROOF</div>
+                    <div class="label-preview border border-slate-200 rounded-2xl p-3">
+                      <div id="proof-preview" class="rounded-xl overflow-hidden bg-white p-5 shadow-inner label-mock" style="min-height: 260px; background-image: url('images/prepress.jpg'); background-size: cover; background-position: center;">
+                        <div class="max-w-[270px]"><div class="bg-white/90 backdrop-blur-sm px-5 py-4 rounded-2xl border border-white/60"><div class="flex items-center justify-between"><div><div id="proof-brand" class="font-bold tracking-tighter text-3xl text-[#0F172A]">ACME</div><div id="proof-product" class="font-medium text-sm text-slate-600 -mt-0.5">Classic Sparkling 12oz</div></div><div class="text-right text-[10px] font-mono text-emerald-600">PRF-2841</div></div><div class="mt-3 text-xs text-slate-500">Matte BOPP • Permanent adhesive • 6 colors</div></div></div>
+                      </div>
+                    </div>
+                    <div class="mt-3 flex gap-2">
+                      <button onclick="simulateUploadProof()" class="flex-1 flex items-center justify-center text-xs h-10 border font-medium rounded-2xl hover:bg-slate-50"><i class="fa-solid fa-upload mr-2"></i> <span>Upload New Artwork</span></button>
+                      <button onclick="requestProofChanges()" class="flex-1 flex items-center justify-center text-xs h-10 bg-amber-100 hover:bg-amber-200 text-amber-800 font-semibold rounded-2xl">Request Changes</button>
+                      <button onclick="approveCurrentProof()" class="flex-1 flex items-center justify-center text-xs h-10 bg-[#0EA47A] hover:bg-emerald-700 text-white font-semibold rounded-2xl">Approve</button>
+                    </div>
+                  </div>
+                  <div class="lg:col-span-2">
+                    <div class="text-xs font-semibold text-slate-500 mb-2">COMMENTS &amp; HISTORY</div>
+                    <div class="border bg-white rounded-2xl h-[220px] flex flex-col"><div id="proof-comments" class="flex-1 p-3 space-y-3 overflow-y-auto text-sm"></div>
+                      <div class="border-t p-2 flex gap-2 bg-slate-50"><input id="proof-comment-input" type="text" class="flex-1 px-3 text-sm border border-slate-200 rounded-2xl" placeholder="Add a comment..."><button onclick="addProofComment()" class="px-4 text-xs font-semibold bg-[#0F172A] text-white rounded-2xl">Post</button></div>
+                    </div>
+                    <div id="proof-status" class="mt-3 text-xs font-medium text-slate-500">Status: <span class="font-semibold text-amber-600">Awaiting your review</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tracking -->
+              <div id="tab-content-tracking" class="portal-tab-content hidden p-6 md:p-8">
+                <div class="text-xs font-semibold mb-2 tracking-wider text-slate-500">YOUR ACTIVE &amp; RECENT ORDERS</div>
+                <div class="overflow-x-auto"><table class="w-full text-sm"><thead><tr class="border-b text-left text-xs font-semibold text-slate-500"><th class="py-2 pr-4">ORDER</th><th class="py-2 pr-4">DESCRIPTION</th><th class="py-2 pr-4">QTY</th><th class="py-2 pr-4">STATUS</th><th class="py-2 pr-4">SHIP BY</th><th class="py-2"></th></tr></thead><tbody id="orders-table-body" class="divide-y"></tbody></table></div>
+                <div id="order-detail" class="hidden mt-6 border rounded-3xl bg-slate-50 p-6"><div class="flex justify-between mb-3"><div id="order-detail-title" class="font-semibold"></div><button onclick="closeOrderDetail()" class="text-xs text-slate-400">CLOSE</button></div><div class="mb-2"><div class="h-2 bg-white rounded w-full overflow-hidden"><div id="order-progress-fill" class="h-2 bg-[#0EA47A] transition-all" style="width:0%"></div></div></div><ul id="order-timeline" class="space-y-3 mt-4 text-sm relative"></ul></div>
+              </div>
+
+              <!-- Payments -->
+              <div id="tab-content-payments" class="portal-tab-content hidden p-6 md:p-8">
+                <div class="flex justify-between items-center mb-4"><div class="text-sm font-semibold">Open &amp; Recent Invoices</div><div class="text-xs px-3 py-1 bg-white border rounded-full">Net 30</div></div>
+                <div class="overflow-x-auto"><table class="w-full text-sm"><thead><tr class="border-b text-xs font-semibold text-slate-500 text-left"><th class="py-2">INVOICE</th><th class="py-2">DATE</th><th class="py-2">AMOUNT</th><th class="py-2">DUE</th><th class="py-2">STATUS</th><th class="py-2"></th></tr></thead><tbody id="invoices-table-body" class="divide-y"></tbody></table></div>
+              </div>
+
+              <!-- Order History -->
+              <div id="tab-content-history" class="portal-tab-content hidden p-6 md:p-8">
+                <div class="text-xs font-semibold mb-3 tracking-wider text-slate-500">COMPLETED ORDERS — LAST 12 MONTHS</div>
+                <div class="overflow-x-auto"><table class="w-full text-sm"><thead><tr class="border-b text-xs font-semibold text-slate-500 text-left"><th class="py-2 pr-3">ORDER</th><th class="py-2 pr-3">DESCRIPTION</th><th class="py-2 pr-3">QTY</th><th class="py-2 pr-3">COMPLETED</th><th class="py-2 pr-3">TOTAL</th><th class="py-2"></th></tr></thead><tbody id="history-table-body" class="divide-y"></tbody></table></div>
+              </div>
+            </div>
+
+            <!-- BUSINESS OPERATIONS VIEW (GANTT + KPIs) -->
+            <div id="business-ops-content" class="hidden p-6 md:p-8 border-t">
+              <!-- Internal Account Dashboard KPIs -->
+              <div class="mb-6">
+                <div class="flex items-center justify-between mb-3">
+                  <div>
+                    <span class="font-semibold text-lg">Internal Manufacturing Operations</span>
+                    <span class="ml-3 px-2.5 py-px text-xs font-medium bg-amber-100 text-amber-700 rounded">FOR FLG TEAM ONLY</span>
+                  </div>
+                  <button onclick="reoptimizeGantt()" class="px-5 py-2 rounded-2xl bg-[#0F172A] text-white text-sm font-semibold flex items-center gap-x-2"><i class="fa-solid fa-magic"></i> <span>Re-optimize with AI</span></button>
+                </div>
+                <div class="text-xs text-amber-700 mb-4">This is the internal operations view. Customers only see simplified status and ship dates in their portal.</div>
+
+                <h4 class="text-sm font-semibold text-slate-700 mb-2">Acme Brands — Account Dashboard</h4>
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+                  <div class="bg-white border border-slate-200 rounded-2xl p-4">
+                    <div class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">YTD ORDER VOLUME</div>
+                    <div class="text-2xl font-semibold text-[#0F172A] mt-1">$142,850</div>
+                    <div class="text-xs text-emerald-600 mt-0.5">+18% vs last year</div>
+                  </div>
+                  <div class="bg-white border border-slate-200 rounded-2xl p-4">
+                    <div class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">ON-TIME DELIVERY</div>
+                    <div class="text-2xl font-semibold text-[#0F172A] mt-1">96%</div>
+                    <div class="text-xs text-emerald-600 mt-0.5">Above target (92%)</div>
+                  </div>
+                  <div class="bg-white border border-slate-200 rounded-2xl p-4">
+                    <div class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">OPEN INVOICES</div>
+                    <div class="text-2xl font-semibold text-[#0F172A] mt-1">$2,780</div>
+                    <div class="text-xs text-amber-600 mt-0.5">2 pending • 1 overdue</div>
+                  </div>
+                  <div class="bg-white border border-slate-200 rounded-2xl p-4">
+                    <div class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">ACTIVE ORDERS</div>
+                    <div class="text-2xl font-semibold text-[#0F172A] mt-1">8</div>
+                    <div class="text-xs text-slate-600 mt-0.5">5 in production</div>
+                  </div>
+                  <div class="bg-white border border-slate-200 rounded-2xl p-4">
+                    <div class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">AVG LEAD TIME</div>
+                    <div class="text-2xl font-semibold text-[#0F172A] mt-1">6.2 <span class="text-base font-normal">days</span></div>
+                    <div class="text-xs text-emerald-600 mt-0.5">-0.8 days vs prior period</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- GANTT CHART -->
+              <div class="border rounded-2xl bg-white overflow-hidden">
+                <div class="p-3 bg-slate-50 border-b flex items-center justify-between text-xs font-semibold">
+                  <div>Production Timeline — March 2026</div>
+                  <div class="text-emerald-600">Capacity: 87% utilized</div>
+                </div>
+
+                <div id="gantt-container" class="p-4 overflow-x-auto" style="min-height: 340px;"></div>
+                
+                <div class="px-4 py-2 bg-slate-50 border-t text-xs flex gap-4 text-slate-600">
+                  <div><span class="font-semibold text-[#0EA47A]">●</span> Press Line 1 (Flexo)</div>
+                  <div><span class="font-semibold text-[#F97316]">●</span> Press Line 2 (Flexo)</div>
+                  <div><span class="font-semibold text-blue-500">●</span> Digital Press</div>
+                  <div><span class="font-semibold text-purple-500">●</span> Finishing Line</div>
+                  <div><span class="font-semibold text-emerald-600">●</span> Rewind / Inspection</div>
+                </div>
+              </div>
+              <div class="text-xs text-slate-500 mt-2 px-1">Drag bars to reschedule jobs. Click a bar for details. This view is for internal use only.</div>
+            </div>
+
+          </div>
+          <div class="px-1 text-xs text-slate-500 mt-2">Fully interactive demo. Changes persist during your session.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about" class="page-section pt-8 pb-16 px-5 md:px-8 bg-white">
+      <div class="max-w-screen-xl mx-auto">
+        <div class="grid lg:grid-cols-12 gap-x-12 gap-y-10 items-center">
+          <div class="lg:col-span-7">
+            <div class="text-[#0EA47A] font-semibold tracking-widest text-sm">OUR STORY</div>
+            <h2 class="heading-font text-4xl md:text-5xl font-semibold tracking-tighter leading-none mt-2">We’ve been making labels since before most suppliers existed.</h2>
+            <div class="prose-custom max-w-2xl mt-6 text-[15px]">
+              <p>We know the frustration of waiting days for quotes and proofs, then learning the material won’t work.</p>
+              <p>That’s why we built this company around speed, clarity, and real expertise — still running presses on the same Memphis floor since 1951, but now with tools that put you in control.</p>
+            </div>
+            <div class="mt-8 grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+              <div class="border p-4 rounded-3xl"><div class="font-semibold text-lg tracking-tighter">75+</div><div class="text-xs text-slate-500">years continuous production</div></div>
+              <div class="border p-4 rounded-3xl"><div class="font-semibold text-lg tracking-tighter">78%</div><div class="text-xs text-slate-500">women-owned</div></div>
+              <div class="border p-4 rounded-3xl"><div class="font-semibold text-lg tracking-tighter">100%</div><div class="text-xs text-slate-500">manufactured in Memphis</div></div>
+            </div>
+          </div>
+          <div class="lg:col-span-5">
+            <div class="rounded-3xl overflow-hidden border border-slate-200"><img src="images/facility.jpg" alt="Memphis manufacturing facility" class="w-full"></div>
+            <div class="text-xs px-1 mt-2 text-slate-500">Our Memphis presses. Running since 1951.</div>
+          </div>
+        </div>
+        <div class="mt-14 bg-slate-50 border border-slate-200 rounded-3xl px-8 py-8">
+          <div class="max-w-3xl"><div class="uppercase font-semibold text-xs text-[#0EA47A]">OUR PHILOSOPHY</div>
+            <div class="mt-2 text-2xl font-semibold tracking-tight">Combine deep manufacturing expertise with modern tools that give our customers control.</div>
+            <div class="mt-4 text-slate-600">You deserve a partner who respects your time. That’s what 75 years of doing it right looks like today.</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" class="page-section pt-8 pb-16 px-5 md:px-8 bg-slate-50">
+      <div class="max-w-screen-xl mx-auto">
+        <div class="grid lg:grid-cols-2 gap-8">
+          <div>
+            <div class="text-[#0EA47A] font-semibold tracking-wider text-sm">LET’S GET STARTED</div>
+            <h2 class="heading-font text-4xl font-semibold tracking-tighter mt-1">Tell us about your project</h2>
+            <p class="text-slate-600 mt-2">A specialist will respond within 2 business hours. Or use the AI assistant instantly.</p>
+
+            <form id="contact-form" onsubmit="submitContactForm(event)" class="mt-7 space-y-4">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div><label class="text-xs font-semibold text-slate-600">YOUR NAME</label><input type="text" required class="mt-1 w-full rounded-2xl border px-4 py-2.5 text-sm" value="Taylor Kim"></div>
+                <div><label class="text-xs font-semibold text-slate-600">COMPANY</label><input type="text" required class="mt-1 w-full rounded-2xl border px-4 py-2.5 text-sm" value="Acme Brands"></div>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div><label class="text-xs font-semibold text-slate-600">EMAIL</label><input type="email" required class="mt-1 w-full rounded-2xl border px-4 py-2.5 text-sm" value="taylor@acmebrands.co"></div>
+                <div><label class="text-xs font-semibold text-slate-600">PHONE</label><input type="tel" class="mt-1 w-full rounded-2xl border px-4 py-2.5 text-sm" value="(615) 555-0174"></div>
+              </div>
+              <div><label class="text-xs font-semibold text-slate-600">PROJECT DETAILS</label>
+                <textarea required rows="4" class="mt-1 w-full rounded-3xl border px-4 py-3 text-sm">Need 18,000 matte BOPP roll labels for refrigerated beverage. 2.25" x 3.5". Need samples by March 18.</textarea></div>
+              <button type="submit" class="w-full bg-[#F97316] hover:bg-orange-600 transition-colors font-semibold h-12 text-white rounded-2xl">Request Quote &amp; Consultation</button>
+            </form>
+          </div>
+
+          <div class="lg:pt-10">
+            <div class="border border-slate-200 bg-white p-7 rounded-3xl">
+              <div class="font-semibold">Need answers faster?</div>
+              <div class="text-sm mt-1 text-slate-600">Our AI assistant is trained on real production data.</div>
+              <button onclick="openChatbot()" class="mt-4 w-full flex items-center justify-center gap-x-2 bg-[#0F172A] text-white font-semibold h-11 rounded-2xl">Open AI Assistant Now</button>
+            </div>
+            <div class="mt-4 text-sm px-1">
+              <div class="font-semibold mb-1">Next steps</div>
+              <ul class="space-y-2 text-slate-600"><li class="flex gap-x-2"><span class="text-[#0EA47A] mt-1">→</span> Use the AI assistant to explore material options</li><li class="flex gap-x-2"><span class="text-[#0EA47A] mt-1">→</span> Try the full Customer Portal</li><li class="flex gap-x-2"><span class="text-[#0EA47A] mt-1">→</span> Receive a formal quote within hours</li></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="bg-[#0F172A] text-white/70 text-sm px-5 md:px-8 py-9">
+    <div class="max-w-screen-xl mx-auto flex flex-col md:flex-row gap-y-3 items-center justify-between">
+      <div class="flex items-center gap-x-2 text-xs md:text-sm"><span>© Flexible Label Group</span> <span class="hidden md:inline">•</span> <span>Memphis, Tennessee</span></div>
+      <div class="flex items-center gap-x-4 text-xs"><span>Since 1951</span><span>Women-Owned • HubZone Certified</span><a href="#" onclick="showPage('portal'); return false;" class="hover:text-white">Portal Login</a></div>
+      <div class="text-xs">901-555-0123 • sales@flexiblelabelgroup.com</div>
+    </div>
+  </footer>
+
+  <!-- CHATBOT MODAL -->
+  <div id="chatbot-modal" onclick="if (event.target.id === 'chatbot-modal') closeChatbot()" class="hidden fixed inset-0 bg-black/60 z-[90] flex items-end md:items-center justify-center">
+    <div onclick="event.stopImmediatePropagation()" class="w-full md:w-[440px] bg-white rounded-t-3xl md:rounded-3xl shadow-xl overflow-hidden">
+      <div class="flex justify-between items-center bg-[#0F172A] px-5 py-3 text-white">
+        <div class="flex items-center gap-x-3"><div class="w-8 h-8 bg-white/10 rounded-2xl flex items-center justify-center"><i class="fa-solid fa-robot"></i></div><div><div class="font-semibold">FLG Assistant</div><div class="text-[10px] text-white/60">Real answers from 75 years of production experience</div></div></div>
+        <button onclick="closeChatbot()" class="text-white/60 hover:text-white text-xl leading-none px-2">×</button>
+      </div>
+      <div id="modal-chat-window" class="h-[320px] p-4 overflow-y-auto bg-slate-50 space-y-4 text-sm"></div>
+      <div class="p-3 bg-white border-t flex flex-wrap gap-1.5"><button onclick="sendQuickReplyFromModal('Material for outdoor bumper stickers?')" class="text-xs px-3 py-1 bg-slate-100 rounded-xl">Outdoor bumper material?</button><button onclick="sendQuickReplyFromModal('Quote for printed packaging tape')" class="text-xs px-3 py-1 bg-slate-100 rounded-xl">Tape quote</button></div>
+      <div class="p-3 bg-white flex gap-2 border-t"><input id="modal-chat-input" type="text" class="flex-1 text-sm border rounded-2xl px-4 py-2 focus:outline-none focus:border-[#0EA47A]" placeholder="Ask about products, materials or orders..." onkeydown="if (event.key === 'Enter') sendModalChatMessage()"><button onclick="sendModalChatMessage()" class="bg-[#0F172A] px-5 text-sm font-semibold rounded-2xl text-white">Send</button></div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div id="toast-container" class="fixed bottom-4 right-4 z-[120] space-y-2"></div>
+
+  <script>
+    function initTailwind() {
+      tailwind.config = { theme: { extend: { colors: { navy: '#0F172A', teal: '#0EA47A', cta: '#F97316' } } } };
+    }
+
+    let currentPage = 'home';
+
+    function showPage(page) {
+      document.querySelectorAll('.page-section').forEach(sec => { sec.classList.remove('active'); sec.style.display = 'none'; });
+      const target = document.getElementById(page);
+      if (target) { target.style.display = 'block'; target.classList.add('active'); }
+      updateActiveNav(page);
+      currentPage = page;
+      if (window.location.hash !== '#' + page) history.replaceState(null, '', '#' + page);
+      closeMobileMenu();
+      if (page === 'portal' && window.portalLoggedIn) {
+        document.getElementById('portal-login-teaser').classList.add('hidden');
+        document.getElementById('portal-dashboard').classList.remove('hidden');
+      }
+    }
+
+    function updateActiveNav(page) {
+      document.querySelectorAll('nav a').forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + page) link.classList.add('active');
+      });
+    }
+
+    function initRouter() {
+      const hash = window.location.hash.replace('#', '');
+      const valid = ['home','capabilities','products','ai-tools','portal','about','contact'];
+      let start = valid.includes(hash) ? hash : 'home';
+      document.querySelectorAll('.page-section').forEach(s => s.style.display = 'none');
+      const el = document.getElementById(start);
+      if (el) { el.style.display = 'block'; el.classList.add('active'); }
+      updateActiveNav(start);
+      currentPage = start;
+
+      window.addEventListener('hashchange', () => {
+        const h = window.location.hash.replace('#','') || 'home';
+        if (valid.includes(h)) showPage(h);
+      });
+    }
+
+    function initMobileMenu() {
+      const btn = document.getElementById('mobile-menu-btn');
+      const menu = document.getElementById('mobile-menu');
+      btn.addEventListener('click', () => {
+        menu.classList.toggle('hidden');
+        btn.innerHTML = menu.classList.contains('hidden') ? '<i class="fa-solid fa-bars text-xl"></i>' : '<i class="fa-solid fa-times text-xl"></i>';
+      });
+    }
+    function closeMobileMenu() {
+      const menu = document.getElementById('mobile-menu');
+      const btn = document.getElementById('mobile-menu-btn');
+      if (menu) menu.classList.add('hidden');
+      if (btn) btn.innerHTML = '<i class="fa-solid fa-bars text-xl"></i>';
+    }
+
+    // ================== CHATBOT ==================
+    function initChat() {
+      const w = document.getElementById('chat-window');
+      if (w && w.children.length === 0) addChatMessageToWindow(w, 'bot', 'Hi! I’m the FLG assistant. Ask about materials, quotes, products, lead times, or order status.');
+    }
+
+    function addChatMessageToWindow(container, role, text) {
+      const d = document.createElement('div');
+      d.className = `flex ${role === 'user' ? 'justify-end' : ''}`;
+      d.innerHTML = role === 'user' ? `<div class="max-w-[80%] chat-bubble-user px-4 py-2.5 rounded-3xl text-sm">${text}</div>` : 
+        `<div class="max-w-[82%] flex gap-2"><div class="w-6 h-6 mt-0.5 bg-[#0EA47A] text-white flex-shrink-0 rounded-xl flex items-center justify-center text-[10px]"><i class="fa-solid fa-robot"></i></div><div class="chat-bubble-bot px-4 py-2.5 rounded-3xl text-sm">${text}</div></div>`;
+      container.appendChild(d); container.scrollTop = container.scrollHeight;
+    }
+
+    function sendChatMessage() {
+      const input = document.getElementById('chat-input');
+      const w = document.getElementById('chat-window');
+      if (!input || !input.value.trim() || !w) return;
+      const txt = input.value.trim();
+      addChatMessageToWindow(w, 'user', txt);
+      input.value = '';
+      setTimeout(() => { addChatMessageToWindow(w, 'bot', getBotResponse(txt)); }, 460);
+    }
+
+    function sendQuickReply(txt) {
+      const w = document.getElementById('chat-window');
+      if (!w) return;
+      addChatMessageToWindow(w, 'user', txt);
+      setTimeout(() => addChatMessageToWindow(w, 'bot', getBotResponse(txt)), 420);
+    }
+
+    function getBotResponse(msg) {
+      const m = msg.toLowerCase();
+      if (m.includes('bumper') || m.includes('outdoor')) return "Bumper stickers use 3-4 mil UV-stabilized vinyl with laminate. Excellent for 3-5 years outdoor. Want a quote for a specific size?";
+      if (m.includes('magnet')) return "We offer 20 mil and 30 mil magnets. Vehicle magnets are 30 mil. Fridge and display are typically 20 mil. Tell me the application and I’ll recommend the right weight.";
+      if (m.includes('tape') || m.includes('packaging')) return "Printed packaging tape comes in 2\" and 3\" widths. We can print up to 3 colors on kraft or white. Lead time is usually 5 days. What quantity are you looking at?";
+      if (m.includes('material') || m.includes('recommend')) return m.includes('beverage') || m.includes('refrigerat') ? "Matte BOPP + permanent acrylic adhesive is ideal for refrigerated beverages." : "BOPP for most CPG, polyester for durability and heat, vinyl for outdoor. Give me environment and quantity.";
+      if (m.includes('quote') || m.includes('price') || m.includes('cost')) return "Typical 10k 2x3 matte BOPP rolls run $1,180–$1,360. Bumper stickers and magnets are priced by square inch. I can give you a precise number — what are the specs?";
+      if (m.includes('lead') || m.includes('turn')) return "Standard is 5–7 business days from approved proof. Rush (2–3 days) is available.";
+      if (m.includes('status') || m.includes('48219')) return "Order FLG-48219 is currently in Finishing. Expected ship March 11.";
+      if (m.includes('variable') || m.includes('qr')) return "Full variable data and QR at production speeds with very little added cost.";
+      return "Happy to help. Tell me dimensions, quantity, application, and environment and I’ll give you an immediate recommendation or quote.";
+    }
+
+    function resetChat() {
+      const w = document.getElementById('chat-window'); w.innerHTML = ''; addChatMessageToWindow(w, 'bot', 'Chat reset. How can I help?');
+    }
+
+    function openChatbot(initial) {
+      const modal = document.getElementById('chatbot-modal');
+      const win = document.getElementById('modal-chat-window');
+      modal.classList.remove('hidden'); modal.classList.add('flex');
+      if (win.children.length === 0) addModalMessage('bot', 'Hi! Ask about any product, material, quote, or order.');
+      if (initial) setTimeout(() => { addModalMessage('user', initial); setTimeout(() => addModalMessage('bot', getBotResponse(initial)), 420); }, 220);
+    }
+    function closeChatbot() { const m = document.getElementById('chatbot-modal'); m.classList.remove('flex'); m.classList.add('hidden'); }
+    function addModalMessage(role, text) {
+      const c = document.getElementById('modal-chat-window');
+      const d = document.createElement('div');
+      d.className = `flex ${role==='user'?'justify-end':''}`;
+      d.innerHTML = role==='user' ? `<div class="max-w-[78%] chat-bubble-user px-4 py-2 rounded-3xl text-sm">${text}</div>` : `<div class="flex gap-2 max-w-[82%]"><div class="w-5 h-5 bg-[#0EA47A] flex-shrink-0 text-white rounded-full flex items-center justify-center text-[9px] mt-px"><i class="fa-solid fa-robot"></i></div><div class="chat-bubble-bot px-3.5 py-2 rounded-3xl text-sm">${text}</div></div>`;
+      c.appendChild(d); c.scrollTop = c.scrollHeight;
+    }
+    function sendModalChatMessage() {
+      const i = document.getElementById('modal-chat-input');
+      if (!i.value.trim()) return;
+      addModalMessage('user', i.value.trim()); const txt = i.value.trim(); i.value='';
+      setTimeout(() => addModalMessage('bot', getBotResponse(txt)), 410);
+    }
+    function sendQuickReplyFromModal(t) { addModalMessage('user', t); setTimeout(() => addModalMessage('bot', getBotResponse(t)), 380); }
+
+    function getQuoteWithAI(context) { showPage('ai-tools'); setTimeout(() => { const w = document.getElementById('chat-window'); if (w) { addChatMessageToWindow(w, 'user', context); setTimeout(() => addChatMessageToWindow(w, 'bot', getBotResponse(context)), 460); } }, 480); }
+    function askAIAboutMaterial() { const title = document.getElementById('rec-title').textContent || 'the recommended material'; showPage('ai-tools'); setTimeout(() => { const w = document.getElementById('chat-window'); if (w) { addChatMessageToWindow(w, 'user', 'Tell me more about ' + title); setTimeout(() => addChatMessageToWindow(w, 'bot', getBotResponse(title)), 500); } }, 520); }
+
+    // ================== MATERIAL RECOMMENDER ==================
+    function getMaterialRecommendation() {
+      const app = document.getElementById('mat-app').value, env = document.getElementById('mat-env').value;
+      const box = document.getElementById('material-result'), t = document.getElementById('rec-title'), w = document.getElementById('rec-why');
+      let rec = '', why = '';
+      if (app === 'beverage' && env === 'fridge') { rec = 'Matte BOPP + Permanent Acrylic'; why = 'Best condensation resistance and premium appearance for refrigerated beverage.'; }
+      else if (env === 'uv' || app === 'outdoor') { rec = '3 mil Polyester + UV Laminate'; why = '3–5 year outdoor life. Excellent for bumper stickers and equipment.'; }
+      else if (app === 'industrial' || env === 'chem') { rec = 'Chemical-Resistant Vinyl / PET'; why = 'High-performance adhesive survives solvents and abrasion.'; }
+      else { rec = 'Premium Matte BOPP'; why = 'Versatile, excellent print quality, cost-effective for most CPG and retail.'; }
+      t.textContent = rec; w.textContent = why; box.classList.remove('hidden');
+    }
+
+    // ================== PORTAL ==================
+    let portalLoggedIn = false;
+    let currentPortalView = 'customer'; // 'customer' or 'business'
+    let scheduleView = 'customer';
+
+    let portalData = {
+      proofs: { status: "Awaiting your review", comments: [{time:"Feb 28, 10:14am", text:"Color looks slightly darker than last run.", author:"Jenna T."}, {time:"Feb 28, 11:02am", text:"Adjusted saturation — new proof attached.", author:"Prepress"}] },
+      orders: [
+        { id: "FLG-48302", desc: "Apex Brewing 16oz Rolls", qty: "62,500", status: "On Press", ship: "Mar 10", progress: 55 },
+        { id: "FLG-48102", desc: "Horizon Foods Jar Labels", qty: "41,000", status: "Printing", ship: "Mar 12", progress: 64 },
+        { id: "FLG-48219", desc: "Acme Spring Refresh 12oz", qty: "53,000", status: "Rewind / Inspection", ship: "Mar 18", progress: 87 },
+        { id: "FLG-47851", desc: "Delta ChemGuard Safety", qty: "27,200", status: "Finishing Line", ship: "Mar 15", progress: 71 },
+        { id: "FLG-47988", desc: "Pinnacle Promo Die-Cuts", qty: "8,200", status: "Proof Approved", ship: "Mar 11", progress: 42 },
+        { id: "FLG-48341", desc: "Metro Fleet UV Bumpers", qty: "9,800", status: "Finishing Line", ship: "Mar 14", progress: 78 },
+        { id: "FLG-48407", desc: "Summit Pharma Tamper Vials", qty: "18,400", status: "Rewind / Inspection", ship: "Mar 16", progress: 91 },
+        { id: "FLG-48422", desc: "Titan Branded Tape 3in", qty: "14,500", status: "Prepress", ship: "Mar 13", progress: 28 }
+      ],
+      invoices: [
+        { id: "INV-24091", date: "Feb 11", amount: 1840, due: "Mar 12", status: "Pending" },
+        { id: "INV-23944", date: "Jan 28", amount: 720, due: "Feb 27", status: "Paid" },
+        { id: "INV-24012", date: "Feb 3", amount: 3150, due: "Mar 4", status: "Overdue" },
+        { id: "INV-24105", date: "Feb 19", amount: 940, due: "Mar 21", status: "Pending" }
+      ],
+      schedule: [
+        { id: "J-2841", name: "Acme 12oz Spring", qty: "48.5k", stage: "finishing", due: "Mar 11", material: "Matte BOPP", ai: true },
+        { id: "J-2837", name: "Jar Labels 4oz", qty: "22k", stage: "printing", due: "Mar 8", material: "Gloss PET", ai: false },
+        { id: "J-2849", name: "Promo Die-Cuts", qty: "8.7k", stage: "prepress", due: "Mar 14", material: "Vinyl", ai: true },
+        { id: "J-2855", name: "Safety Chemical", qty: "15k", stage: "shipping", due: "Mar 2", material: "Polyester", ai: false }
+      ],
+      history: [
+        { id: "FLG-47721", desc: "Apex Brewing 16oz Roll Labels - Matte BOPP", qty: "62,000", completed: "Feb 12, 2026", amount: 4280 },
+        { id: "FLG-47588", desc: "Pinnacle Retail Die-Cut Stickers - Matte Vinyl", qty: "14,500", completed: "Jan 28, 2026", amount: 1920 },
+        { id: "FLG-47402", desc: "Metro City Fleet Bumper Stickers - UV Vinyl", qty: "8,200", completed: "Jan 9, 2026", amount: 1350 },
+        { id: "FLG-47266", desc: "Horizon Foods 4oz Jar Labels - Gloss BOPP", qty: "39,000", completed: "Dec 19, 2025", amount: 2610 },
+        { id: "FLG-47119", desc: "Summit Pharma Tamper-Evident Vials", qty: "22,500", completed: "Nov 26, 2025", amount: 3740 },
+        { id: "FLG-46981", desc: "Delta ChemGuard Chemical Safety Rolls", qty: "31,000", completed: "Oct 15, 2025", amount: 2450 },
+        { id: "FLG-46840", desc: "Titan Logistics 3in Branded Packaging Tape", qty: "12,800", completed: "Sep 25, 2025", amount: 980 },
+        { id: "FLG-46755", desc: "Acme Brands Foil Embossed Die-Cuts", qty: "7,600", completed: "Feb 27, 2026", amount: 1580 }
+      ],
+      internalJobs: [
+        { id: "J-3011", name: "Apex Brewing 16oz Rolls", qty: "62.5k", resource: "Press Line 1 (Flexo)", start: 0, duration: 4, due: "Mar 10", material: "Matte BOPP" },
+        { id: "J-3015", name: "Horizon Foods Jar Labels", qty: "41k", resource: "Press Line 2 (Flexo)", start: 1, duration: 3, due: "Mar 12", material: "Gloss BOPP" },
+        { id: "J-3020", name: "Pinnacle Promo Die-Cuts", qty: "8.2k", resource: "Digital Press", start: 2, duration: 2, due: "Mar 11", material: "Matte Vinyl" },
+        { id: "J-3024", name: "Delta ChemGuard Safety", qty: "27.2k", resource: "Press Line 1 (Flexo)", start: 5, duration: 3, due: "Mar 15", material: "Chem-Resist PET" },
+        { id: "J-3028", name: "Titan Branded Tape 3in", qty: "14.5k", resource: "Finishing Line", start: 4, duration: 2, due: "Mar 13", material: "Printed Kraft Tape" },
+        { id: "J-3032", name: "Metro Fleet UV Bumpers", qty: "9.8k", resource: "Finishing Line", start: 7, duration: 2, due: "Mar 14", material: "UV Vinyl" },
+        { id: "J-3036", name: "Summit Pharma Tamper Vials", qty: "18.4k", resource: "Rewind / Inspection", start: 9, duration: 2, due: "Mar 16", material: "Tamper-Evident PET" },
+        { id: "J-3041", name: "Acme Spring Refresh 12oz", qty: "53k", resource: "Rewind / Inspection", start: 12, duration: 2, due: "Mar 18", material: "Matte BOPP" }
+      ]
+    };
+
+    function savePortalState() { try { localStorage.setItem('flg_portal_demo', JSON.stringify(portalData)); } catch(e){} }
+    function loadPortalState() { try { const s = localStorage.getItem('flg_portal_demo'); if (s) portalData = JSON.parse(s); } catch(e){} }
+
+    function switchPortalView(mode) {
+      currentPortalView = mode;
+      const custTabs = document.getElementById('customer-tabs-wrapper');
+      const biz = document.getElementById('business-ops-content');
+      const custBtn = document.getElementById('view-customer-btn');
+      const bizBtn = document.getElementById('view-business-btn');
+      const indicator = document.getElementById('view-indicator');
+
+      if (mode === 'customer') {
+        custTabs.classList.remove('hidden');
+        biz.classList.add('hidden');
+        custBtn.classList.add('view-toggle-active'); custBtn.classList.remove('text-slate-600');
+        bizBtn.classList.remove('view-toggle-active'); bizBtn.classList.add('text-slate-600');
+        indicator.classList.add('hidden');
+        // Reset and show first customer tab
+        document.querySelectorAll('.portal-tab').forEach(btn => btn.classList.remove('border-[#0EA47A]', 'text-[#0F172A]', 'active-tab'));
+        document.querySelectorAll('.portal-tab').forEach(btn => btn.classList.add('border-transparent', 'text-slate-600'));
+        const proofBtn = document.getElementById('tab-proofing');
+        if (proofBtn) proofBtn.classList.add('border-[#0EA47A]', 'text-[#0F172A]', 'active-tab');
+        document.querySelectorAll('.portal-tab-content').forEach(el => el.classList.add('hidden'));
+        const proofContent = document.getElementById('tab-content-proofing');
+        if (proofContent) proofContent.classList.remove('hidden');
+      } else {
+        custTabs.classList.add('hidden');
+        biz.classList.remove('hidden');
+        bizBtn.classList.add('view-toggle-active'); bizBtn.classList.remove('text-slate-600');
+        custBtn.classList.remove('view-toggle-active'); custBtn.classList.add('text-slate-600');
+        indicator.classList.remove('hidden');
+        renderGantt();
+      }
+    }
+
+    function loginAsDemoCustomer() {
+      portalLoggedIn = true; window.portalLoggedIn = true;
+      document.getElementById('portal-login-teaser').classList.add('hidden');
+      document.getElementById('portal-dashboard').classList.remove('hidden');
+
+      initPortalTabs();
+      renderOrdersTable();
+      renderInvoicesTable();
+      renderProofComments();
+      renderHistoryTable();
+
+      showPortalTab('proofing');
+      switchPortalView('customer');
+
+      showToast("Welcome back, Jenna. You're now in the demo portal.");
+    }
+    function logoutDemo() {
+      portalLoggedIn = false; window.portalLoggedIn = false;
+      document.getElementById('portal-dashboard').classList.add('hidden');
+      document.getElementById('portal-login-teaser').classList.remove('hidden');
+      showToast("Signed out of demo.");
+    }
+
+    function initPortalTabs() {}
+
+    function showPortalTab(tab) {
+      // In Business Operations mode we don't use customer tabs
+      if (currentPortalView === 'business') {
+        return;
+      }
+      document.querySelectorAll('.portal-tab-content').forEach(el => el.classList.add('hidden'));
+      const content = document.getElementById('tab-content-' + tab);
+      if (content) content.classList.remove('hidden');
+
+      document.querySelectorAll('.portal-tab').forEach(btn => {
+        btn.classList.remove('border-[#0EA47A]', 'text-[#0F172A]', 'active-tab');
+        btn.classList.add('border-transparent', 'text-slate-600');
+        if (btn.id === 'tab-' + tab) {
+          btn.classList.add('border-[#0EA47A]', 'text-[#0F172A]', 'active-tab');
+          btn.classList.remove('border-transparent', 'text-slate-600');
+        }
+      });
+    }
+
+    // Proofing
+    function renderProofComments() {
+      const c = document.getElementById('proof-comments'); if (!c) return; c.innerHTML = '';
+      portalData.proofs.comments.forEach(com => {
+        const d = document.createElement('div');
+        d.className = `text-sm px-2 py-1.5 ${com.author === 'Prepress' ? 'bg-white' : ''}`;
+        d.innerHTML = `<div class="flex justify-between text-xs"><span class="font-medium">${com.author}</span> <span class="text-slate-400">${com.time}</span></div><div class="text-slate-700">${com.text}</div>`;
+        c.appendChild(d);
+      });
+      c.scrollTop = c.scrollHeight;
+    }
+    function addProofComment() {
+      const i = document.getElementById('proof-comment-input'); if (!i || !i.value.trim()) return;
+      portalData.proofs.comments.push({time: "Just now", text: i.value.trim(), author: "Jenna T."});
+      savePortalState(); renderProofComments(); i.value = ''; showToast("Comment added.");
+    }
+    function approveCurrentProof() {
+      portalData.proofs.status = "Approved";
+      portalData.proofs.comments.push({time:"Just now", text:"Proof approved. Thank you!", author:"Jenna T."});
+      savePortalState(); renderProofComments();
+      document.getElementById('proof-status').innerHTML = `Status: <span class="font-semibold text-emerald-600">Approved</span>`;
+      showToast("Proof approved. Moved to Prepress.", true);
+    }
+    function requestProofChanges() {
+      const r = prompt("What changes are needed?");
+      if (!r) return;
+      portalData.proofs.status = "Changes Requested";
+      portalData.proofs.comments.push({time:"Just now", text: "Change requested: " + r, author: "Jenna T."});
+      savePortalState(); renderProofComments();
+      document.getElementById('proof-status').innerHTML = `Status: <span class="font-semibold text-amber-700">Changes Requested</span>`;
+      showToast("Change request submitted.");
+    }
+    function simulateUploadProof() {
+      const p = document.getElementById('proof-preview');
+      p.style.opacity = '0.4';
+      showToast("Uploading artwork...");
+      setTimeout(() => {
+        p.style.backgroundImage = `url('images/rolls.jpg')`; p.style.opacity = '1';
+        const n = document.createElement('div'); n.className = 'mt-2 px-2 text-[10px] text-emerald-700'; n.textContent = 'New file uploaded: acme_spring_v3.pdf';
+        p.parentElement.appendChild(n);
+        portalData.proofs.comments.push({time:"Just now", text:"Uploaded revised artwork (v3).", author:"Jenna T."});
+        renderProofComments(); showToast("Upload complete. Prepress notified.");
+      }, 900);
+    }
+
+    // Tracking
+    function renderOrdersTable() {
+      const b = document.getElementById('orders-table-body'); if (!b) return; b.innerHTML = '';
+      portalData.orders.forEach(o => {
+        const tr = document.createElement('tr'); tr.className = 'cursor-pointer hover:bg-slate-50';
+        tr.innerHTML = `<td class="py-3 pr-4 font-medium font-mono text-xs">${o.id}</td><td class="py-3 pr-4 text-slate-700">${o.desc}</td><td class="py-3 pr-4">${o.qty}</td><td class="py-3 pr-4"><span class="status-pill ${o.status.includes('Shipped')?'bg-emerald-100 text-emerald-700':o.status.includes('Printing')?'bg-blue-100 text-blue-700':'bg-amber-100 text-amber-700'}">${o.status}</span></td><td class="py-3 pr-4 text-xs text-slate-500">${o.ship}</td><td class="py-3 text-right"><button class="text-xs font-semibold px-3 py-1 border rounded-2xl">View timeline</button></td>`;
+        tr.onclick = () => showOrderDetail(o.id);
+        b.appendChild(tr);
+      });
+    }
+    let currentOrderId = null;
+    function showOrderDetail(id) {
+      const o = portalData.orders.find(x => x.id === id); if (!o) return;
+      currentOrderId = id;
+      const cont = document.getElementById('order-detail');
+      document.getElementById('order-detail-title').textContent = `${o.id} — ${o.desc}`;
+      document.getElementById('order-progress-fill').style.width = o.progress + '%';
+      const tl = document.getElementById('order-timeline'); tl.innerHTML = '';
+      const stages = [{l:"Order Received",d:"Feb 20",done:true},{l:"Proof Submitted",d:"Feb 21",done:true},{l:"Proof Approved",d:"Feb 23",done:true},{l:"Prepress",d:"Feb 24",done:o.progress>35},{l:"On Press",d:"Feb 28",done:o.progress>55},{l:"Finishing & QC",d:"Mar 3",done:o.progress>75},{l:"Shipping",d:o.progress>=98?"Feb 27":"Mar 8",done:o.progress>=98}];
+      stages.forEach(s => {
+        const li = document.createElement('li'); li.className = `timeline-item flex items-start gap-x-3 relative pl-1 ${!s.done?'opacity-60':''}`;
+        li.innerHTML = `<div class="mt-1 w-[22px] flex-shrink-0"><div class="${s.done?'bg-[#0EA47A] text-white':'border border-slate-300 bg-white'} w-[22px] h-[22px] rounded-full flex items-center justify-center text-xs">${s.done?'<i class="fa-solid fa-check text-[10px]"></i>':''}</div></div><div class="flex-1 pb-1 -mt-0.5"><div class="font-medium">${s.l}</div><div class="text-xs text-slate-500">${s.d}</div></div>`;
+        tl.appendChild(li);
+      });
+      cont.classList.remove('hidden');
+    }
+    function closeOrderDetail() { document.getElementById('order-detail').classList.add('hidden'); }
+
+    // Payments
+    function renderInvoicesTable() {
+      const b = document.getElementById('invoices-table-body'); if (!b) return; b.innerHTML = '';
+      portalData.invoices.forEach((inv, idx) => {
+        const tr = document.createElement('tr');
+        let stat = inv.status === 'Paid' ? '<span class="status-pill bg-emerald-100 text-emerald-700">Paid</span>' : inv.status === 'Overdue' ? '<span class="status-pill bg-red-100 text-red-700">Overdue</span>' : '<span class="status-pill bg-amber-100 text-amber-700">Pending</span>';
+        let act = inv.status !== 'Paid' ? `<button onclick="payInvoice(${idx}, event)" class="px-4 py-1 text-xs font-semibold bg-[#F97316] text-white rounded-2xl">Pay Now</button>` : `<span class="text-emerald-600 text-xs">—</span>`;
+        tr.innerHTML = `<td class="py-3 font-mono text-xs pr-3">${inv.id}</td><td class="py-3 text-xs text-slate-500 pr-3">${inv.date}</td><td class="py-3 font-medium">$${inv.amount}</td><td class="py-3 text-xs">${inv.due}</td><td class="py-3">${stat}</td><td class="py-3 text-right">${act}</td>`;
+        b.appendChild(tr);
+      });
+    }
+    function payInvoice(idx, e) {
+      e.stopImmediatePropagation();
+      const inv = portalData.invoices[idx];
+      const modal = document.createElement('div');
+      modal.className = 'fixed inset-0 bg-black/60 flex items-center justify-center z-[100]';
+      modal.innerHTML = `<div onclick="event.target.remove()" class="absolute inset-0"></div><div class="modal bg-white w-full max-w-sm rounded-3xl px-7 pt-6 pb-7 relative"><div class="font-semibold text-xl">Pay Invoice ${inv.id}</div><div class="mt-0.5 text-sm text-slate-600">Amount due: <span class="font-semibold text-lg">$${inv.amount}</span></div><div class="mt-5 space-y-3 text-sm"><div><div class="text-xs text-slate-500">CARD NUMBER</div><div class="border rounded-2xl px-4 py-2 mt-1 font-mono">4242 4242 4242 4242</div></div><div class="grid grid-cols-2 gap-3"><div><div class="text-xs text-slate-500">EXPIRY</div><div class="border rounded-2xl px-4 py-2 mt-1 font-mono">03 / 28</div></div><div><div class="text-xs text-slate-500">CVC</div><div class="border rounded-2xl px-4 py-2 mt-1 font-mono">242</div></div></div></div><div class="mt-6 flex gap-3"><button onclick="this.closest('.fixed').remove()" class="flex-1 h-10 rounded-2xl border text-sm font-medium">Cancel</button><button id="pay-btn" class="flex-1 h-10 rounded-2xl bg-[#0F172A] text-white text-sm font-semibold">Pay $${inv.amount}</button></div></div>`;
+      document.body.appendChild(modal);
+      setTimeout(() => {
+        modal.querySelector('#pay-btn').onclick = () => {
+          inv.status = 'Paid';
+          savePortalState();
+          modal.remove();
+          renderInvoicesTable();
+          showReceiptModal(inv);
+        };
+      }, 100);
+    }
+    function showReceiptModal(inv) {
+      const m = document.createElement('div');
+      m.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-[110]';
+      m.innerHTML = `<div onclick="event.target.remove()" class="absolute inset-0"></div><div class="modal bg-white w-full max-w-xs rounded-3xl p-7"><div class="text-center"><div class="mx-auto w-11 h-11 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-3"><i class="fa-solid fa-check text-xl"></i></div><div class="font-semibold">Payment successful</div><div class="text-sm mt-px text-emerald-600">$${inv.amount} received</div></div><div class="mt-5 text-xs border-t pt-4 space-y-[5px]"><div class="flex justify-between"><span class="text-slate-500">Invoice</span><span class="font-medium">${inv.id}</span></div><div class="flex justify-between"><span class="text-slate-500">Paid</span><span class="font-medium">${new Date().toLocaleDateString()}</span></div></div><div class="flex gap-2 mt-6"><button onclick="this.closest('.fixed').remove()" class="flex-1 border rounded-2xl text-sm h-10">Close</button><button onclick="downloadReceipt(this, '${inv.id}', ${inv.amount})" class="flex-1 bg-[#0F172A] text-white text-sm h-10 rounded-2xl">Download Receipt</button></div></div>`;
+      document.body.appendChild(m);
+    }
+    function downloadReceipt(btn, id, amt) { btn.textContent = 'Downloaded'; const blob = new Blob([`Flexible Label Group\nReceipt ${id}\nAmount: $${amt}\n${new Date()}`], {type:'text/plain'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download=`${id}-receipt.txt`; a.click(); setTimeout(()=>btn.closest('.fixed')?.remove(), 600); }
+
+    // Order History + Reorder
+    function renderHistoryTable() {
+      const b = document.getElementById('history-table-body'); if (!b) return; b.innerHTML = '';
+      portalData.history.forEach(h => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td class="py-3 pr-3 font-mono text-xs">${h.id}</td><td class="py-3 pr-3">${h.desc}</td><td class="py-3 pr-3">${h.qty}</td><td class="py-3 pr-3 text-xs text-slate-500">${h.completed}</td><td class="py-3 pr-3 font-medium">$${h.amount}</td><td class="py-3 text-right"><button class="text-xs font-semibold px-4 py-1 bg-[#0EA47A] text-white rounded-2xl">Reorder</button></td>`;
+        tr.querySelector('button').onclick = (e) => { e.stopImmediatePropagation(); reorderJob(h); };
+        b.appendChild(tr);
+      });
+    }
+
+    function reorderJob(order) {
+      const newShip = "Mar " + (Math.floor(Math.random()*6)+16);
+      const modal = document.createElement('div');
+      modal.className = 'fixed inset-0 bg-black/60 flex items-center justify-center z-[100]';
+      modal.innerHTML = `<div onclick="event.target.remove()" class="absolute inset-0"></div><div class="modal bg-white w-full max-w-sm rounded-3xl p-7"><div class="font-semibold text-xl">Reorder ${order.id}</div><div class="mt-1 text-sm text-slate-600">${order.desc} • ${order.qty}</div><div class="my-5 border-t pt-4"><div class="text-sm">Estimated new ship date:</div><div class="text-2xl font-semibold text-[#0EA47A] mt-0.5">${newShip}</div><div class="text-xs text-slate-500">Based on current capacity and material availability.</div></div><div class="flex gap-3"><button onclick="this.closest('.fixed').remove()" class="flex-1 h-10 border rounded-2xl">Cancel</button><button id="reorder-confirm" class="flex-1 h-10 bg-[#0F172A] text-white font-semibold rounded-2xl">Confirm Reorder</button></div></div>`;
+      document.body.appendChild(modal);
+      modal.querySelector('#reorder-confirm').onclick = () => {
+        const newOrder = {...order, id: "FLG-" + (47000 + Math.floor(Math.random()*999)), status: "Reorder - Awaiting Proof", ship: newShip, progress: 5 };
+        portalData.orders.unshift(newOrder);
+        savePortalState();
+        modal.remove();
+        renderOrdersTable();
+        showToast(`Reorder placed. New ship date: ${newShip}`, true);
+        setTimeout(() => showPortalTab('tracking'), 420);
+      };
+    }
+
+    // ================== GANTT CHART (BUSINESS OPS) ==================
+    function renderGantt() {
+      const container = document.getElementById('gantt-container');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const days = ['Mar 3','Mar 4','Mar 5','Mar 6','Mar 7','Mar 8','Mar 9','Mar 10','Mar 11','Mar 12','Mar 13','Mar 14','Mar 15','Mar 16','Mar 17','Mar 18','Mar 19'];
+      const resources = ['Press Line 1 (Flexo)', 'Press Line 2 (Flexo)', 'Digital Press', 'Finishing Line', 'Rewind / Inspection'];
+      const resourceColors = {
+        'Press Line 1 (Flexo)': 'bg-[#0EA47A]',
+        'Press Line 2 (Flexo)': 'bg-[#F97316]',
+        'Digital Press': 'bg-blue-500',
+        'Finishing Line': 'bg-purple-500',
+        'Rewind / Inspection': 'bg-emerald-600'
+      };
+
+      const header = document.createElement('div');
+      header.className = 'grid gap-1 mb-1 text-center';
+      header.style.gridTemplateColumns = `140px repeat(${days.length}, 1fr)`;
+      header.innerHTML = `<div></div>` + days.map(d => `<div class="gantt-day">${d}</div>`).join('');
+      container.appendChild(header);
+
+      const ganttJobs = portalData.internalJobs;
+
+      resources.forEach((res) => {
+        const row = document.createElement('div');
+        row.className = 'grid gap-1 items-center mb-2';
+        row.style.gridTemplateColumns = `140px repeat(${days.length}, 1fr)`;
+        row.style.minHeight = '42px';
+
+        const label = document.createElement('div');
+        label.className = 'pr-3 text-xs font-medium text-right text-slate-600';
+        label.textContent = res;
+        row.appendChild(label);
+
+        const barArea = document.createElement('div');
+        barArea.className = 'relative col-span-1 bg-slate-100 rounded h-9';
+        barArea.style.gridColumn = `2 / span ${days.length}`;
+
+        const jobsOnLine = ganttJobs.filter(j => j.resource === res);
+        jobsOnLine.forEach(job => {
+          const bar = document.createElement('div');
+          const leftPct = (job.start / days.length) * 100;
+          const widthPct = Math.max( (job.duration / days.length) * 100 , 7);
+          const colorClass = resourceColors[res] || 'bg-slate-600';
+          bar.className = `gantt-bar absolute top-1 h-7 text-[10px] flex items-center px-2 font-semibold text-white rounded shadow-sm ${colorClass}`;
+          bar.style.left = `${leftPct}%`;
+          bar.style.width = `${widthPct}%`;
+          bar.style.minWidth = '54px';
+          const shortName = job.name.length > 22 ? job.name.slice(0,19) + '…' : job.name;
+          bar.textContent = `${shortName} ${job.qty ? '• ' + job.qty : ''}`;
+          bar.title = `${job.name} • ${job.qty || ''} • ${job.material || ''} • Due ${job.due}`;
+          bar.dataset.jobId = job.id;
+
+          // Drag
+          let startX = 0, origStart = job.start;
+          bar.addEventListener('mousedown', (e) => {
+            startX = e.clientX;
+            origStart = job.start;
+            const onMove = (ev) => {
+              const deltaPx = ev.clientX - startX;
+              const dayWidth = bar.parentElement.offsetWidth / days.length;
+              let newStart = Math.round(origStart + (deltaPx / dayWidth));
+              newStart = Math.max(0, Math.min(newStart, days.length - job.duration));
+              job.start = newStart;
+              bar.style.left = `${(job.start / days.length) * 100}%`;
+            };
+            const onUp = () => {
+              document.removeEventListener('mousemove', onMove);
+              document.removeEventListener('mouseup', onUp);
+              savePortalState();
+              renderGantt();
+              showToast(`Rescheduled ${job.name}`);
+            };
+            document.addEventListener('mousemove', onMove);
+            document.addEventListener('mouseup', onUp, {once:true});
+          });
+
+          bar.onclick = () => showGanttJobModal(job, res);
+          barArea.appendChild(bar);
+        });
+
+        row.appendChild(barArea);
+        container.appendChild(row);
+      });
+
+      // Capacity row
+      const cap = document.createElement('div');
+      cap.className = 'mt-2 text-xs px-1 text-slate-500';
+      cap.textContent = 'Drag bars to reschedule jobs. Click any bar for details.';
+      container.appendChild(cap);
+    }
+
+    function showGanttJobModal(job, resource) {
+      const m = document.createElement('div');
+      m.className = 'fixed inset-0 bg-black/60 flex items-center justify-center z-[100]';
+      const qtyLine = job.qty ? `<div class="text-sm mt-1">Quantity: <strong>${job.qty}</strong></div>` : '';
+      const matLine = job.material ? `<div class="text-sm">Material: <strong>${job.material}</strong></div>` : '';
+      m.innerHTML = `<div onclick="event.target.remove()" class="absolute inset-0"></div><div class="modal bg-white w-full max-w-sm rounded-3xl p-6"><div class="font-semibold text-xl">${job.name}</div><div class="text-sm text-slate-600 mt-0.5">${resource}</div>${qtyLine}${matLine}<div class="mt-3 text-sm text-slate-600">Due <strong>${job.due}</strong> • Duration <strong>${job.duration} days</strong></div><div class="flex gap-3 mt-6"><button onclick="this.closest('.fixed').remove()" class="flex-1 border h-10 rounded-2xl text-sm">Close</button><button onclick="rescheduleFromModal('${job.id}', this)" class="flex-1 bg-[#0F172A] text-white h-10 rounded-2xl text-sm">Move +1 Day</button></div></div>`;
+      document.body.appendChild(m);
+    }
+
+    function rescheduleFromModal(jobId, btn) {
+      const job = portalData.internalJobs.find(j => j.id === jobId);
+      if (!job) return;
+      job.start = Math.min(job.start + 1, 15);
+      savePortalState();
+      btn.closest('.fixed').remove();
+      renderGantt();
+    }
+
+    function reoptimizeGantt() {
+      showToast("AI re-optimizing production schedule...");
+      setTimeout(() => {
+        // Simple optimization: sort by due and evenly distribute across lines
+        portalData.internalJobs.sort((a,b) => parseInt(a.due.split(' ')[1]||10) - parseInt(b.due.split(' ')[1]||10));
+        let offset = 0;
+        portalData.internalJobs.forEach((j, i) => {
+          j.start = offset;
+          offset += 2;
+          if (offset > 9) offset = 1;
+        });
+        savePortalState();
+        renderGantt();
+        showToast("Schedule re-optimized across all lines.", true);
+      }, 780);
+    }
+
+    // ================== PORTAL RENDER HELPERS & INIT ==================
+    function initPortal() {
+      // Already handled via login function
+    }
+
+    function showToast(msg, success = false) {
+      const c = document.getElementById('toast-container');
+      const t = document.createElement('div');
+      t.className = `max-w-[270px] px-4 py-3 rounded-2xl shadow-lg text-sm flex items-start gap-x-3 ${success ? 'bg-emerald-700 text-white' : 'bg-[#0F172A] text-white'}`;
+      t.innerHTML = `<div class="flex-1 pt-px">${msg}</div><button class="text-white/60 hover:text-white/90 text-lg">×</button>`;
+      c.appendChild(t);
+      t.querySelector('button').onclick = () => t.remove();
+      setTimeout(() => t.parentNode && t.remove(), 4800);
+    }
+
+    function submitContactForm(e) {
+      e.preventDefault();
+      const form = e.currentTarget;
+      setTimeout(() => {
+        form.innerHTML = `<div class="border border-emerald-200 bg-emerald-50 text-emerald-800 p-6 rounded-3xl"><div class="font-semibold text-lg">Thank you. Request received.</div><div class="mt-2 text-sm">A production specialist will contact you within 2 business hours.</div><div class="mt-4 flex gap-3"><button onclick="showPage('ai-tools')" class="px-5 py-2 rounded-2xl border border-emerald-300 font-medium text-sm">Talk to AI now</button><button onclick="showPage('portal');document.getElementById('portal-login-teaser').classList.add('hidden');document.getElementById('portal-dashboard').classList.remove('hidden');" class="px-5 py-2 rounded-2xl bg-emerald-800 text-white text-sm">Open Portal</button></div></div>`;
+      }, 650);
+    }
+
+    function initializeEverything() {
+      initTailwind();
+      initRouter();
+      initMobileMenu();
+      initChat();
+      loadPortalState();
+
+      // Initial render helpers
+      const home = document.getElementById('home');
+      if (home && !window.location.hash) {
+        document.querySelectorAll('.page-section').forEach(s => s.style.display = 'none');
+        home.style.display = 'block';
+      }
+
+      // Keyboard
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          const openModals = document.querySelectorAll('.fixed.inset-0:not(.hidden)');
+          if (openModals.length) openModals[openModals.length-1].remove();
+          else { const cm = document.getElementById('chatbot-modal'); if (!cm.classList.contains('hidden')) closeChatbot(); }
+        }
+        if (e.key === '/' && document.activeElement.tagName === 'BODY') { e.preventDefault(); openChatbot(); }
+      });
+
+      // Make material result hidden initially
+      const mr = document.getElementById('material-result');
+      if (mr) mr.classList.add('hidden');
+
+      console.log('%c[FLG] Updated Flexible Label Group site ready — Products page + Dual Portal View (Customer + Gantt) live.', 'color:#64748b');
+    }
+
+    window.addEventListener('DOMContentLoaded', initializeEverything);
+
+    // Global helpers
+    window.FLG = {
+      showPage: (p) => showPage(p),
+      openChat: () => openChatbot(),
+      loginPortal: () => { const t = document.getElementById('portal-login-teaser'); if (t) t.classList.add('hidden'); document.getElementById('portal-dashboard').classList.remove('hidden'); loginAsDemoCustomer(); }
+    };
+  </script>
+</body>
+</html>
