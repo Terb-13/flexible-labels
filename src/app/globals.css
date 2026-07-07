@@ -1,0 +1,105 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-navy: #0f172a;
+  --color-teal: #0ea47a;
+  --color-cta: #f97316;
+  --font-sans: var(--font-inter);
+  --font-heading: var(--font-space-grotesk);
+}
+
+@layer base {
+  body {
+    @apply bg-slate-50 text-slate-900 antialiased;
+  }
+}
+
+@layer utilities {
+  .heading-font {
+    font-family: var(--font-space-grotesk), var(--font-inter), system-ui, sans-serif;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+  }
+
+  .label-preview {
+    background: linear-gradient(145deg, #f8fafc 0%, #e2e8f0 100%);
+    box-shadow:
+      0 10px 15px -3px rgb(15 23 42 / 0.15),
+      0 4px 6px -4px rgb(15 23 42 / 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  }
+
+  .chat-bubble-user {
+    background: #0f172a;
+    color: white;
+    border-bottom-right-radius: 4px;
+  }
+
+  .chat-bubble-bot {
+    background: #f1e7ff;
+    color: #0f172a;
+    border-bottom-left-radius: 4px;
+  }
+
+  .story-card,
+  .capability-card,
+  .product-card {
+    transition:
+      transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .story-card:hover,
+  .capability-card:hover,
+  .product-card:hover {
+    transform: translateY(-3px);
+    box-shadow:
+      0 20px 25px -5px rgb(15 23 42 / 0.1),
+      0 8px 10px -6px rgb(15 23 42 / 0.1);
+  }
+
+  .product-card img {
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .product-card:hover img {
+    transform: scale(1.03);
+  }
+
+  .gantt-bar {
+    transition:
+      left 0.1s ease,
+      width 0.1s ease;
+    cursor: grab;
+  }
+
+  .gantt-bar:active {
+    cursor: grabbing;
+    box-shadow: 0 10px 15px -3px rgb(15 23 42 / 0.3);
+  }
+
+  .gantt-day {
+    font-size: 10px;
+    font-weight: 600;
+    color: #64748b;
+  }
+
+  .view-toggle-active {
+    background: #0f172a;
+    color: white;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.2);
+  }
+
+  .trust-pill {
+    background: white;
+    box-shadow: 0 1px 2px rgb(15 23 42 / 0.06);
+  }
+
+  .status-pill {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 1px 9px;
+    border-radius: 9999px;
+    letter-spacing: -0.3px;
+  }
+}

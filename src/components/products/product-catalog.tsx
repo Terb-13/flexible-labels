@@ -1,0 +1,67 @@
+"use client";
+
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { PRODUCTS } from "@/lib/data/demo-data";
+import { Button } from "@/components/ui/button";
+
+export function ProductCatalog() {
+  const router = useRouter();
+
+  return (
+    <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+      {PRODUCTS.map((product) => (
+        <div
+          key={product.id}
+          className="product-card border border-slate-200 rounded-3xl overflow-hidden bg-white flex flex-col"
+        >
+          <Image
+            src={product.image}
+            alt={product.name}
+            width={400}
+            height={225}
+            className="w-full aspect-video object-cover"
+          />
+          <div className="p-5 flex-1 flex flex-col">
+            <div>
+              <span className="uppercase text-[10px] tracking-widest font-semibold text-teal">
+                {product.categoryLabel}
+              </span>
+            </div>
+            <h3 className="text-xl font-semibold tracking-tight mt-1">
+              {product.name}
+            </h3>
+            <p className="text-sm text-slate-600 mt-1.5">{product.description}</p>
+            <div className="mt-3 text-xs flex flex-wrap gap-1">
+              {product.tags.map((tag) => (
+                <span key={tag} className="px-2 py-0.5 bg-slate-100 rounded">
+                  {tag}
+                </span>
+              ))}
+            </div>
+            <div className="text-xs mt-3 text-slate-500">
+              Ideal for: {product.idealFor}
+            </div>
+            <div className="mt-auto pt-4 flex gap-2">
+              <Button
+                variant="cta"
+                className="flex-1 text-sm"
+                onClick={() =>
+                  router.push(
+                    `/ai-tools?prompt=${encodeURIComponent(product.aiPrompt)}`
+                  )
+                }
+              >
+                Get Quote with AI
+              </Button>
+              <Button asChild variant="outline" className="flex-1 text-sm">
+                <Link href="/contact">Discuss with Specialist</Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
