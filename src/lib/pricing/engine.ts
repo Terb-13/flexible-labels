@@ -59,11 +59,12 @@ export function calculateQuote(
   };
 }
 
-export function formatCurrency(amount: number): string {
+export function formatCurrency(amount: number, showCents = false): string {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
-    maximumFractionDigits: 0,
+    minimumFractionDigits: showCents ? 2 : 0,
+    maximumFractionDigits: showCents ? 2 : 0,
   }).format(amount);
 }
 

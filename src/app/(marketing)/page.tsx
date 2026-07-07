@@ -4,7 +4,6 @@ import {
   Check,
   Clock,
   Eye,
-  MessageCircle,
   RefreshCw,
   UserRound,
 } from "lucide-react";
@@ -38,12 +37,10 @@ export default function HomePage() {
 
             <div className="flex flex-wrap gap-3 mt-8">
               <Button asChild variant="cta" size="lg" className="rounded-2xl shadow-sm">
-                <Link href="/portal">Open the Customer Portal</Link>
+                <Link href="/quote">Get Instant Quote</Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="rounded-2xl border-2 border-navy">
-                <Link href="/ai-tools">
-                  <MessageCircle /> Ask our AI Assistant
-                </Link>
+                <Link href="/products">Browse Products</Link>
               </Button>
             </div>
 

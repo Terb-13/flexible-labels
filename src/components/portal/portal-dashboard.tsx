@@ -236,10 +236,10 @@ export function PortalDashboard({
               </button>
             ))}
             <Link
-              href="/portal/estimator"
+              href="/quote"
               className="px-5 py-3 text-sm font-semibold rounded-t-2xl border-b-2 border-transparent text-slate-600 hover:text-teal ml-auto"
             >
-              New Quote / Estimator →
+              Get Instant Quote →
             </Link>
           </div>
 

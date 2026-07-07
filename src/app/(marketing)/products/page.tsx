@@ -24,12 +24,12 @@ export default function ProductsPage() {
         <ProductCatalog />
 
         <div className="mt-8 text-center">
-          <Link
-            href="/ai-tools"
-            className="inline-flex px-8 py-3 font-semibold border-2 border-navy rounded-2xl text-sm hover:bg-slate-50"
-          >
-            Not sure what you need? Ask our AI right now →
-          </Link>
+            <Link
+              href="/quote"
+              className="inline-flex px-8 py-3 font-semibold bg-cta text-white rounded-2xl text-sm hover:bg-orange-600"
+            >
+              Get instant quote for any product →
+            </Link>
         </div>
       </div>
     </section>

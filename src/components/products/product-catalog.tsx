@@ -2,15 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { PRODUCTS } from "@/lib/data/demo-data";
 import { Button } from "@/components/ui/button";
 
 export function ProductCatalog() {
-  const router = useRouter();
-
   return (
-    <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
       {PRODUCTS.map((product) => (
         <div
           key={product.id}
@@ -23,7 +20,7 @@ export function ProductCatalog() {
             height={225}
             className="w-full aspect-video object-cover"
           />
-          <div className="p-5 flex-1 flex flex-col">
+          <div className="p-5 flex-1 flex flex-col min-w-0">
             <div>
               <span className="uppercase text-[10px] tracking-widest font-semibold text-teal">
                 {product.categoryLabel}
@@ -43,21 +40,34 @@ export function ProductCatalog() {
             <div className="text-xs mt-3 text-slate-500">
               Ideal for: {product.idealFor}
             </div>
-            <div className="mt-auto pt-4 flex gap-2">
-              <Button
-                variant="cta"
-                className="flex-1 text-sm"
-                onClick={() =>
-                  router.push(
-                    `/ai-tools?prompt=${encodeURIComponent(product.aiPrompt)}`
-                  )
-                }
-              >
-                Get Quote with AI
+            <div className="mt-auto pt-4 grid grid-cols-1 gap-2">
+              <Button asChild variant="cta" className="w-full whitespace-normal h-auto min-h-11 py-2.5">
+                <Link href={`/quote?product=${product.slug}`}>
+                  Get Instant Quote
+                </Link>
               </Button>
-              <Button asChild variant="outline" className="flex-1 text-sm">
-                <Link href="/contact">Discuss with Specialist</Link>
-              </Button>
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  asChild
+                  variant="outline"
+                  size="sm"
+                  className="whitespace-normal h-auto min-h-9 py-2 text-xs"
+                >
+                  <Link
+                    href={`/ai-tools?prompt=${encodeURIComponent(product.aiPrompt)}`}
+                  >
+                    Ask AI
+                  </Link>
+                </Button>
+                <Button
+                  asChild
+                  variant="outline"
+                  size="sm"
+                  className="whitespace-normal h-auto min-h-9 py-2 text-xs"
+                >
+                  <Link href="/contact">Specialist</Link>
+                </Button>
+              </div>
             </div>
           </div>
         </div>

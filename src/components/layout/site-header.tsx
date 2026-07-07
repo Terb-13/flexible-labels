@@ -10,8 +10,9 @@ import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
   { href: "/", label: "Home" },
-  { href: "/capabilities", label: "Capabilities" },
   { href: "/products", label: "Products" },
+  { href: "/quote", label: "Get Quote" },
+  { href: "/capabilities", label: "Capabilities" },
   { href: "/ai-tools", label: "AI Tools" },
   { href: "/portal", label: "Customer Portal" },
   { href: "/about", label: "About" },
@@ -64,8 +65,11 @@ export function SiteHeader({
               <Bot className="text-teal" />
               Talk to AI
             </Button>
-            <Button asChild>
-              <Link href="/portal">Try Portal Demo</Link>
+            <Button asChild variant="cta">
+              <Link href="/quote">Get Instant Quote</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href="/portal">Portal</Link>
             </Button>
           </div>
 
@@ -93,12 +97,17 @@ export function SiteHeader({
                 </Link>
               ))}
               <div className="flex flex-col gap-y-2 pt-3 mt-2 border-t">
+                <Button asChild variant="cta">
+                  <Link href="/quote" onClick={() => setMobileOpen(false)}>
+                    Get Instant Quote
+                  </Link>
+                </Button>
                 <Button variant="outline" onClick={() => { onOpenChat?.(); setMobileOpen(false); }}>
                   <Bot /> Talk to AI Assistant
                 </Button>
-                <Button asChild>
+                <Button asChild variant="outline">
                   <Link href="/portal" onClick={() => setMobileOpen(false)}>
-                    Try Customer Portal Demo
+                    Customer Portal
                   </Link>
                 </Button>
               </div>
