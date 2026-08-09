@@ -2,9 +2,12 @@
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import type { UserRole } from "@/types";
+import type { DemoSessionValue } from "@/lib/auth/demo-session";
 
-export async function loginDemo(role: UserRole, next = "/portal") {
+export async function loginDemo(
+  role: DemoSessionValue,
+  next = "/portal"
+) {
   const cookieStore = await cookies();
   cookieStore.set("flg_demo_session", role, {
     httpOnly: true,

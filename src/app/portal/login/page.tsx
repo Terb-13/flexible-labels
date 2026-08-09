@@ -14,9 +14,9 @@ export default async function PortalLoginPage({
         <div className="mx-auto w-14 h-14 rounded-2xl bg-navy flex items-center justify-center mb-6">
           <Lock className="text-white w-7 h-7" />
         </div>
-        <div className="font-semibold text-xl">Demo Customer Access</div>
+        <div className="font-semibold text-xl">Demo Access</div>
         <div className="text-sm text-slate-600 mt-1">
-          Acme Brands — Procurement & Operations
+          Customer portal, Sales/CX estimating, or E&P queue
         </div>
         <DemoLoginForm next={next} />
         <div className="mt-4 text-xs text-slate-500">

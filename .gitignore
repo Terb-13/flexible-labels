@@ -35,6 +35,10 @@ yarn-error.log*
 # vercel
 .vercel
 
+# estimating runtime (demo persistence)
+/data/estimates.json
+/data/memphis-register-runtime.json
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

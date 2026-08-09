@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { isEmployeeSession } from "@/lib/auth/demo-session";
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
@@ -11,15 +12,20 @@ export async function updateSession(request: NextRequest) {
   const demoSession = request.cookies.get("flg_demo_session")?.value;
 
   if (!supabaseUrl || !supabaseAnonKey) {
-    if (path.startsWith("/portal") && !path.startsWith("/portal/login") && !demoSession) {
+    if (
+      path.startsWith("/portal") &&
+      !path.startsWith("/portal/login") &&
+      !demoSession
+    ) {
       const url = request.nextUrl.clone();
       url.pathname = "/portal/login";
       url.searchParams.set("next", path);
       return NextResponse.redirect(url);
     }
-    if (path.startsWith("/operations") && demoSession !== "employee") {
+    if (path.startsWith("/operations") && !isEmployeeSession(demoSession)) {
       const url = request.nextUrl.clone();
       url.pathname = demoSession ? "/portal" : "/portal/login";
+      if (!demoSession) url.searchParams.set("next", path);
       return NextResponse.redirect(url);
     }
     return supabaseResponse;
@@ -30,7 +36,13 @@ export async function updateSession(request: NextRequest) {
       getAll() {
         return request.cookies.getAll();
       },
-      setAll(cookiesToSet: { name: string; value: string; options?: Record<string, unknown> }[]) {
+      setAll(
+        cookiesToSet: {
+          name: string;
+          value: string;
+          options?: Record<string, unknown>;
+        }[]
+      ) {
         cookiesToSet.forEach(({ name, value }) =>
           request.cookies.set(name, value)
         );
@@ -46,8 +58,13 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // Demo cookie still works alongside Supabase for estimating role demos
+  if (path.startsWith("/operations") && isEmployeeSession(demoSession)) {
+    return supabaseResponse;
+  }
+
   if (path.startsWith("/portal") && !path.startsWith("/portal/login")) {
-    if (!user) {
+    if (!user && !demoSession) {
       const url = request.nextUrl.clone();
       url.pathname = "/portal/login";
       url.searchParams.set("next", path);
