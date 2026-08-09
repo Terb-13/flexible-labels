@@ -176,7 +176,7 @@ export function CpqWizard({
           : `Draft saved (${data.estimate.id}).`
       );
       if (status === "for_estimate") {
-        router.push("/operations/estimating/queue");
+        router.push("/operations/queue");
         router.refresh();
       }
     } catch (e) {

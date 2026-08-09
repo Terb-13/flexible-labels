@@ -46,8 +46,8 @@ export function QueueClient({
     return (
       <p className="text-sm text-slate-500 bg-white border rounded-2xl p-6">
         Queue is empty. CX can submit drafts via{" "}
-        <Link href="/operations/estimating/new" className="text-teal underline">
-          New estimate
+        <Link href="/operations/cpq" className="text-teal underline">
+          New estimate (CPQ)
         </Link>
         .
       </p>
@@ -65,7 +65,7 @@ export function QueueClient({
           >
             <div>
               <Link
-                href={`/operations/estimating/${e.id}`}
+                href={`/operations/estimates/${e.id}`}
                 className="font-medium text-teal hover:underline"
               >
                 {e.customerName || "Untitled"} · {e.productLabel}

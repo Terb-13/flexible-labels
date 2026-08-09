@@ -644,7 +644,7 @@ function BusinessOpsPanel({
       <GanttScheduler jobs={jobs} days={GANTT_DAYS} onJobsChange={setJobs} />
       <div className="mt-4 flex gap-3">
         <Button asChild variant="outline">
-          <Link href="/operations">Open full operations workspace →</Link>
+          <Link href="/operations/cpq">Open Memphis CPQ (operations) →</Link>
         </Button>
       </div>
     </>

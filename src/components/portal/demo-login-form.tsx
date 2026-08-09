@@ -12,19 +12,19 @@ export function DemoLoginForm({ next }: { next: string }) {
         </Button>
       </form>
       <form
-        action={() => loginDemo("employee_cx", "/operations/estimating")}
+        action={() => loginDemo("employee_cx", "/operations/cpq")}
         className="mt-3"
       >
         <Button type="submit" variant="outline" className="w-full h-12">
-          Login as Sales / CX
+          Sales — New estimate (CPQ)
         </Button>
       </form>
       <form
-        action={() => loginDemo("employee_ep", "/operations/estimating/queue")}
+        action={() => loginDemo("employee_ep", "/operations/queue")}
         className="mt-3"
       >
         <Button type="submit" variant="outline" className="w-full h-12">
-          Login as Estimating (E&P)
+          Estimating — Queue
         </Button>
       </form>
     </>
