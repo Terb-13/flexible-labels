@@ -1,107 +1,170 @@
-import { cookies } from "next/headers";
+import Link from "next/link";
 import { redirect } from "next/navigation";
-import { EstimatorWorkspace } from "@/components/portal/estimator-workspace";
+import { OpsShell } from "@/components/operations/ops-shell";
+import { getAppSession } from "@/lib/auth/session";
 import {
-  DEMO_KPIS,
-  DEMO_SCHEDULE_JOBS,
-  GANTT_DAYS,
-} from "@/lib/data/demo-data";
-import { formatCurrency } from "@/lib/pricing/engine";
-import { OperationsClient } from "@/components/portal/operations-client";
+  estimateStats,
+  listEstimates,
+} from "@/lib/estimating/estimates-store";
+import {
+  getRegisterSnapshot,
+  registerHealth,
+} from "@/lib/estimating/register-store";
+import { productTypeLabel } from "@/lib/estimating/product-types";
 
-export default async function OperationsPage() {
-  const cookieStore = await cookies();
-  const role = cookieStore.get("flg_demo_session")?.value;
+function money(n: number) {
+  return n.toLocaleString("en-US", { style: "currency", currency: "USD" });
+}
 
-  if (role !== "employee") {
+export const dynamic = "force-dynamic";
+
+export default async function EstimatesHubPage() {
+  const session = await getAppSession();
+  if (!session?.isEmployee) {
     redirect("/portal/login?next=/operations");
   }
 
+  const [snap, recent, stats] = await Promise.all([
+    getRegisterSnapshot(),
+    listEstimates(12),
+    estimateStats(),
+  ]);
+  const health = registerHealth(snap);
+
   return (
-    <section className="pt-8 pb-20 px-5 md:px-8 bg-slate-50 min-h-screen">
-      <div className="max-w-screen-2xl mx-auto space-y-8">
+    <OpsShell
+      title="Estimates"
+      subtitle="Memphis CPQ hub · start a quote or open the queue"
+      role={session.actorRole}
+      actorName={session.profile.full_name}
+    >
+      <div className="mb-8 rounded-2xl border border-teal/30 bg-white p-6 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-3">
-            <h1 className="heading-font text-4xl tracking-tighter font-semibold">
-              Business Operations
-            </h1>
-            <span className="text-xs px-3 py-px bg-amber-100 text-amber-700 font-medium rounded-full">
-              EMPLOYEE ONLY
-            </span>
-          </div>
-          <p className="text-slate-600 mt-1">
-            KPI dashboard, full estimator, production scheduler, job tickets, and
-            margin assessment.
+          <h2 className="font-semibold text-xl">Start a new estimate</h2>
+          <p className="text-sm text-slate-600 mt-1 max-w-xl">
+            Open the full CPQ wizard to configure product, material, and
+            quantity. Pricing routes onto Memphis presses automatically.
           </p>
         </div>
+        <Link
+          href="/operations/cpq"
+          className="inline-flex items-center rounded-lg bg-teal px-5 py-3 text-sm font-semibold text-white hover:opacity-90"
+        >
+          New estimate (CPQ)
+        </Link>
+      </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-          {[
-            ["YTD VOLUME", formatCurrency(DEMO_KPIS.ytdVolume), `+${DEMO_KPIS.ytdGrowthPercent}% YoY`],
-            ["ON-TIME %", `${DEMO_KPIS.onTimePercent}%`, "Above 92% target"],
-            ["OPEN INVOICES", formatCurrency(DEMO_KPIS.openInvoicesAmount), `${DEMO_KPIS.openInvoicesCount} pending`],
-            ["ACTIVE ORDERS", String(DEMO_KPIS.activeOrders), `${DEMO_KPIS.inProduction} in production`],
-            ["AVG LEAD TIME", `${DEMO_KPIS.avgLeadTimeDays} days`, `${DEMO_KPIS.leadTimeDelta} vs prior`],
-          ].map(([label, value, sub]) => (
-            <div key={label} className="bg-white border border-slate-200 rounded-2xl p-4">
-              <div className="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">
-                {label}
-              </div>
-              <div className="text-2xl font-semibold text-navy mt-1">{value}</div>
-              <div className="text-xs text-emerald-600 mt-0.5">{sub}</div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+        {[
+          ["Open drafts", String(stats.open), `${stats.total} total saved`],
+          ["In queue", String(stats.queue), "Open queue →"],
+          ["With estimators", String(stats.estimating), `${stats.sent} sent`],
+          [
+            "Production routes",
+            String(health.routes),
+            `${health.presses} presses · ${health.plants} plant`,
+          ],
+        ].map(([label, value, detail]) => (
+          <div
+            key={label}
+            className="bg-white border border-slate-200 rounded-2xl p-4"
+          >
+            <div className="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">
+              {label}
             </div>
-          ))}
-        </div>
+            <div className="text-2xl font-semibold text-navy mt-1">{value}</div>
+            <div className="text-xs text-slate-500 mt-0.5">
+              {label === "In queue" ? (
+                <Link href="/operations/queue" className="text-teal">
+                  {detail}
+                </Link>
+              ) : (
+                detail
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
 
-        <OperationsClient initialJobs={DEMO_SCHEDULE_JOBS} days={GANTT_DAYS} />
-
-        <div>
-          <h2 className="font-semibold text-xl mb-4">Full Estimator (cost breakdown)</h2>
-          <EstimatorWorkspace showBreakdown />
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-6">
-          <div className="bg-white border rounded-3xl p-6">
-            <h3 className="font-semibold mb-3">Plant tracking</h3>
-            <ul className="space-y-3 text-sm">
-              {[
-                ["Press Line 1", "Running — Apex 16oz", "87%"],
-                ["Press Line 2", "Setup — Horizon jars", "—"],
-                ["Digital Press", "Idle", "—"],
-                ["Finishing", "Metro bumpers QC", "62%"],
-                ["Rewind / Inspection", "Summit pharma", "91%"],
-              ].map(([line, job, util]) => (
-                <li key={line} className="flex justify-between border-b pb-2">
+      <div className="grid lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 bg-white border border-slate-200 rounded-2xl p-5">
+          <h2 className="font-semibold mb-3">Recent estimates</h2>
+          {recent.length === 0 ? (
+            <p className="text-sm text-slate-500">
+              No saved estimates yet.{" "}
+              <Link href="/operations/cpq" className="text-teal underline">
+                Start the CPQ wizard
+              </Link>{" "}
+              to create one.
+            </p>
+          ) : (
+            <ul className="divide-y">
+              {recent.map((e) => (
+                <li
+                  key={e.id}
+                  className="py-3 flex justify-between gap-3 text-sm"
+                >
                   <div>
-                    <div className="font-medium">{line}</div>
-                    <div className="text-xs text-slate-500">{job}</div>
+                    <Link
+                      href={`/operations/estimates/${e.id}`}
+                      className="font-medium text-teal hover:underline"
+                    >
+                      {e.customerName || "Untitled"} · {e.productLabel}
+                    </Link>
+                    <div className="text-xs text-slate-500 mt-0.5">
+                      {e.quantity.toLocaleString()} · {e.status} ·{" "}
+                      {e.pressName ?? "—"}
+                    </div>
                   </div>
-                  <div className="text-xs font-semibold text-teal">{util}</div>
+                  <div className="font-semibold whitespace-nowrap">
+                    {money(e.sellPrice)}
+                  </div>
                 </li>
               ))}
             </ul>
-          </div>
-          <div className="bg-white border rounded-3xl p-6">
-            <h3 className="font-semibold mb-3">Post-production margin assessment</h3>
-            <div className="space-y-3 text-sm">
-              {[
-                ["FLG-47721", "Quoted 32%", "Actual 29.4%", "Material waste +2.1%"],
-                ["FLG-47588", "Quoted 32%", "Actual 31.8%", "On target"],
-                ["FLG-47402", "Quoted 32%", "Actual 27.2%", "Rush finishing — review"],
-              ].map(([order, quoted, actual, note]) => (
-                <div key={order} className="border-b pb-2">
-                  <div className="font-mono text-xs text-slate-500">{order}</div>
-                  <div className="flex gap-4 mt-1">
-                    <span>{quoted}</span>
-                    <span className="font-semibold">{actual}</span>
-                  </div>
-                  <div className="text-xs text-slate-500 mt-1">{note}</div>
-                </div>
-              ))}
+          )}
+        </div>
+
+        <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-3">
+          <h2 className="font-semibold">Memphis register</h2>
+          <p className="text-sm text-slate-600">{snap.plants[0]?.name}</p>
+          <dl className="text-sm space-y-1">
+            <div className="flex justify-between">
+              <dt className="text-slate-500">Assets</dt>
+              <dd>{health.assets}</dd>
             </div>
-          </div>
+            <div className="flex justify-between">
+              <dt className="text-slate-500">Installed presses</dt>
+              <dd>{health.presses}</dd>
+            </div>
+            <div className="flex justify-between">
+              <dt className="text-slate-500">Active routes</dt>
+              <dd>{health.routes}</dd>
+            </div>
+          </dl>
+          <ul className="text-xs text-slate-500 space-y-1 pt-2 border-t">
+            {snap.routes.slice(0, 4).map((r) => (
+              <li key={r.id}>
+                {productTypeLabel(r.productType)} · {r.pressAssetTag}
+              </li>
+            ))}
+          </ul>
+          <Link
+            href="/operations/assets"
+            className="inline-block text-sm text-teal hover:underline pt-1"
+          >
+            Open asset registry →
+          </Link>
         </div>
       </div>
-    </section>
+
+      <p className="mt-8 text-xs text-slate-500">
+        Public website “Get Instant Quote” is a separate demo tool. Internal CPQ
+        is here.{" "}
+        <Link href="/operations/plant" className="text-teal hover:underline">
+          Plant schedule & KPIs
+        </Link>
+      </p>
+    </OpsShell>
   );
 }

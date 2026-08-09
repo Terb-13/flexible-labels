@@ -1,0 +1,255 @@
+{
+  "version": 1,
+  "generatedAt": "2026-08-09T00:00:00.000Z",
+  "sourceFilename": "memphis-seed-register.json",
+  "plants": [
+    {
+      "code": "MEM-TN",
+      "name": "Flexible Label Group — Memphis",
+      "region": "TN",
+      "routingMode": "live"
+    }
+  ],
+  "assets": [
+    {
+      "assetTag": "MEM-P01",
+      "plantCode": "MEM-TN",
+      "status": "Installed",
+      "equipmentType": "Flexo Press",
+      "equipNumber": "Press Line 1",
+      "manufacturer": "Mark Andy",
+      "model": "Performance Series P7",
+      "yearOfManufacture": "2018",
+      "maxPrintDieWidthIn": 17,
+      "maxMaterialWidthIn": 17.5,
+      "widthIn": 17.5,
+      "colorStations": 8,
+      "maxSpeedFpm": 750,
+      "avgSpeedFpm": 420,
+      "avgMrMinutes": 45,
+      "avgMrMinutesPerColor": 8,
+      "capabilities": ["uv", "cold_foil", "laminate"]
+    },
+    {
+      "assetTag": "MEM-P02",
+      "plantCode": "MEM-TN",
+      "status": "Installed",
+      "equipmentType": "Flexo Press",
+      "equipNumber": "Press Line 2",
+      "manufacturer": "Nilpeter",
+      "model": "FA-4*",
+      "yearOfManufacture": "2015",
+      "maxPrintDieWidthIn": 13,
+      "maxMaterialWidthIn": 13.5,
+      "widthIn": 13.5,
+      "colorStations": 6,
+      "maxSpeedFpm": 600,
+      "avgSpeedFpm": 360,
+      "avgMrMinutes": 50,
+      "avgMrMinutesPerColor": 10,
+      "capabilities": ["uv", "laminate"]
+    },
+    {
+      "assetTag": "MEM-D01",
+      "plantCode": "MEM-TN",
+      "status": "Installed",
+      "equipmentType": "Digital Press",
+      "equipNumber": "Digital Press",
+      "manufacturer": "HP",
+      "model": "Indigo 6900",
+      "yearOfManufacture": "2020",
+      "maxPrintDieWidthIn": 13,
+      "maxMaterialWidthIn": 13,
+      "widthIn": 13,
+      "colorStations": 7,
+      "maxSpeedFpm": 120,
+      "avgSpeedFpm": 90,
+      "avgMrMinutes": 18,
+      "avgMrMinutesPerColor": 2,
+      "capabilities": ["variable_data", "short_run"]
+    },
+    {
+      "assetTag": "MEM-F01",
+      "plantCode": "MEM-TN",
+      "status": "Installed",
+      "equipmentType": "Digital Finisher",
+      "equipNumber": "Finishing",
+      "manufacturer": "ABG",
+      "model": "Digicon Series 3",
+      "yearOfManufacture": "2019",
+      "maxPrintDieWidthIn": 13,
+      "maxMaterialWidthIn": 13.5,
+      "widthIn": 13.5,
+      "colorStations": 1,
+      "maxSpeedFpm": 200,
+      "avgSpeedFpm": 140,
+      "avgMrMinutes": 25,
+      "avgMrMinutesPerColor": 0,
+      "capabilities": ["dieCut", "laminate", "varnish", "rewind"]
+    },
+    {
+      "assetTag": "MEM-F02",
+      "plantCode": "MEM-TN",
+      "status": "Installed",
+      "equipmentType": "Rewinder",
+      "equipNumber": "Rewind / Inspection",
+      "manufacturer": "Rotoflex",
+      "model": "VLI-340",
+      "yearOfManufacture": "2016",
+      "maxPrintDieWidthIn": 13,
+      "maxMaterialWidthIn": 13.5,
+      "widthIn": 13.5,
+      "colorStations": 0,
+      "maxSpeedFpm": 500,
+      "avgSpeedFpm": 320,
+      "avgMrMinutes": 12,
+      "avgMrMinutesPerColor": 0,
+      "capabilities": ["rewind", "dieCut"]
+    },
+    {
+      "assetTag": "MEM-L01",
+      "plantCode": "MEM-TN",
+      "status": "Installed",
+      "equipmentType": "Laminator",
+      "equipNumber": "Laminator 1",
+      "manufacturer": "GMP",
+      "model": "Excelam",
+      "yearOfManufacture": "2017",
+      "maxMaterialWidthIn": 17,
+      "widthIn": 17,
+      "colorStations": 0,
+      "maxSpeedFpm": 180,
+      "avgSpeedFpm": 120,
+      "avgMrMinutes": 15,
+      "avgMrMinutesPerColor": 0,
+      "capabilities": ["laminate"]
+    },
+    {
+      "assetTag": "MEM-C01",
+      "plantCode": "MEM-TN",
+      "status": "Installed",
+      "equipmentType": "Core Cutter",
+      "equipNumber": "Core Cutter",
+      "manufacturer": "CMC",
+      "model": "CC-200",
+      "yearOfManufacture": "2014",
+      "capabilities": []
+    },
+    {
+      "assetTag": "MEM-V01",
+      "plantCode": "MEM-TN",
+      "status": "Installed",
+      "equipmentType": "Web Viewer",
+      "equipNumber": "Inspection Station",
+      "manufacturer": "BST",
+      "model": "POWERScope",
+      "yearOfManufacture": "2018",
+      "capabilities": []
+    },
+    {
+      "assetTag": "MEM-U01",
+      "plantCode": "MEM-TN",
+      "status": "Installed",
+      "equipmentType": "UV/LED Lamp System",
+      "equipNumber": "UV Bank Line 1",
+      "manufacturer": "GEW",
+      "model": "AeroLED",
+      "yearOfManufacture": "2019",
+      "capabilities": ["uv"]
+    },
+    {
+      "assetTag": "MEM-T01",
+      "plantCode": "MEM-TN",
+      "status": "Installed",
+      "equipmentType": "Table Top",
+      "equipNumber": "Hand Finishing",
+      "manufacturer": "In-house",
+      "model": "Bench",
+      "capabilities": []
+    }
+  ],
+  "routes": [
+    {
+      "id": "MEM-P01::ps_label",
+      "plantCode": "MEM-TN",
+      "pressAssetTag": "MEM-P01",
+      "productType": "ps_label",
+      "productTypeRaw": "PS label",
+      "isActive": true,
+      "steps": [
+        { "stepOrder": 1, "routeGroup": "1st", "assetTag": "MEM-P01", "label": "Press Line 1" },
+        { "stepOrder": 2, "routeGroup": "1st", "assetTag": "MEM-L01", "label": "Laminator" },
+        { "stepOrder": 3, "routeGroup": "2nd", "assetTag": "MEM-F02", "label": "Rewind / Inspection" }
+      ]
+    },
+    {
+      "id": "MEM-P02::ps_label",
+      "plantCode": "MEM-TN",
+      "pressAssetTag": "MEM-P02",
+      "productType": "ps_label",
+      "productTypeRaw": "PS label",
+      "isActive": true,
+      "steps": [
+        { "stepOrder": 1, "routeGroup": "1st", "assetTag": "MEM-P02", "label": "Press Line 2" },
+        { "stepOrder": 2, "routeGroup": "2nd", "assetTag": "MEM-F02", "label": "Rewind / Inspection" }
+      ]
+    },
+    {
+      "id": "MEM-D01::ps_label",
+      "plantCode": "MEM-TN",
+      "pressAssetTag": "MEM-D01",
+      "productType": "ps_label",
+      "productTypeRaw": "PS label (digital)",
+      "isActive": true,
+      "steps": [
+        { "stepOrder": 1, "routeGroup": "1st", "assetTag": "MEM-D01", "label": "Digital Press" },
+        { "stepOrder": 2, "routeGroup": "1st", "assetTag": "MEM-F01", "label": "Digital Finisher" }
+      ]
+    },
+    {
+      "id": "MEM-D01::variable_data",
+      "plantCode": "MEM-TN",
+      "pressAssetTag": "MEM-D01",
+      "productType": "variable_data",
+      "productTypeRaw": "Variable data",
+      "isActive": true,
+      "steps": [
+        { "stepOrder": 1, "routeGroup": "1st", "assetTag": "MEM-D01", "label": "Digital Press" },
+        { "stepOrder": 2, "routeGroup": "1st", "assetTag": "MEM-F01", "label": "Digital Finisher" },
+        { "stepOrder": 3, "routeGroup": "2nd", "assetTag": "MEM-F02", "label": "Rewind / Inspection" }
+      ]
+    },
+    {
+      "id": "MEM-D01::sheeted",
+      "plantCode": "MEM-TN",
+      "pressAssetTag": "MEM-D01",
+      "productType": "sheeted",
+      "productTypeRaw": "Sheeted / die-cut",
+      "isActive": true,
+      "steps": [
+        { "stepOrder": 1, "routeGroup": "1st", "assetTag": "MEM-D01", "label": "Digital Press" },
+        { "stepOrder": 2, "routeGroup": "1st", "assetTag": "MEM-F01", "label": "Digital Finisher" }
+      ]
+    },
+    {
+      "id": "MEM-P02::sheeted",
+      "plantCode": "MEM-TN",
+      "pressAssetTag": "MEM-P02",
+      "productType": "sheeted",
+      "productTypeRaw": "Sheeted / die-cut",
+      "isActive": true,
+      "steps": [
+        { "stepOrder": 1, "routeGroup": "1st", "assetTag": "MEM-P02", "label": "Press Line 2" },
+        { "stepOrder": 2, "routeGroup": "2nd", "assetTag": "MEM-F01", "label": "Digital Finisher" }
+      ]
+    }
+  ],
+  "importSummary": {
+    "plantsUpserted": 1,
+    "assetsUpserted": 10,
+    "routesUpserted": 6,
+    "stepsCreated": 15,
+    "skipped": 0,
+    "errors": []
+  }
+}
