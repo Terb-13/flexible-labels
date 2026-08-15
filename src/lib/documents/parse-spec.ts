@@ -14,22 +14,35 @@ const PRODUCT_RULES: { test: RegExp; name: string }[] = [
 
 const CRITICAL_FIELDS = ["quantity", "dimensions", "material"] as const;
 
+function parseQty(raw: string | undefined): number | undefined {
+  if (!raw) return undefined;
+  const n = Number(raw.replace(/,/g, ""));
+  return Number.isFinite(n) && n > 0 ? n : undefined;
+}
+
 function extractQuantity(text: string): number | undefined {
   const labeled = text.match(
-    /(?:qty|quantity|piece\s*count|labels?|stickers?|rolls?)\s*[:=]?\s*(\d[\d,]*)/i
+    /(?:qty|quantity|piece\s*count)\s*[:=]?\s*(\d[\d,]*)/i
   );
-  if (labeled) {
-    const n = Number(labeled[1].replace(/,/g, ""));
-    return Number.isFinite(n) && n > 0 ? n : undefined;
-  }
+  const fromLabel = parseQty(labeled?.[1]);
+  if (fromLabel && fromLabel >= 10) return fromLabel;
 
-  const leading = text.match(/(\d[\d,]*)\s*(?:labels?|stickers?|pcs|pieces|qty|quantity|rolls?)\b/i);
-  if (leading) {
-    const n = Number(leading[1].replace(/,/g, ""));
-    return Number.isFinite(n) && n > 0 ? n : undefined;
-  }
+  const afterNoun = text.match(
+    /(?:labels?|stickers?|rolls?|qty|quantity)\s+(\d{1,3}(?:,\d{3})+|\d{3,})\b/i
+  );
+  const fromAfterNoun = parseQty(afterNoun?.[1]);
+  if (fromAfterNoun) return fromAfterNoun;
 
-  return undefined;
+  const leading = text.match(
+    /(\d{1,3}(?:,\d{3})+|\d{3,})\s+(?:[\w."/-]+\s+){0,6}(?:labels?|stickers?|pcs|pieces|rolls?)\b/i
+  );
+  const fromLeading = parseQty(leading?.[1]);
+  if (fromLeading) return fromLeading;
+
+  const trailing = text.match(
+    /(\d{1,3}(?:,\d{3})+|\d{3,})\s*(?:labels?|stickers?|pcs|pieces|qty|quantity|rolls?)\b/i
+  );
+  return parseQty(trailing?.[1]) ?? (fromLabel && fromLabel >= 50 ? fromLabel : undefined);
 }
 
 function extractDimensions(text: string): { widthIn?: number; heightIn?: number } {

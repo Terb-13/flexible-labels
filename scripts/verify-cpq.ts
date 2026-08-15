@@ -74,7 +74,9 @@ assert(
 const fasterPress = {
   ...registries,
   assets: registries.assets.map((a) =>
-    a.id === direct.recommendedAssetId ? { ...a, hourlyRate: a.hourlyRate * 2 } : a
+    a.kind === "press_flexo" || a.kind === "press_digital"
+      ? { ...a, hourlyRate: a.hourlyRate * 2 }
+      : a
   ),
 };
 const fasterQuote = calculateQuote(SPEC, DEMO_COMPANY, { registries: fasterPress });
@@ -234,6 +236,28 @@ assert(
   "every press/finisher has live rates"
 );
 assert(MEMPHIS_RATE_CARD.prepressBase > 0, "rate card supplies prepress / VDP rates");
+
+let tooWide = false;
+try {
+  calculateQuote({ ...SPEC, widthIn: 20 }, DEMO_COMPANY);
+} catch {
+  tooWide = true;
+}
+assert(tooWide, "width beyond every press web is rejected");
+
+let tooManyColors = false;
+try {
+  calculateQuote({ ...SPEC, colors: 12 }, DEMO_COMPANY);
+} catch {
+  tooManyColors = true;
+}
+assert(tooManyColors, "color count beyond every press is rejected");
+
+const shortRun = calculateQuote({ ...SPEC, quantity: 800 }, DEMO_COMPANY);
+assert(
+  shortRun.recommendedAssetId === "mem-d01",
+  "short run routes to the digital press"
+);
 
 if (failed) {
   console.error(`\n${failed} quality-bar check(s) failed.`);
