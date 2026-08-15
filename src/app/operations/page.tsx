@@ -1,13 +1,8 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { EstimatorWorkspace } from "@/components/portal/estimator-workspace";
-import {
-  DEMO_KPIS,
-  DEMO_SCHEDULE_JOBS,
-  GANTT_DAYS,
-} from "@/lib/data/demo-data";
+import { OperationsCpq } from "@/components/portal/operations-cpq";
+import { DEMO_KPIS, DEMO_SCHEDULE_JOBS, GANTT_DAYS } from "@/lib/data/demo-data";
 import { formatCurrency } from "@/lib/pricing/engine";
-import { OperationsClient } from "@/components/portal/operations-client";
 
 export default async function OperationsPage() {
   const cookieStore = await cookies();
@@ -30,8 +25,8 @@ export default async function OperationsPage() {
             </span>
           </div>
           <p className="text-slate-600 mt-1">
-            KPI dashboard, full estimator, production scheduler, job tickets, and
-            margin assessment.
+            KPI dashboard, full estimator, margin approval, job tickets, and the
+            production scheduler.
           </p>
         </div>
 
@@ -53,12 +48,7 @@ export default async function OperationsPage() {
           ))}
         </div>
 
-        <OperationsClient initialJobs={DEMO_SCHEDULE_JOBS} days={GANTT_DAYS} />
-
-        <div>
-          <h2 className="font-semibold text-xl mb-4">Full Estimator (cost breakdown)</h2>
-          <EstimatorWorkspace showBreakdown />
-        </div>
+        <OperationsCpq initialJobs={DEMO_SCHEDULE_JOBS} days={GANTT_DAYS} />
 
         <div className="grid md:grid-cols-2 gap-6">
           <div className="bg-white border rounded-3xl p-6">

@@ -1,36 +1,28 @@
 import { NextResponse } from "next/server";
-import { DEMO_COMPANY, DEMO_RESELLER } from "@/lib/data/demo-data";
-import { calculateQuote } from "@/lib/pricing/engine";
+import { companyById } from "@/lib/data/demo-data";
+import { calculateQuote, toCustomerQuote } from "@/lib/pricing/engine";
 import type { QuoteSpec } from "@/types";
 
 export async function POST(request: Request) {
   const body = (await request.json()) as QuoteSpec & {
     companyId?: string;
     discountPercent?: number;
+    view?: "customer" | "internal";
   };
 
-  const company =
-    body.companyId === DEMO_RESELLER.id ? DEMO_RESELLER : DEMO_COMPANY;
+  try {
+    const company = companyById(body.companyId);
+    const breakdown = calculateQuote(body, company, {
+      discountPercent: body.discountPercent,
+    });
 
-  let breakdown = calculateQuote(body, company);
+    if (body.view === "customer") {
+      return NextResponse.json(toCustomerQuote(breakdown, body.quantity));
+    }
 
-  if (body.discountPercent && body.discountPercent > 0) {
-    const discountedPrice =
-      Math.round(breakdown.finalPrice * (1 - body.discountPercent / 100) * 100) /
-      100;
-    const marginAmount = discountedPrice - breakdown.totalCost;
-    const marginPercent =
-      discountedPrice > 0
-        ? Math.round((marginAmount / discountedPrice) * 1000) / 10
-        : 0;
-    breakdown = {
-      ...breakdown,
-      finalPrice: discountedPrice,
-      marginAmount,
-      marginPercent,
-      needsApproval: marginPercent < company.target_margin_percent,
-    };
+    return NextResponse.json(breakdown);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unable to price quote";
+    return NextResponse.json({ error: message }, { status: 400 });
   }
-
-  return NextResponse.json(breakdown);
 }

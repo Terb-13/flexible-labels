@@ -10,6 +10,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "verify:cpq": "tsx scripts/verify-cpq.ts",
     "db:seed": "tsx scripts/seed-demo.ts"
   },
   "dependencies": {

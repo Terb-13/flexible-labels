@@ -95,6 +95,88 @@ export interface ScheduleJob {
   company_id: string;
 }
 
+export type MaterialCategory =
+  | "substrate"
+  | "adhesive"
+  | "laminate"
+  | "ink"
+  | "packaging"
+  | "prepress";
+
+export type AssetKind =
+  | "press_flexo"
+  | "press_digital"
+  | "finishing"
+  | "rewind"
+  | "laminator"
+  | "specialty";
+
+export interface Material {
+  id: string;
+  sku: string;
+  name: string;
+  category: MaterialCategory;
+  /** Dollars per thousand square inches when unit is msi. */
+  costPerMsi: number;
+  /** Dollars per each / hour / pound when unit is not msi. */
+  costPerUnit: number;
+  unit: "msi" | "each" | "hour" | "lb";
+  wasteFactor: number;
+  coverageFactor?: number;
+  aliases: string[];
+  recommendedFor: string[];
+  attributes: {
+    thicknessMil?: number;
+    outdoorRated?: boolean;
+    condensationResistant?: boolean;
+    chemicalResistant?: boolean;
+    description?: string;
+  };
+  active: boolean;
+}
+
+export interface PlantAsset {
+  id: string;
+  tag: string;
+  name: string;
+  kind: AssetKind;
+  manufacturer: string;
+  model: string;
+  plantCode: string;
+  hourlyRate: number;
+  electricityPerHour: number;
+  setupMinutes: number;
+  setupMinutesPerColor: number;
+  avgSpeedFpm: number;
+  maxSpeedFpm: number;
+  maxWebWidthIn: number;
+  colorStations: number;
+  plateCostPerColor: number;
+  wastePercent: number;
+  capabilities: string[];
+  ganttResource: string;
+  active: boolean;
+}
+
+export interface RateCard {
+  id: string;
+  prepressBase: number;
+  vdpSetup: number;
+  vdpPerThousand: number;
+  defaultLabelsPerRoll: number;
+  rollsPerCarton: number;
+  defaultAdhesiveId: string;
+  defaultInkId: string;
+  defaultCoreId: string;
+  defaultCartonId: string;
+}
+
+export interface PricingRegistries {
+  materials: Material[];
+  assets: PlantAsset[];
+  rateCard: RateCard;
+}
+
 export interface QuoteSpec {
   productType: string;
   widthIn: number;
@@ -104,19 +186,51 @@ export interface QuoteSpec {
   material: string;
   finish?: string;
   variableData?: boolean;
+  adhesive?: string;
+  labelsPerRoll?: number;
+  notes?: string;
+}
+
+export interface CostBucket {
+  key:
+    | "material"
+    | "press"
+    | "ink"
+    | "setup"
+    | "finishing"
+    | "packaging"
+    | "prepress";
+  label: string;
+  amount: number;
 }
 
 export interface QuoteBreakdown {
   materialCost: number;
   pressCost: number;
-  finishingCost: number;
+  inkCost: number;
   setupCost: number;
+  finishingCost: number;
+  packagingCost: number;
+  prepressCost: number;
   totalCost: number;
+  /** Actual sell-side margin: (price - cost) / price * 100 */
   marginPercent: number;
+  /** Customer markup used to set the selling price. */
+  appliedMarginPercent: number;
   finalPrice: number;
   marginAmount: number;
   needsApproval: boolean;
   targetMarginPercent: number;
+  recommendedAssetId: string;
+  recommendedAssetName: string;
+  recommendedResource: string;
+  routeSteps: string[];
+  materialSku: string;
+  materialName: string;
+  across: number;
+  runMinutes: number;
+  rationale: string[];
+  buckets: CostBucket[];
 }
 
 export interface ParsedDocumentSpec {
@@ -131,6 +245,66 @@ export interface ParsedDocumentSpec {
   notes?: string;
   missingFields: string[];
   confidence: number;
+  source?: "text" | "pdf" | "excel" | "image" | "unknown";
+}
+
+export type EstimateStatus =
+  | "draft"
+  | "pending_approval"
+  | "approved"
+  | "rejected"
+  | "ticketed";
+
+export interface SavedEstimate {
+  id: string;
+  companyId: string;
+  companyName: string;
+  createdBy: string;
+  spec: QuoteSpec;
+  breakdown: QuoteBreakdown;
+  status: EstimateStatus;
+  needsApproval: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ApprovalDecision {
+  id: string;
+  estimateId: string;
+  decidedBy: string;
+  decidedAt: string;
+  decision: "approved" | "rejected";
+  reason: string;
+  actualMarginPercent: number;
+  targetMarginPercent: number;
+}
+
+export interface JobTicket {
+  id: string;
+  ticketNumber: string;
+  estimateId: string;
+  companyId: string;
+  companyName: string;
+  productType: string;
+  widthIn: number;
+  heightIn: number;
+  quantity: number;
+  colors: number;
+  materialSku: string;
+  materialName: string;
+  finish?: string;
+  variableData: boolean;
+  recommendedAssetId: string;
+  recommendedAssetName: string;
+  recommendedResource: string;
+  routeSteps: string[];
+  internalRefs: {
+    estimateId: string;
+    approvalId?: string;
+    companyId: string;
+  };
+  createdAt: string;
+  scheduled: boolean;
 }
 
 export interface AccountKpis {

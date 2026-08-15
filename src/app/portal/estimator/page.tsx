@@ -12,7 +12,7 @@ export default function PortalEstimatorPage() {
               Account Estimator
             </h1>
             <p className="text-slate-600 mt-1">
-              Saved quotes and reorder specs for your account team.
+              Guided quote wizard for your account — final price only.
             </p>
           </div>
           <Button asChild variant="cta">
