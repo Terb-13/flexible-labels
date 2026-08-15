@@ -19,9 +19,8 @@ export default function QuotePageClient() {
             Get your price in seconds. Order online.
           </h1>
           <p className="text-slate-600 mt-3">
-            Enter your specs below for an immediate quote — no waiting for email.
-            Business and reseller pricing are calculated automatically. Prefer AI
-            guidance? That&apos;s optional, not required.
+            Follow the short quote wizard — account, specs, material, then your
+            price. No waiting for email. Prefer AI guidance? That&apos;s optional.
           </p>
         </div>
         <EstimatorWorkspace

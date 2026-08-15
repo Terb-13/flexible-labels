@@ -74,7 +74,7 @@ export function OperationsCpq({
       <div className="rounded-3xl border border-teal/30 bg-teal/5 p-5 text-sm text-slate-700">
         <div className="font-semibold text-navy mb-1">How the estimating loop works</div>
         <ol className="list-decimal pl-5 space-y-1">
-          <li>Upload or enter specs. Document Intelligence only fills values it can read.</li>
+          <li>Walk the wizard: customer → specs → material → priced review → ticket.</li>
           <li>The engine prices from the Material Master and Asset Registry — no hard-coded rates.</li>
           <li>Reseller vs Direct uses that customer&apos;s margin % and target.</li>
           <li>Below-target quotes go to the approval queue. Who / when / why is logged.</li>
@@ -83,7 +83,7 @@ export function OperationsCpq({
       </div>
 
       <div>
-        <h2 className="font-semibold text-xl mb-4">Full Estimator (cost breakdown)</h2>
+        <h2 className="font-semibold text-xl mb-4">Estimating wizard</h2>
         <EstimatorWorkspace
           showBreakdown
           actorName={ACTOR}
@@ -93,6 +93,7 @@ export function OperationsCpq({
             refresh();
           }}
           onTicketCreated={() => refresh()}
+          onScheduleTicket={handleSchedule}
         />
       </div>
 
