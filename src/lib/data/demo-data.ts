@@ -25,6 +25,33 @@ export const DEMO_RESELLER: Company = {
   target_margin_percent: 22,
 };
 
+export const DEMO_HORIZON: Company = {
+  id: "00000000-0000-4000-8000-000000000003",
+  name: "Horizon Foods",
+  margin_percent: 30,
+  is_reseller: false,
+  target_margin_percent: 26,
+};
+
+export const DEMO_SUMMIT: Company = {
+  id: "00000000-0000-4000-8000-000000000004",
+  name: "Summit Pharma",
+  margin_percent: 38,
+  is_reseller: false,
+  target_margin_percent: 32,
+};
+
+export const DEMO_CUSTOMERS: Company[] = [
+  DEMO_COMPANY,
+  DEMO_RESELLER,
+  DEMO_HORIZON,
+  DEMO_SUMMIT,
+];
+
+export function companyById(id: string | undefined): Company {
+  return DEMO_CUSTOMERS.find((c) => c.id === id) ?? DEMO_COMPANY;
+}
+
 export const PRODUCTS: Product[] = [
   {
     id: "1",

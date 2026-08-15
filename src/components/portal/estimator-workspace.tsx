@@ -1,16 +1,26 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
 import { FileUp, Sparkles } from "lucide-react";
-import { DEMO_COMPANY, DEMO_RESELLER, PRODUCTS } from "@/lib/data/demo-data";
-import { calculateQuote, formatCurrency } from "@/lib/pricing/engine";
-import type { ParsedDocumentSpec, QuoteBreakdown, QuoteSpec } from "@/types";
+import { CustomerQuotePanel } from "@/components/portal/customer-quote-panel";
+import { InternalQuotePanel } from "@/components/portal/internal-quote-panel";
 import { QuoteCheckout } from "@/components/quote/quote-checkout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { ADHESIVES, FINISHES, SUBSTRATES } from "@/lib/data/material-master";
+import { DEMO_CUSTOMERS, DEMO_COMPANY, PRODUCTS } from "@/lib/data/demo-data";
+import { createEstimate, createJobTicket } from "@/lib/cpq/store";
+import { calculateQuote } from "@/lib/pricing/engine";
+import type {
+  Company,
+  JobTicket,
+  ParsedDocumentSpec,
+  QuoteBreakdown,
+  QuoteSpec,
+  SavedEstimate,
+} from "@/types";
 import { useToast } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
 
@@ -21,7 +31,9 @@ const DEFAULT_SPEC: QuoteSpec = {
   quantity: 10000,
   colors: 4,
   material: "Matte BOPP",
+  finish: "None",
   variableData: false,
+  adhesive: "Permanent Acrylic",
 };
 
 export type CustomerTier = "business" | "reseller";
@@ -33,34 +45,54 @@ function productFromSlug(slug: string | null): QuoteSpec {
   return { ...DEFAULT_SPEC, productType: product.name };
 }
 
+function safeQuote(spec: QuoteSpec, company: Company): QuoteBreakdown | { error: string } {
+  try {
+    return calculateQuote(spec, company);
+  } catch (error) {
+    return { error: error instanceof Error ? error.message : "Unable to price" };
+  }
+}
+
 export function EstimatorWorkspace({
   showBreakdown = false,
   enableCheckout = false,
   initialProductSlug = null,
   defaultTier = "business",
+  actorName = "Morgan Lee",
+  onEstimateSaved,
+  onTicketCreated,
+  savedEstimate,
 }: {
   showBreakdown?: boolean;
   enableCheckout?: boolean;
   initialProductSlug?: string | null;
   defaultTier?: CustomerTier;
+  actorName?: string;
+  onEstimateSaved?: (estimate: SavedEstimate) => void;
+  onTicketCreated?: (ticket: JobTicket) => void;
+  savedEstimate?: SavedEstimate | null;
 }) {
   const { toast } = useToast();
-  const [tier, setTier] = useState<CustomerTier>(defaultTier);
-  const [spec, setSpec] = useState<QuoteSpec>(() =>
-    productFromSlug(initialProductSlug)
+  const [companyId, setCompanyId] = useState(
+    defaultTier === "reseller" ? DEMO_CUSTOMERS[1].id : DEMO_COMPANY.id
   );
+  const [spec, setSpec] = useState<QuoteSpec>(() => productFromSlug(initialProductSlug));
   const [pasteText, setPasteText] = useState("");
   const [parsing, setParsing] = useState(false);
   const [missingFields, setMissingFields] = useState<string[]>([]);
   const [uploadName, setUploadName] = useState<string | null>(null);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
-
-  const company = tier === "reseller" ? DEMO_RESELLER : DEMO_COMPANY;
-
-  const breakdown = useMemo(
-    () => calculateQuote(spec, company),
-    [spec, company]
+  const [quoteSaved, setQuoteSaved] = useState(false);
+  const [localEstimate, setLocalEstimate] = useState<SavedEstimate | null>(
+    savedEstimate ?? null
   );
+
+  const company =
+    DEMO_CUSTOMERS.find((c) => c.id === companyId) ?? DEMO_COMPANY;
+  const priced = useMemo(() => safeQuote(spec, company), [spec, company]);
+  const breakdown = "error" in priced ? null : priced;
+  const priceError = "error" in priced ? priced.error : null;
+  const currentEstimate = savedEstimate ?? localEstimate;
 
   async function parseDocument(file?: File) {
     setParsing(true);
@@ -78,13 +110,14 @@ export function EstimatorWorkspace({
 
       setSpec((prev) => ({
         ...prev,
-        productType: data.productType ?? prev.productType,
-        widthIn: data.widthIn ?? prev.widthIn,
-        heightIn: data.heightIn ?? prev.heightIn,
-        quantity: data.quantity ?? prev.quantity,
-        colors: data.colors ?? prev.colors,
-        material: data.material ?? prev.material,
-        variableData: data.variableData ?? prev.variableData,
+        ...(data.productType ? { productType: data.productType } : {}),
+        ...(data.widthIn ? { widthIn: data.widthIn } : {}),
+        ...(data.heightIn ? { heightIn: data.heightIn } : {}),
+        ...(data.quantity ? { quantity: data.quantity } : {}),
+        ...(data.colors ? { colors: data.colors } : {}),
+        ...(data.material ? { material: data.material } : {}),
+        ...(data.finish ? { finish: data.finish } : {}),
+        ...(data.variableData !== undefined ? { variableData: data.variableData } : {}),
       }));
 
       if (file) setUploadName(file.name);
@@ -95,30 +128,98 @@ export function EstimatorWorkspace({
         !data.missingFields?.length
       );
     } catch {
-      toast("Could not parse document. Using demo extraction.");
+      toast("Could not parse document. No values were invented.");
     } finally {
       setParsing(false);
     }
   }
 
+  function handleSaveEstimate() {
+    if (!breakdown) return;
+    const estimate = createEstimate({
+      companyId: company.id,
+      companyName: company.name,
+      createdBy: actorName,
+      spec,
+      breakdown,
+    });
+    setLocalEstimate(estimate);
+    setQuoteSaved(true);
+    onEstimateSaved?.(estimate);
+    toast(
+      estimate.needsApproval
+        ? "Estimate saved and sent to the approval queue."
+        : "Estimate saved and approved at target margin.",
+      !estimate.needsApproval
+    );
+  }
+
+  function handleGenerateTicket() {
+    const estimate = currentEstimate;
+    if (!estimate) {
+      toast("Save the estimate before generating a Job Ticket.");
+      return;
+    }
+    try {
+      const ticket = createJobTicket({ estimateId: estimate.id, actor: actorName });
+      onTicketCreated?.(ticket);
+      toast(`Job Ticket ${ticket.ticketNumber} created.`, true);
+    } catch (error) {
+      toast(error instanceof Error ? error.message : "Ticket blocked.");
+    }
+  }
+
+  const canGenerateTicket = Boolean(
+    currentEstimate && currentEstimate.status === "approved"
+  );
+  const ticketBlockedReason = !currentEstimate
+    ? "Save the estimate first."
+    : currentEstimate.status === "pending_approval"
+      ? "Waiting on a logged approval decision."
+      : currentEstimate.status === "rejected"
+        ? "This estimate was rejected."
+        : currentEstimate.status === "ticketed"
+          ? "Job Ticket already generated."
+          : undefined;
+
   return (
     <>
       <div className="grid lg:grid-cols-2 gap-6">
         <div className="space-y-6">
-          {!showBreakdown && (
+          {showBreakdown ? (
+            <div className="border border-slate-200 rounded-3xl p-6 bg-white">
+              <div className="font-semibold mb-1">Customer</div>
+              <p className="text-sm text-slate-600 mb-4">
+                Margin % and target come from the customer record (Reseller vs Direct).
+                The engine never hard-codes those rates.
+              </p>
+              <select
+                className="flex h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm outline-none focus:border-teal"
+                value={company.id}
+                onChange={(e) => setCompanyId(e.target.value)}
+              >
+                {DEMO_CUSTOMERS.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name} · {c.is_reseller ? "Reseller" : "Direct"} · {c.margin_percent}% / target{" "}
+                    {c.target_margin_percent}%
+                  </option>
+                ))}
+              </select>
+            </div>
+          ) : (
             <div className="border border-slate-200 rounded-3xl p-6 bg-white">
               <div className="font-semibold mb-1">Who is this quote for?</div>
               <p className="text-sm text-slate-600 mb-4">
-                Business customers and resellers/wholesale partners see different
-                pricing. Reseller accounts use lower margins and volume tiers.
+                Business customers and resellers see different final prices. Cost and
+                margin stay internal.
               </p>
               <div className="inline-flex rounded-2xl border p-0.5 bg-slate-50 text-sm w-full sm:w-auto">
                 <button
                   type="button"
-                  onClick={() => setTier("business")}
+                  onClick={() => setCompanyId(DEMO_COMPANY.id)}
                   className={cn(
                     "flex-1 sm:flex-none px-5 py-2 rounded-[14px] text-sm font-semibold transition-colors",
-                    tier === "business"
+                    company.id === DEMO_COMPANY.id
                       ? "view-toggle-active"
                       : "text-slate-600 hover:text-slate-900"
                   )}
@@ -127,10 +228,10 @@ export function EstimatorWorkspace({
                 </button>
                 <button
                   type="button"
-                  onClick={() => setTier("reseller")}
+                  onClick={() => setCompanyId(DEMO_CUSTOMERS[1].id)}
                   className={cn(
                     "flex-1 sm:flex-none px-5 py-2 rounded-[14px] text-sm font-semibold transition-colors",
-                    tier === "reseller"
+                    company.is_reseller
                       ? "view-toggle-active"
                       : "text-slate-600 hover:text-slate-900"
                   )}
@@ -138,11 +239,6 @@ export function EstimatorWorkspace({
                   Reseller / Wholesale
                 </button>
               </div>
-              <p className="text-xs text-slate-500 mt-3">
-                {tier === "reseller"
-                  ? "Wholesale pricing for print partners and distributors. Net 30 available after account approval."
-                  : "Standard pricing for brands, CPG, and direct buyers. Instant checkout available."}
-              </p>
             </div>
           )}
 
@@ -152,8 +248,8 @@ export function EstimatorWorkspace({
               <div className="font-semibold">Document Intelligence (optional)</div>
             </div>
             <p className="text-sm text-slate-600 mb-4">
-              Upload specs or paste details to auto-fill the form — or enter specs
-              manually below for an immediate quote.
+              Upload a PDF, screenshot, Excel/CSV, or paste text. Clean inputs auto-fill.
+              Incomplete inputs return missing fields — critical values are never invented.
             </p>
             <label className="flex flex-col items-center justify-center border-2 border-dashed border-slate-200 rounded-2xl p-8 cursor-pointer hover:border-teal transition-colors">
               <input
@@ -262,16 +358,53 @@ export function EstimatorWorkspace({
               </div>
               <div className="sm:col-span-2">
                 <Label>Material</Label>
-                <Input
-                  className="mt-1"
+                <select
+                  className="mt-1 flex h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm outline-none focus:border-teal"
                   value={spec.material}
                   onChange={(e) => setSpec({ ...spec, material: e.target.value })}
-                />
+                >
+                  {SUBSTRATES.map((m) => (
+                    <option key={m.id} value={m.name}>
+                      {m.name}
+                    </option>
+                  ))}
+                </select>
               </div>
+              <div>
+                <Label>Finish</Label>
+                <select
+                  className="mt-1 flex h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm outline-none focus:border-teal"
+                  value={spec.finish ?? "None"}
+                  onChange={(e) => setSpec({ ...spec, finish: e.target.value })}
+                >
+                  <option value="None">None</option>
+                  {FINISHES.map((m) => (
+                    <option key={m.id} value={m.name}>
+                      {m.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {showBreakdown && (
+                <div>
+                  <Label>Adhesive</Label>
+                  <select
+                    className="mt-1 flex h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm outline-none focus:border-teal"
+                    value={spec.adhesive ?? "Permanent Acrylic"}
+                    onChange={(e) => setSpec({ ...spec, adhesive: e.target.value })}
+                  >
+                    {ADHESIVES.map((m) => (
+                      <option key={m.id} value={m.name}>
+                        {m.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
               <label className="sm:col-span-2 flex items-center gap-2 text-sm">
                 <input
                   type="checkbox"
-                  checked={spec.variableData}
+                  checked={Boolean(spec.variableData)}
                   onChange={(e) =>
                     setSpec({ ...spec, variableData: e.target.checked })
                   }
@@ -282,124 +415,41 @@ export function EstimatorWorkspace({
           </div>
         </div>
 
-        <QuoteSummaryPanel
-          breakdown={breakdown}
-          spec={spec}
-          showBreakdown={showBreakdown}
-          tier={tier}
-          enableCheckout={enableCheckout}
-          onCheckout={() => setCheckoutOpen(true)}
-        />
+        {priceError || !breakdown ? (
+          <div className="border border-red-200 rounded-3xl p-6 bg-red-50 text-sm text-red-800 h-fit">
+            {priceError ?? "Enter valid specs to price."}
+          </div>
+        ) : showBreakdown ? (
+          <InternalQuotePanel
+            breakdown={breakdown}
+            spec={spec}
+            companyName={company.name}
+            isReseller={company.is_reseller}
+            onSaveEstimate={handleSaveEstimate}
+            onGenerateTicket={handleGenerateTicket}
+            canGenerateTicket={canGenerateTicket}
+            ticketBlockedReason={ticketBlockedReason}
+          />
+        ) : (
+          <CustomerQuotePanel
+            breakdown={breakdown}
+            spec={spec}
+            enableCheckout={enableCheckout}
+            onCheckout={() => setCheckoutOpen(true)}
+            onRequestQuote={handleSaveEstimate}
+            quoteSaved={quoteSaved}
+          />
+        )}
       </div>
 
-      {checkoutOpen && (
+      {checkoutOpen && breakdown && (
         <QuoteCheckout
           spec={spec}
           breakdown={breakdown}
-          tier={tier}
+          tier={company.is_reseller ? "reseller" : "business"}
           onClose={() => setCheckoutOpen(false)}
         />
       )}
     </>
-  );
-}
-
-function QuoteSummaryPanel({
-  breakdown,
-  spec,
-  showBreakdown,
-  tier,
-  enableCheckout,
-  onCheckout,
-}: {
-  breakdown: QuoteBreakdown;
-  spec: QuoteSpec;
-  showBreakdown: boolean;
-  tier: CustomerTier;
-  enableCheckout: boolean;
-  onCheckout: () => void;
-}) {
-  return (
-    <div className="border border-slate-200 rounded-3xl p-6 bg-white h-fit lg:sticky lg:top-24">
-      <div className="text-xs font-semibold text-slate-500 tracking-wider">
-        {showBreakdown ? "FULL ESTIMATE" : "INSTANT QUOTE"}
-      </div>
-      {!showBreakdown ? (
-        <>
-          <div className="text-4xl font-semibold text-navy mt-2">
-            {formatCurrency(breakdown.finalPrice)}
-          </div>
-          <p className="text-sm text-slate-600 mt-2">
-            {formatCurrency(breakdown.finalPrice / spec.quantity, true)} per unit ·{" "}
-            {spec.quantity.toLocaleString()} {spec.productType.toLowerCase()}
-          </p>
-          <div className="mt-3 text-xs text-slate-500">
-            {tier === "reseller" ? "Wholesale / reseller tier" : "Business pricing"} ·
-            Lead time 5–7 business days from approved proof
-          </div>
-          {enableCheckout ? (
-            <div className="mt-6 space-y-2">
-              <Button className="w-full" variant="cta" onClick={onCheckout}>
-                Place Order — Pay Now
-              </Button>
-              <Button asChild variant="outline" className="w-full">
-                <Link href="/portal/login">Save to account & track order</Link>
-              </Button>
-              <Button asChild variant="ghost" className="w-full text-teal">
-                <Link
-                  href={`/ai-tools?prompt=${encodeURIComponent(
-                    `Quote for ${spec.quantity} ${spec.productType} ${spec.widthIn}x${spec.heightIn} ${spec.material}`
-                  )}`}
-                >
-                  Or discuss with AI assistant →
-                </Link>
-              </Button>
-            </div>
-          ) : (
-            <Button className="mt-6 w-full" variant="cta">
-              Request formal quote
-            </Button>
-          )}
-        </>
-      ) : (
-        <>
-          <div className="text-3xl font-semibold text-navy mt-2">
-            {formatCurrency(breakdown.finalPrice)}
-          </div>
-          <div className="mt-4 space-y-2 text-sm">
-            <Row label="Material" value={breakdown.materialCost} />
-            <Row label="Press" value={breakdown.pressCost} />
-            <Row label="Finishing" value={breakdown.finishingCost} />
-            <Row label="Setup / VDP" value={breakdown.setupCost} />
-            <div className="border-t pt-2 flex justify-between font-semibold">
-              <span>Total cost</span>
-              <span>{formatCurrency(breakdown.totalCost)}</span>
-            </div>
-            <div className="flex justify-between text-teal">
-              <span>Margin ({breakdown.marginPercent}%)</span>
-              <span>{formatCurrency(breakdown.marginAmount)}</span>
-            </div>
-          </div>
-          {breakdown.needsApproval && (
-            <div className="mt-4 rounded-2xl bg-red-50 border border-red-200 p-3 text-sm text-red-800">
-              Below target margin ({breakdown.targetMarginPercent}%). Sent to
-              discount approval queue.
-            </div>
-          )}
-          <Button className="mt-4 w-full" disabled={breakdown.needsApproval}>
-            Generate job ticket
-          </Button>
-        </>
-      )}
-    </div>
-  );
-}
-
-function Row({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="flex justify-between text-slate-600">
-      <span>{label}</span>
-      <span>{formatCurrency(value)}</span>
-    </div>
   );
 }
