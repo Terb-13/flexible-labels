@@ -104,12 +104,6 @@ export default function CapabilitiesPage() {
                 production.
               </div>
             </div>
-            <Link
-              href="/ai-tools"
-              className="text-sm mt-3 md:mt-0 font-semibold text-teal"
-            >
-              Or ask the full AI →
-            </Link>
           </div>
           <div className="grid md:grid-cols-5 gap-4">
             <div>
@@ -174,13 +168,6 @@ export default function CapabilitiesPage() {
                   </div>
                   <div className="text-sm text-slate-600 mt-1.5">{rec.why}</div>
                 </div>
-                <Button asChild variant="outline" className="border-teal text-teal">
-                  <Link
-                    href={`/ai-tools?prompt=${encodeURIComponent(`Tell me more about ${rec.title}`)}`}
-                  >
-                    Discuss with AI
-                  </Link>
-                </Button>
               </div>
             </div>
           )}

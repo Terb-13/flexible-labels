@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { ProductCatalog } from "@/components/products/product-catalog";
 
 export default function ProductsPage() {
@@ -16,21 +15,11 @@ export default function ProductsPage() {
           </h1>
           <p className="text-slate-600 mt-3 max-w-2xl">
             Every category below is produced in our Memphis facility with the same
-            75-year standard of precision. Click any card for fast AI guidance or
-            to speak with a specialist.
+            75-year standard of precision. Speak with a specialist about any line.
           </p>
         </div>
 
         <ProductCatalog />
-
-        <div className="mt-8 text-center">
-            <Link
-              href="/quote"
-              className="inline-flex px-8 py-3 font-semibold bg-cta text-white rounded-2xl text-sm hover:bg-orange-600"
-            >
-              Get instant quote for any product →
-            </Link>
-        </div>
       </div>
     </section>
   );

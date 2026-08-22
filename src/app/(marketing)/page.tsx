@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   Check,
-  Clock,
   Eye,
   RefreshCw,
   UserRound,
@@ -36,9 +35,6 @@ export default function HomePage() {
             </p>
 
             <div className="flex flex-wrap gap-3 mt-8">
-              <Button asChild variant="cta" size="lg" className="rounded-2xl shadow-sm">
-                <Link href="/quote">Get Instant Quote</Link>
-              </Button>
               <Button asChild variant="outline" size="lg" className="rounded-2xl border-2 border-navy">
                 <Link href="/products">Browse Products</Link>
               </Button>
@@ -123,7 +119,7 @@ export default function HomePage() {
           </h2>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-5">
+        <div className="grid md:grid-cols-2 gap-5">
           {[
             {
               icon: RefreshCw,
@@ -131,13 +127,6 @@ export default function HomePage() {
               body: "No more guessing substrates. Our AI + real press experts recommend the exact construction that performs on your line and in your environment.",
               href: "/products",
               cta: "Explore all products →",
-            },
-            {
-              icon: Clock,
-              title: "No more email loops.",
-              body: "Instant material guidance and quotes. Approve proofs in one click. Track real production status without calling anyone.",
-              href: "/ai-tools",
-              cta: "Try the AI assistant →",
             },
             {
               icon: Eye,

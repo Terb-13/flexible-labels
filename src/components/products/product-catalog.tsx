@@ -2,17 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
-import { ChatModal } from "@/components/chat/chat-modal";
 import { PRODUCTS } from "@/lib/data/demo-data";
 import { Button } from "@/components/ui/button";
 
 export function ProductCatalog() {
-  const [chatOpen, setChatOpen] = useState(false);
-  const [chatSeed, setChatSeed] = useState<string | undefined>();
-
   return (
-    <>
     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
       {PRODUCTS.map((product) => (
         <div
@@ -46,44 +40,18 @@ export function ProductCatalog() {
             <div className="text-xs mt-3 text-slate-500">
               Ideal for: {product.idealFor}
             </div>
-            <div className="mt-auto pt-4 grid grid-cols-1 gap-2">
-              <Button asChild variant="cta" className="w-full whitespace-normal h-auto min-h-11 py-2.5">
-                <Link href={`/quote?product=${product.slug}`}>
-                  Get Instant Quote
-                </Link>
+            <div className="mt-auto pt-4">
+              <Button
+                asChild
+                variant="outline"
+                className="w-full whitespace-normal h-auto min-h-11 py-2.5"
+              >
+                <Link href="/contact">Specialist</Link>
               </Button>
-              <div className="grid grid-cols-2 gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="whitespace-normal h-auto min-h-9 py-2 text-xs"
-                  onClick={() => {
-                    setChatSeed(product.aiPrompt);
-                    setChatOpen(true);
-                  }}
-                >
-                  Ask AI
-                </Button>
-                <Button
-                  asChild
-                  variant="outline"
-                  size="sm"
-                  className="whitespace-normal h-auto min-h-9 py-2 text-xs"
-                >
-                  <Link href="/contact">Specialist</Link>
-                </Button>
-              </div>
             </div>
           </div>
         </div>
       ))}
     </div>
-    <ChatModal
-      open={chatOpen}
-      onOpenChange={setChatOpen}
-      initialMessage={chatSeed}
-    />
-    </>
   );
 }
