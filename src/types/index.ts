@@ -198,6 +198,7 @@ export interface QuoteSpec {
   colors: number;
   finish?: string;
   variableData?: boolean;
+  quoteNumber?: string;
   /** @deprecated use product */
   productType?: string;
 }
@@ -245,6 +246,7 @@ export interface SavedQuote {
   needs_approval: boolean;
   order_id: string | null;
   created_at: string;
+  quote_number?: string;
 }
 
 export interface ParsedDocumentSpec {

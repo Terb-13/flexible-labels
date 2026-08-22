@@ -1,21 +1,19 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import {
   addCompanyAction,
   approveQuoteAction,
   generateJobTicketAction,
   saveQuoteAction,
 } from "@/app/operations/actions";
+import { CustomerPicker } from "@/components/estimator/customer-picker";
 import { SpecFields, useLiveQuote, DEFAULT_SPEC } from "@/components/portal/estimator-workspace";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/toaster";
 import { formatCurrency } from "@/lib/pricing/engine";
 import type {
   Company,
-  CompanyType,
   Material,
   QuoteSpec,
   SavedQuote,
@@ -34,45 +32,11 @@ export function OperationsEstimator({
   const { toast } = useToast();
   const [companies, setCompanies] = useState(initialCompanies);
   const [companyId, setCompanyId] = useState(initialCompanies[0]?.id ?? "");
-  const [adding, setAdding] = useState(false);
-  const [newCompany, setNewCompany] = useState({
-    name: "",
-    type: "dtc" as CompanyType,
-    margin_percent: 32,
-    target_margin_percent: 28,
-    discount_percent: 0,
-  });
   const [spec, setSpec] = useState<QuoteSpec>(DEFAULT_SPEC);
   const [saved, setSaved] = useState<SavedQuote | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
 
   const { breakdown, loading } = useLiveQuote(spec, companyId || undefined);
-  const company = useMemo(
-    () => companies.find((c) => c.id === companyId) ?? null,
-    [companies, companyId]
-  );
-
-  async function addCompany() {
-    setBusy("company");
-    try {
-      const created = await addCompanyAction(newCompany);
-      setCompanies((prev) => [...prev, created].sort((a, b) => a.name.localeCompare(b.name)));
-      setCompanyId(created.id);
-      setAdding(false);
-      setNewCompany({
-        name: "",
-        type: "dtc",
-        margin_percent: 32,
-        target_margin_percent: 28,
-        discount_percent: 0,
-      });
-      toast(`Added ${created.name}`, true);
-    } catch (err) {
-      toast(err instanceof Error ? err.message : "Could not add company");
-    } finally {
-      setBusy(null);
-    }
-  }
 
   async function save() {
     if (!companyId) {
@@ -130,121 +94,28 @@ export function OperationsEstimator({
   return (
     <div className="grid lg:grid-cols-2 gap-6">
       <div className="space-y-6">
-        <div className="border border-slate-200 rounded-3xl p-6 bg-white">
-          <div className="font-semibold mb-1">Customer</div>
-          <p className="text-sm text-slate-600 mb-4">
-            Select an existing company or add one. Margin and discount load from
-            the companies table — they are not entered on the estimate.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-2">
-            <select
-              className="flex h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm outline-none focus:border-teal"
-              value={companyId}
-              onChange={(e) => {
-                setCompanyId(e.target.value);
-                setSaved(null);
-              }}
-            >
-              <option value="">Select a customer…</option>
-              {companies.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name} · {c.is_reseller ? "Reseller" : "DTC"}
-                </option>
-              ))}
-            </select>
-            <Button type="button" variant="outline" onClick={() => setAdding((v) => !v)}>
-              {adding ? "Cancel" : "Add customer"}
-            </Button>
-          </div>
-          {company && (
-            <div className="mt-3 text-xs text-slate-500">
-              Type {company.is_reseller ? "reseller" : "DTC"} · margin{" "}
-              {company.margin_percent}% · target {company.target_margin_percent}% ·
-              discount {company.discount_percent}%
-            </div>
-          )}
-          {adding && (
-            <div className="mt-4 grid sm:grid-cols-2 gap-3">
-              <div className="sm:col-span-2">
-                <Label>Name</Label>
-                <Input
-                  className="mt-1"
-                  value={newCompany.name}
-                  onChange={(e) =>
-                    setNewCompany({ ...newCompany, name: e.target.value })
-                  }
-                />
-              </div>
-              <div>
-                <Label>Type</Label>
-                <select
-                  className="mt-1 flex h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm"
-                  value={newCompany.type}
-                  onChange={(e) =>
-                    setNewCompany({
-                      ...newCompany,
-                      type: e.target.value as CompanyType,
-                    })
-                  }
-                >
-                  <option value="dtc">DTC / brand</option>
-                  <option value="reseller">Reseller</option>
-                </select>
-              </div>
-              <div>
-                <Label>Margin %</Label>
-                <Input
-                  type="number"
-                  className="mt-1"
-                  value={newCompany.margin_percent}
-                  onChange={(e) =>
-                    setNewCompany({
-                      ...newCompany,
-                      margin_percent: Number(e.target.value),
-                    })
-                  }
-                />
-              </div>
-              <div>
-                <Label>Target margin %</Label>
-                <Input
-                  type="number"
-                  className="mt-1"
-                  value={newCompany.target_margin_percent}
-                  onChange={(e) =>
-                    setNewCompany({
-                      ...newCompany,
-                      target_margin_percent: Number(e.target.value),
-                    })
-                  }
-                />
-              </div>
-              <div>
-                <Label>Discount %</Label>
-                <Input
-                  type="number"
-                  className="mt-1"
-                  value={newCompany.discount_percent}
-                  onChange={(e) =>
-                    setNewCompany({
-                      ...newCompany,
-                      discount_percent: Number(e.target.value),
-                    })
-                  }
-                />
-              </div>
-              <div className="sm:col-span-2">
-                <Button
-                  type="button"
-                  onClick={addCompany}
-                  disabled={busy === "company"}
-                >
-                  Save customer
-                </Button>
-              </div>
-            </div>
-          )}
-        </div>
+        <CustomerPicker
+          companies={companies}
+          companyId={companyId}
+          busy={busy === "company"}
+          onSelect={(id) => {
+            setCompanyId(id);
+            setSaved(null);
+          }}
+          onCreate={async (input) => {
+            setBusy("company");
+            try {
+              const created = await addCompanyAction(input);
+              setCompanies((prev) =>
+                [...prev, created].sort((a, b) => a.name.localeCompare(b.name))
+              );
+              setCompanyId(created.id);
+              toast(`Added ${created.name}`, true);
+            } finally {
+              setBusy(null);
+            }
+          }}
+        />
         <SpecFields spec={spec} onChange={(next) => { setSpec(next); setSaved(null); }} materials={materials} />
       </div>
 
@@ -260,8 +131,8 @@ export function OperationsEstimator({
             <p className="text-xs text-slate-500 mt-2">
               Route {breakdown.routeName}
               {breakdown.catalogSource === "example"
-                ? " · EXAMPLE catalog (seed or replace in Supabase)"
-                : " · rates from equipment + materials tables"}
+                ? " · EXAMPLE rates — not published plant costs"
+                : " · from the plant catalog"}
             </p>
             <div className="mt-4 space-y-2 text-sm">
               <Row

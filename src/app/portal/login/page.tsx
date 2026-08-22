@@ -22,7 +22,7 @@ export default async function PortalLoginPage({
         </div>
         <DoorLoginForm door="customer" next={dest} allowDemo={isDemoLoginAllowed()} />
         <div className="mt-4 text-xs text-slate-500">
-          Production sign-in uses Supabase Auth and your customer profile.
+          Use the email on your account to sign in.
         </div>
       </div>
     </section>

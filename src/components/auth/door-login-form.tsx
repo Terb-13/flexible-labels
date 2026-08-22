@@ -66,9 +66,7 @@ export function DoorLoginForm({
       {allowDemo && (
         <form action={() => loginDemo(door, next)}>
           <Button type="submit" variant="outline" className="w-full h-12">
-            {door === "employee"
-              ? "Local preview — continue as employee"
-              : "Local preview — continue as customer"}
+            Sample account — won&apos;t affect real orders.
           </Button>
         </form>
       )}

@@ -30,7 +30,7 @@ export async function loginWithPassword(
   const next = String(formData.get("next") ?? "") || homePathFor(door);
 
   if (!isSupabaseConfigured()) {
-    return { error: "Supabase Auth is not configured. Use local preview sign-in." };
+    return { error: "Sign-in is unavailable right now." };
   }
   if (!email || !password) {
     return { error: "Email and password are required." };

@@ -1,11 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-
-function demoAllowed(supabaseReady: boolean) {
-  if (!supabaseReady) return true;
-  if (process.env.NEXT_PUBLIC_ENABLE_DEMO_LOGIN === "true") return true;
-  return process.env.NODE_ENV !== "production";
-}
+import { isDemoLoginAllowed } from "@/lib/supabase/config";
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
@@ -19,7 +14,7 @@ export async function updateSession(request: NextRequest) {
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   const supabaseReady = Boolean(supabaseUrl && supabaseAnonKey);
   const rawDemo = request.cookies.get("flg_demo_session")?.value;
-  const demoRole = demoAllowed(supabaseReady) ? rawDemo : undefined;
+  const demoRole = isDemoLoginAllowed() ? rawDemo : undefined;
 
   let authRole: "customer" | "employee" | null = null;
 
@@ -79,6 +74,13 @@ export async function updateSession(request: NextRequest) {
     const url = request.nextUrl.clone();
     url.pathname = "/portal/login";
     url.searchParams.set("next", path);
+    return NextResponse.redirect(url);
+  }
+
+  if (isOpsLogin && role === "customer") {
+    const url = request.nextUrl.clone();
+    url.pathname = "/portal";
+    url.search = "";
     return NextResponse.redirect(url);
   }
 

@@ -67,7 +67,7 @@ export function OperationsClient({
                   <div>
                     <div className="font-medium">{eq.name}</div>
                     <div className="text-xs text-slate-500">
-                      {eq.stage} · EXAMPLE cost_rate ${eq.cost_rate}/hr ·{" "}
+                      {eq.stage} · EXAMPLE ${eq.cost_rate}/hr ·{" "}
                       {eq.run_speed.toLocaleString()} /hr
                     </div>
                     <div className="text-xs text-slate-500">
@@ -88,8 +88,8 @@ export function OperationsClient({
           <h3 className="font-semibold mb-3">Scheduled jobs</h3>
           {jobs.length === 0 ? (
             <p className="text-sm text-slate-500">
-              Save and approve a quote, then generate a job ticket. Jobs write to
-              schedule_jobs and job_steps.
+              Save and approve a quote, then generate a job ticket to put it on
+              the calendar.
             </p>
           ) : (
             <ul className="space-y-3 text-sm">

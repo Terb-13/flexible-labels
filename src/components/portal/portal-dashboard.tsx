@@ -3,16 +3,12 @@
 import Link from "next/link";
 import { useState } from "react";
 import {
-  DEMO_COMPANY,
-  DEMO_HISTORY,
-  DEMO_INVOICES,
-  DEMO_ORDERS,
-  DEMO_PROOF,
   DEMO_PROOF_COMMENTS,
   ORDER_TIMELINE_STAGES,
 } from "@/lib/data/demo-data";
+import { forCompany, quoteNumberOf } from "@/lib/data/tenant";
 import { formatCurrency } from "@/lib/pricing/engine";
-import type { Invoice, Order, ProofComment } from "@/types";
+import type { Company, Invoice, Order, Proof, ProofComment, SavedQuote } from "@/types";
 import type { Profile } from "@/types";
 import { logoutDemo } from "@/app/portal/actions";
 import { Button } from "@/components/ui/button";
@@ -25,18 +21,39 @@ type Tab = "proofing" | "tracking" | "payments" | "history";
 
 export function PortalDashboard({
   profile,
+  company,
+  orders: initialOrders,
+  history: initialHistory,
+  invoices: initialInvoices,
+  proof,
+  quotes,
+  highlightQuote,
 }: {
   profile: Profile;
+  company: Company | null;
+  orders: Order[];
+  history: Order[];
+  invoices: Invoice[];
+  proof: Proof | null;
+  quotes: SavedQuote[];
+  highlightQuote?: string | null;
 }) {
+  const companyId = profile.company_id;
   const { toast } = useToast();
-  const [tab, setTab] = useState<Tab>("proofing");
-  const [proofStatus, setProofStatus] = useState(DEMO_PROOF.status);
-  const [proofImage, setProofImage] = useState(DEMO_PROOF.image_url);
-  const [comments, setComments] = useState<ProofComment[]>(DEMO_PROOF_COMMENTS);
+  const [tab, setTab] = useState<Tab>(highlightQuote ? "tracking" : "proofing");
+  const [proofStatus, setProofStatus] = useState(proof?.status ?? "No proof yet");
+  const [proofImage, setProofImage] = useState(proof?.image_url ?? "");
+  const [comments, setComments] = useState<ProofComment[]>(
+    proof ? DEMO_PROOF_COMMENTS.filter((c) => c.proof_id === proof.id) : []
+  );
   const [commentInput, setCommentInput] = useState("");
-  const [orders, setOrders] = useState(DEMO_ORDERS);
-  const [invoices, setInvoices] = useState(DEMO_INVOICES);
-  const [history] = useState(DEMO_HISTORY);
+  const [orders, setOrders] = useState(() => forCompany(initialOrders, companyId));
+  const [invoices, setInvoices] = useState(() => forCompany(initialInvoices, companyId));
+  const [history] = useState(() => forCompany(initialHistory, companyId));
+  const scopedQuotes = quotes.filter((q) => q.company_id === companyId);
+  const highlighted = scopedQuotes.find(
+    (q) => quoteNumberOf(q) === highlightQuote
+  );
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [payModal, setPayModal] = useState<Invoice | null>(null);
 
@@ -46,7 +63,7 @@ export function PortalDashboard({
       ...prev,
       {
         id: String(Date.now()),
-        proof_id: DEMO_PROOF.id,
+        proof_id: proof?.id ?? "",
         author: profile.full_name.split(" ")[0] + " T.",
         body: commentInput.trim(),
         created_at: "Just now",
@@ -62,7 +79,7 @@ export function PortalDashboard({
       ...prev,
       {
         id: String(Date.now()),
-        proof_id: DEMO_PROOF.id,
+        proof_id: proof?.id ?? "",
         author: profile.full_name.split(" ")[0] + " T.",
         body: "Proof approved. Thank you!",
         created_at: "Just now",
@@ -79,7 +96,7 @@ export function PortalDashboard({
       ...prev,
       {
         id: String(Date.now()),
-        proof_id: DEMO_PROOF.id,
+        proof_id: proof?.id ?? "",
         author: profile.full_name.split(" ")[0] + " T.",
         body: `Change requested: ${r}`,
         created_at: "Just now",
@@ -96,7 +113,7 @@ export function PortalDashboard({
         ...prev,
         {
           id: String(Date.now()),
-          proof_id: DEMO_PROOF.id,
+          proof_id: proof?.id ?? "",
           author: profile.full_name.split(" ")[0] + " T.",
           body: "Uploaded revised artwork (v3).",
           created_at: "Just now",
@@ -136,7 +153,7 @@ export function PortalDashboard({
       <div className="border-b px-6 py-4 bg-slate-50">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-y-3">
           <div>
-            <div className="font-semibold">{DEMO_COMPANY.name}</div>
+            <div className="font-semibold">{company?.name ?? "Your account"}</div>
             <div className="text-xs text-emerald-600 flex items-center gap-x-1">
               <span className="inline-block w-2 h-2 bg-emerald-500 rounded-full" />
               Active • {orders.length} open orders
@@ -190,18 +207,29 @@ export function PortalDashboard({
             </Link>
           </div>
 
-          {tab === "proofing" && (
+          {highlighted && (
+            <div className="mx-6 mt-4 rounded-2xl border border-teal/30 bg-teal/5 px-4 py-3 text-sm">
+              Quote <span className="font-mono font-semibold">{quoteNumberOf(highlighted)}</span>{" "}
+              is on your account — {highlighted.spec.product} · {highlighted.spec.material} ·{" "}
+              {highlighted.spec.quantity.toLocaleString()} qty.
+            </div>
+          )}
+
+          {tab === "proofing" && !proof && (
+            <div className="p-6 md:p-8 text-sm text-slate-600">
+              No proofs are waiting for this account.
+            </div>
+          )}
+
+          {tab === "proofing" && proof && (
             <div className="p-6 md:p-8">
               <div className="flex items-center justify-between mb-5">
                 <div>
                   <span className="font-semibold">
-                    Proof Review — {DEMO_PROOF.title}
-                  </span>
-                  <span className="text-sm ml-3 px-2.5 py-px bg-amber-100 text-amber-700 rounded">
-                    3 of 4 approved
+                    Proof Review — {proof.title}
                   </span>
                 </div>
-                <div className="text-xs text-slate-500">Last updated today 9:41am</div>
+                <div className="text-xs text-slate-500">Your account only</div>
               </div>
               <div className="grid lg:grid-cols-5 gap-6">
                 <div className="lg:col-span-3">
@@ -222,18 +250,18 @@ export function PortalDashboard({
                           <div className="flex items-center justify-between">
                             <div>
                               <div className="font-bold tracking-tighter text-3xl text-navy">
-                                {DEMO_PROOF.brand}
+                                {proof.brand}
                               </div>
                               <div className="font-medium text-sm text-slate-600 -mt-0.5">
-                                {DEMO_PROOF.product_name}
+                                {proof.product_name}
                               </div>
                             </div>
                             <div className="text-right text-[10px] font-mono text-emerald-600">
-                              {DEMO_PROOF.proof_number}
+                              {proof.proof_number}
                             </div>
                           </div>
                           <div className="mt-3 text-xs text-slate-500">
-                            {DEMO_PROOF.material}
+                            {proof.material}
                           </div>
                         </div>
                       </div>
@@ -301,6 +329,31 @@ export function PortalDashboard({
 
           {tab === "tracking" && (
             <div className="p-6 md:p-8">
+              {scopedQuotes.length > 0 && (
+                <div className="mb-6">
+                  <div className="text-xs font-semibold mb-2 tracking-wider text-slate-500">
+                    YOUR QUOTES
+                  </div>
+                  <ul className="space-y-2 text-sm">
+                    {scopedQuotes.map((q) => (
+                      <li
+                        key={q.id}
+                        className={cn(
+                          "border rounded-2xl px-4 py-3",
+                          highlightQuote === quoteNumberOf(q) && "border-teal bg-teal/5"
+                        )}
+                      >
+                        <span className="font-mono font-semibold">{quoteNumberOf(q)}</span>
+                        <span className="text-slate-600">
+                          {" "}
+                          · {q.spec.product} · {q.spec.quantity.toLocaleString()} ·{" "}
+                          {q.spec.material}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
               <div className="text-xs font-semibold mb-2 tracking-wider text-slate-500">
                 YOUR ACTIVE & RECENT ORDERS
               </div>
@@ -527,9 +580,11 @@ export function PortalDashboard({
         </div>
       )}
 
-      <div className="px-6 pb-4 text-xs text-slate-500">
-        Fully interactive demo. Changes persist during your session.
-      </div>
+      {profile.id === "demo-customer" && (
+        <div className="px-6 pb-4 text-xs text-slate-500">
+          Sample account — won&apos;t affect real orders.
+        </div>
+      )}
     </div>
   );
 }

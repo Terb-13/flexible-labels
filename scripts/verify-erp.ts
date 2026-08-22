@@ -4,6 +4,12 @@ import {
   EXAMPLE_DTC_COMPANY,
   EXAMPLE_RESELLER_COMPANY,
 } from "../src/lib/data/example-catalog";
+import {
+  DEMO_COMPANY,
+  DEMO_HISTORY,
+  DEMO_ORDERS,
+} from "../src/lib/data/demo-data";
+import { forCompany } from "../src/lib/data/tenant";
 import { calculateQuote, matchRoute, qualifyEquipment } from "../src/lib/pricing/engine";
 
 const rollSpec = {
@@ -45,7 +51,17 @@ const reseller = calculateQuote(rollSpec, EXAMPLE_RESELLER_COMPANY, EXAMPLE_CATA
 assert.ok(reseller.finalPrice < dtc.finalPrice);
 assert.equal(reseller.discountPercent, 5);
 
-console.log("ERP pricing checks passed.");
+const acmeOrders = forCompany(DEMO_ORDERS, DEMO_COMPANY.id);
+assert.ok(acmeOrders.length > 0);
+assert.ok(acmeOrders.every((o) => o.company_id === DEMO_COMPANY.id));
+assert.ok(
+  acmeOrders.every((o) => /acme/i.test(o.description)),
+  "Acme portal must not list other companies' jobs"
+);
+assert.equal(forCompany(DEMO_ORDERS, null).length, 0);
+assert.ok(forCompany(DEMO_HISTORY, DEMO_COMPANY.id).every((o) => /acme/i.test(o.description)));
+
+console.log("ERP pricing and tenant-scope checks passed.");
 console.log(
   `DTC ${dtc.finalPrice} vs reseller ${reseller.finalPrice} via ${dtc.routeName}`
 );
