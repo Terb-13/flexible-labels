@@ -10,6 +10,7 @@ import {
   listEquipment,
   listJobs,
   listPlantShifts,
+  listQuotes,
 } from "@/lib/erp/store";
 import { loadCatalog } from "@/lib/pricing/catalog";
 
@@ -19,7 +20,7 @@ export default async function OperationsPage() {
     redirect(session.role === "customer" ? "/portal" : "/operations/login");
   }
 
-  const [companies, equipment, jobs, catalog, clocks, reasons, shifts] =
+  const [companies, equipment, jobs, catalog, clocks, reasons, shifts, quotes] =
     await Promise.all([
       listCompanies(),
       listEquipment(),
@@ -28,6 +29,7 @@ export default async function OperationsPage() {
       listClocks(),
       listDelayReasons(),
       listPlantShifts(),
+      listQuotes(),
     ]);
 
   return (
@@ -43,7 +45,7 @@ export default async function OperationsPage() {
             </span>
           </div>
           <p className="text-slate-600 mt-1">
-            Press board, operator clocks, and customer-attribute estimating.
+            Press board, operator clocks, and the CPQ estimate wizard.
             Press time is footage / EXAMPLE FPM — not published plant speeds.
           </p>
           <form action={logoutOperations} className="mt-3">
@@ -56,6 +58,7 @@ export default async function OperationsPage() {
         <OperationsClient
           initialJobs={jobs}
           initialClocks={clocks}
+          initialQuotes={quotes}
           equipment={equipment}
           companies={companies}
           materials={catalog.materials}

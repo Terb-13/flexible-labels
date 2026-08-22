@@ -25,7 +25,7 @@ export default async function PortalEstimatorPage() {
               Account Estimator
             </h1>
             <p className="text-slate-600 mt-1">
-              Product attributes only. This quote stays on your account.
+              Same 7-step estimate as /quote. This quote stays on your account.
             </p>
           </div>
           <Button asChild variant="cta">
@@ -35,6 +35,7 @@ export default async function PortalEstimatorPage() {
         <EstimatorWorkspace
           enableCheckout
           materials={catalog.materials}
+          equipment={catalog.equipment}
           companies={locked ? [locked] : companies}
           lockedCompany={locked}
           loggedIn

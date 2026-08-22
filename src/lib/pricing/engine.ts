@@ -11,6 +11,8 @@ import type {
   PricingCatalog,
   ProductionRoute,
   QuoteBreakdown,
+  QuoteBreakResult,
+  QuoteEstimate,
   QuoteSpec,
   RouteCostLine,
 } from "@/types";
@@ -22,19 +24,66 @@ const STAGE_ORDER: EquipmentStage[] = [
   "shipping",
 ];
 
+/** Ink stations: front + back + optional white plate + varnish. */
+export function stationCount(spec: QuoteSpec): number {
+  const hasStations =
+    spec.frontColors != null ||
+    spec.backColors != null ||
+    spec.whitePlate ||
+    spec.varnish;
+  if (hasStations) {
+    return (
+      (Number(spec.frontColors) || 0) +
+      (Number(spec.backColors) || 0) +
+      (spec.whitePlate ? 1 : 0) +
+      (spec.varnish ? 1 : 0)
+    );
+  }
+  return Number(spec.colors) || 0;
+}
+
+export function validQtyBreaks(spec: QuoteSpec): number[] {
+  const breaks = (spec.qtyBreaks ?? [])
+    .map((n) => Number(n) || 0)
+    .filter((n) => n > 0)
+    .slice(0, 7);
+  if (breaks.length) return breaks;
+  const qty = Number(spec.quantity) || 0;
+  return qty > 0 ? [qty] : [];
+}
+
+/** Quantities to send through calculateQuote: sum if grouped, else each break. */
+export function pricedQuantities(spec: QuoteSpec): number[] {
+  const breaks = validQtyBreaks(spec);
+  if (!breaks.length) return [];
+  if (spec.grouped) {
+    return [breaks.reduce((sum, n) => sum + n, 0)];
+  }
+  return breaks;
+}
+
 export function normalizeSpec(spec: QuoteSpec): QuoteSpec {
+  const colors = stationCount(spec) || Number(spec.colors) || 0;
+  const features = spec.features ?? [];
+  const variableData =
+    Boolean(spec.variableData) ||
+    features.some((f) => /variable|serial|qr/i.test(f));
+  const heightIn = Number(spec.heightIn) || 0;
   return {
+    ...spec,
     product: spec.product || spec.productType || "Roll Labels",
     type: spec.type || "Prime / pressure-sensitive",
     material: spec.material,
     widthIn: Number(spec.widthIn) || 0,
-    heightIn: Number(spec.heightIn) || 0,
+    heightIn,
     quantity: Number(spec.quantity) || 0,
-    colors: Number(spec.colors) || 1,
-    finish: spec.finish,
-    variableData: Boolean(spec.variableData),
-    repeatIn: Number(spec.repeatIn) || 0,
+    colors: colors || 1,
+    finish: spec.finish || spec.premiumFinishes?.[0],
+    variableData,
+    repeatIn: Number(spec.repeatIn) || heightIn || 0,
     across: Number(spec.across) || 0,
+    qtyBreaks: spec.qtyBreaks,
+    grouped: Boolean(spec.grouped),
   };
 }
 
@@ -270,6 +319,122 @@ export function calculateQuote(
     catalogSource: catalog.source,
     productionFeet: printerLine?.productionFeet ?? 0,
     plannedPressHours: printerLine?.hours ?? 0,
+    viable: isViableSpec(spec, catalog),
+  };
+}
+
+/**
+ * True when a press actually qualifies — no fallback to an unqualified machine.
+ * Used for the estimate empty state. Does not invent web widths or FPM.
+ */
+export function isViableSpec(spec: QuoteSpec, catalog: PricingCatalog): boolean {
+  if (!(spec.widthIn > 0) || !(spec.heightIn > 0) || !(spec.quantity > 0)) {
+    return false;
+  }
+  if (!spec.product || !spec.material) return false;
+  return catalog.equipment.some((eq) => {
+    if (eq.stage !== "printer" || eq.active === false) return false;
+    const cap = eq.capabilities ?? {};
+    if (cap.products?.length && !cap.products.includes(spec.product)) {
+      return false;
+    }
+    if (cap.types?.length && spec.type && !cap.types.includes(spec.type)) {
+      return false;
+    }
+    if (cap.materials?.length && !cap.materials.includes(spec.material)) {
+      return false;
+    }
+    if (cap.max_width_in != null && spec.widthIn > cap.max_width_in) {
+      return false;
+    }
+    if (cap.max_colors != null && spec.colors > cap.max_colors) return false;
+    return true;
+  });
+}
+
+/** Geometric fit only — not a stocked-web price table. */
+const LAYOUT_TRIM_IN = 0.25;
+const LAYOUT_GAP_IN = 0.125;
+
+export function webInchesForAcross(widthIn: number, across: number): number {
+  if (!(widthIn > 0) || !(across > 0)) return 0;
+  return across * widthIn + Math.max(0, across - 1) * LAYOUT_GAP_IN + 2 * LAYOUT_TRIM_IN;
+}
+
+export function viableAcrossValues(spec: QuoteSpec, catalog: PricingCatalog): number[] {
+  const printers = catalog.equipment.filter(
+    (eq) => eq.stage === "printer" && eq.active !== false
+  );
+  const withWeb = printers.filter((eq) => eq.capabilities?.max_width_in != null);
+  if (!withWeb.length || !(spec.widthIn > 0)) return [];
+
+  const fits = (across: number) => {
+    const web = webInchesForAcross(spec.widthIn, across);
+    return withWeb.some((eq) => {
+      const cap = eq.capabilities ?? {};
+      if (cap.products?.length && spec.product && !cap.products.includes(spec.product)) {
+        return false;
+      }
+      if (cap.materials?.length && spec.material && !cap.materials.includes(spec.material)) {
+        return false;
+      }
+      return web <= (cap.max_width_in ?? 0);
+    });
+  };
+
+  return [1, 2, 3, 4, 5, 6].filter(fits);
+}
+
+export function calculateLayouts(
+  rawSpec: QuoteSpec,
+  company: Pick<
+    Company,
+    "margin_percent" | "target_margin_percent" | "is_reseller" | "discount_percent"
+  >,
+  catalog: PricingCatalog
+) {
+  return viableAcrossValues(rawSpec, catalog)
+    .map((across) => {
+      const breakdown = calculateQuote({ ...rawSpec, across }, company, catalog);
+      return {
+        across,
+        webIn: webInchesForAcross(rawSpec.widthIn, across),
+        breakdown,
+        viable: breakdown.viable !== false,
+      };
+    })
+    .sort((a, b) => a.breakdown.finalPrice - b.breakdown.finalPrice);
+}
+
+export function calculateQuoteBreaks(
+  rawSpec: QuoteSpec,
+  company: Pick<
+    Company,
+    "margin_percent" | "target_margin_percent" | "is_reseller" | "discount_percent"
+  >,
+  catalog: PricingCatalog
+): QuoteEstimate {
+  const quantities = pricedQuantities(rawSpec);
+  const breaks: QuoteBreakResult[] = quantities.map((quantity) => {
+    const breakdown = calculateQuote(
+      { ...rawSpec, quantity },
+      company,
+      catalog
+    );
+    return {
+      quantity,
+      breakdown,
+      viable: breakdown.viable !== false,
+    };
+  });
+  const primary = breaks[0]?.breakdown ?? null;
+  return {
+    grouped: Boolean(rawSpec.grouped),
+    quantities: validQtyBreaks(rawSpec),
+    pricedQuantity: quantities[0] ?? 0,
+    breaks,
+    primary,
+    viable: breaks.some((b) => b.viable),
   };
 }
 

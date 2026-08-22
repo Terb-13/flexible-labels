@@ -19,8 +19,8 @@ A sample-account bypass is **local only**. It never appears on Vercel production
 
 1. Employee signs in at `/operations/login`.
 2. Pick an existing **company** or add one (`name`, type via `is_reseller`, margin, discount). There is no `customers` table.
-3. Enter **product attributes only**: product, type, material, specs. No reseller/DTC toggle and no discount field on the estimate.
-4. `POST /api/quotes/calculate` matches a production route (`printer → seamer → finisher → shipping`), qualifies equipment, and cost-plus prices from:
+3. Click **New estimate**, pick or add a **company** first, then walk the 7-step wizard: Product → Material → Size → Colors → Specs → Quantity → Estimate. Logged-in customers skip the picker. No reseller/DTC toggle and no discount field on the estimate.
+4. `POST /api/quotes/calculate` still calls `calculateQuote` (once per break, or once on the summed qty when “Group these together” is on). It matches a production route (`printer → seamer → finisher → shipping`), qualifies equipment, and cost-plus prices from:
    - equipment: `cost_rate`, `run_speed`, `waste_percent`, `setup_time_minutes`
    - materials: substrate + dye
    - company: `is_reseller`, `margin_percent`, `target_margin_percent`, `discount_percent`
@@ -46,8 +46,9 @@ npm run db:seed
 - `supabase/migrations/001_initial.sql` — companies, profiles, orders, quotes, schedule_jobs
 - `supabase/migrations/002_erp_estimating.sql` — `discount_percent`, equipment, materials, production_routes, route_steps, job_steps, quote↔order links, calendar columns on `schedule_jobs`
 - `supabase/migrations/003_press_floor.sql` — `run_speed_unit` / `run_speed_fpm`, quote/job `repeat_in` + `across` + `production_feet`, `delay_reasons`, `shop_floor_clocks`, `plant_shifts`
+- `supabase/migrations/004_cpq_qty_breaks.sql` — `quotes.qty_breaks` + `quotes.grouped` (wizard capture; still priced by `calculateQuote`)
 
-Apply 002 (already in production) then **003 only**. Do not rewrite or re-apply 001/002.
+Apply 002 (already in production) then **003** and **004**. Do not rewrite or re-apply 001/002.
 
 Press-floor v1 is a shop-floor scheduler + operator clocks. Out of scope: JDF/press-counter hookup, changeover optimizer, inventory/material holds, payroll, multi-plant, auto-reschedule of the whole plant, invented plant dollars, buyer email.
 
@@ -64,6 +65,7 @@ Without Supabase keys, calculate uses the EXAMPLE catalog and quote/job writes s
 ```bash
 npm run verify:erp
 npm run verify:floor
+npm run verify:cpq
 npm run lint
 npm run build
 ```

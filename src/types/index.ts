@@ -237,6 +237,14 @@ export interface ShopFloorClock {
   operator_name?: string | null;
 }
 
+export type ColorMethod = "process" | "spot" | "mixed";
+export type LabelShape = "rectangle" | "oval" | "circle" | "square";
+
+export interface ArtworkColor {
+  hex: string;
+  pct: string;
+}
+
 export interface QuoteSpec {
   product: string;
   type: string;
@@ -254,6 +262,60 @@ export interface QuoteSpec {
   across: number;
   /** @deprecated use product */
   productType?: string;
+  /** process / spot / mixed — captured; station count still drives dye. */
+  colorMethod?: ColorMethod;
+  frontColors?: number;
+  backColors?: number;
+  whitePlate?: boolean;
+  varnish?: boolean;
+  artworkColors?: ArtworkColor[];
+  /** Up to 7 quantity breaks. Engine is called per break or once on the sum. */
+  qtyBreaks?: number[];
+  /** ON = family run (sum qty for volume pricing). */
+  grouped?: boolean;
+  rush?: boolean;
+  shape?: LabelShape;
+  unwind?: number;
+  features?: string[];
+  finishing?: string[];
+  premiumFinishes?: string[];
+  cornerRadius?: string;
+  coreSize?: string;
+  /** Snapshot of each priced break at save time. */
+  breakSnapshots?: QuoteBreakSnapshot[];
+}
+
+export interface QuoteBreakSnapshot {
+  quantity: number;
+  finalPrice: number;
+  perUnit: number;
+  totalCost: number;
+  routeName: string;
+  viable: boolean;
+}
+
+export interface QuoteBreakResult {
+  quantity: number;
+  breakdown: QuoteBreakdown;
+  viable: boolean;
+}
+
+export interface QuoteEstimate {
+  grouped: boolean;
+  quantities: number[];
+  pricedQuantity: number;
+  breaks: QuoteBreakResult[];
+  primary: QuoteBreakdown | null;
+  viable: boolean;
+}
+
+export interface QuoteLayoutOption {
+  across: number;
+  webIn: number;
+  viable: boolean;
+  finalPrice: number;
+  perUnit: number;
+  routeName: string;
 }
 
 export interface RouteCostLine {
@@ -292,6 +354,8 @@ export interface QuoteBreakdown {
   catalogSource: "supabase" | "example";
   productionFeet: number;
   plannedPressHours: number;
+  /** False when no press actually qualifies (UI empty state). */
+  viable?: boolean;
 }
 
 export interface SavedQuote {
@@ -304,6 +368,8 @@ export interface SavedQuote {
   order_id: string | null;
   created_at: string;
   quote_number?: string;
+  qty_breaks?: number[];
+  grouped?: boolean;
 }
 
 export interface ParsedDocumentSpec {
@@ -319,9 +385,22 @@ export interface ParsedDocumentSpec {
   variableData?: boolean;
   repeatIn?: number;
   across?: number;
+  qtyBreaks?: number[];
+  colorMethod?: ColorMethod;
+  frontColors?: number;
+  rush?: boolean;
   notes?: string;
   missingFields: string[];
   confidence: number;
+}
+
+export interface RfpIntakeItem {
+  title: string;
+  customer: string | null;
+  parsed: ParsedDocumentSpec;
+  missing: string[];
+  found: [string, string][];
+  ready: boolean;
 }
 
 export interface AccountKpis {

@@ -14,6 +14,7 @@ export function CustomerPicker({
   locked = false,
   busy = false,
   showInternalTerms = true,
+  allowTermsOnCreate = true,
 }: {
   companies: Company[];
   companyId: string;
@@ -28,6 +29,8 @@ export function CustomerPicker({
   locked?: boolean;
   busy?: boolean;
   showInternalTerms?: boolean;
+  /** Public door: name only. Terms stay on the company record. */
+  allowTermsOnCreate?: boolean;
 }) {
   const [adding, setAdding] = useState(false);
   const [newCompany, setNewCompany] = useState({
@@ -88,6 +91,8 @@ export function CustomerPicker({
               onChange={(e) => setNewCompany({ ...newCompany, name: e.target.value })}
             />
           </div>
+          {allowTermsOnCreate ? (
+            <>
           <div>
             <Label>Type</Label>
             <select
@@ -143,6 +148,13 @@ export function CustomerPicker({
               }
             />
           </div>
+            </>
+          ) : (
+            <p className="sm:col-span-2 text-xs text-slate-500">
+              New accounts use standard DTC terms from the customer record. An
+              employee can adjust type and discount later.
+            </p>
+          )}
           <div className="sm:col-span-2">
             <Button
               type="button"
