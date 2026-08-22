@@ -11,6 +11,7 @@ import {
 } from "../src/lib/data/demo-data";
 import { forCompany } from "../src/lib/data/tenant";
 import { calculateQuote, matchRoute, qualifyEquipment } from "../src/lib/pricing/engine";
+import "./verify-floor";
 
 const rollSpec = {
   product: "Roll Labels",
@@ -20,6 +21,8 @@ const rollSpec = {
   heightIn: 3.5,
   quantity: 10000,
   colors: 4,
+  repeatIn: 3.5,
+  across: 2,
 };
 
 const longRun = { ...rollSpec, quantity: 40000 };

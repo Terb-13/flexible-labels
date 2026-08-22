@@ -31,6 +31,8 @@ export const DEFAULT_SPEC: QuoteSpec = {
   quantity: 10000,
   colors: 4,
   variableData: false,
+  repeatIn: 3.5,
+  across: 2,
 };
 
 function productFromSlug(slug: string | null): QuoteSpec {
@@ -142,6 +144,32 @@ export function SpecFields({
             onChange={(e) => onChange({ ...spec, colors: Number(e.target.value) })}
           />
         </div>
+        <div>
+          <Label>Repeat (in)</Label>
+          <Input
+            type="number"
+            step="0.01"
+            min="0.01"
+            className="mt-1"
+            value={spec.repeatIn}
+            onChange={(e) =>
+              onChange({ ...spec, repeatIn: Number(e.target.value) })
+            }
+          />
+        </div>
+        <div>
+          <Label>Across</Label>
+          <Input
+            type="number"
+            min="1"
+            step="1"
+            className="mt-1"
+            value={spec.across}
+            onChange={(e) =>
+              onChange({ ...spec, across: Number(e.target.value) })
+            }
+          />
+        </div>
         <label className="sm:col-span-2 flex items-center gap-2 text-sm">
           <input
             type="checkbox"
@@ -238,6 +266,8 @@ export function EstimatorWorkspace({
         colors: data.colors ?? prev.colors,
         material: data.material ?? prev.material,
         variableData: data.variableData ?? prev.variableData,
+        repeatIn: data.repeatIn ?? prev.repeatIn,
+        across: data.across ?? prev.across,
       }));
 
       if (file) setUploadName(file.name);
@@ -366,10 +396,19 @@ export function EstimatorWorkspace({
                   : "—"}
           </div>
           {companyId && breakdown && (
-            <p className="text-sm text-slate-600 mt-2">
-              {formatCurrency(breakdown.finalPrice / Math.max(spec.quantity, 1), true)}{" "}
-              per unit · {spec.quantity.toLocaleString()} {spec.product.toLowerCase()}
-            </p>
+            <>
+              <p className="text-sm text-slate-600 mt-2">
+                {formatCurrency(breakdown.finalPrice / Math.max(spec.quantity, 1), true)}{" "}
+                per unit · {spec.quantity.toLocaleString()} {spec.product.toLowerCase()}
+              </p>
+              <p className="text-sm text-slate-600 mt-1">
+                {breakdown.productionFeet.toLocaleString("en-US", {
+                  maximumFractionDigits: 1,
+                })}{" "}
+                production feet · {breakdown.plannedPressHours.toFixed(2)} planned
+                press hours
+              </p>
+            </>
           )}
           <div className="mt-3 text-xs text-slate-500">
             {!companyId

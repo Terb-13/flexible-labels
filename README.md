@@ -25,7 +25,11 @@ A sample-account bypass is **local only**. It never appears on Vercel production
    - materials: substrate + dye
    - company: `is_reseller`, `margin_percent`, `target_margin_percent`, `discount_percent`
 5. Save quote → approve if below target margin → **Generate job ticket** writes `orders`, `schedule_jobs`, and `job_steps`.
-6. The Gantt reads `schedule_jobs` + `job_steps` on a real calendar (`started_at` / `ended_at`). Plant list reads `equipment`.
+6. Press time uses lineal feet and EXAMPLE FPM, not label-count / unitless speed:
+   - `production_feet = (quantity / across) * (repeat_in / 12)`
+   - `planned_press_hours = setup_time_minutes/60 + production_feet / run_speed_fpm`
+7. Job windows snap to the EXAMPLE Mon–Fri plant shift and do not overlap another block on the same press.
+8. Employees clock setup / run / delay on `/operations`. One open clock per press. Delay requires a reason. The owner board shows ON PRESS NOW plus planned vs actual and delay hours.
 
 ## EXAMPLE rates
 
@@ -41,8 +45,11 @@ npm run db:seed
 
 - `supabase/migrations/001_initial.sql` — companies, profiles, orders, quotes, schedule_jobs
 - `supabase/migrations/002_erp_estimating.sql` — `discount_percent`, equipment, materials, production_routes, route_steps, job_steps, quote↔order links, calendar columns on `schedule_jobs`
+- `supabase/migrations/003_press_floor.sql` — `run_speed_unit` / `run_speed_fpm`, quote/job `repeat_in` + `across` + `production_feet`, `delay_reasons`, `shop_floor_clocks`, `plant_shifts`
 
-Apply 002 on the live Supabase project (CIO) so the repo and database match.
+Apply 002 (already in production) then **003 only**. Do not rewrite or re-apply 001/002.
+
+Press-floor v1 is a shop-floor scheduler + operator clocks. Out of scope: JDF/press-counter hookup, changeover optimizer, inventory/material holds, payroll, multi-plant, auto-reschedule of the whole plant, invented plant dollars, buyer email.
 
 ## Local
 
@@ -56,6 +63,7 @@ Without Supabase keys, calculate uses the EXAMPLE catalog and quote/job writes s
 
 ```bash
 npm run verify:erp
+npm run verify:floor
 npm run lint
 npm run build
 ```

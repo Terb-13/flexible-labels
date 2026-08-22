@@ -30,7 +30,8 @@ export default function QuotePageClient({
           </h1>
           <p className="text-slate-600 mt-3">
             Choose or add the company first. Then enter product attributes only —
-            no reseller toggle and no discount field on the estimate.
+            including repeat and across for press footage. No reseller toggle
+            and no discount field on the estimate.
           </p>
         </div>
         <EstimatorWorkspace

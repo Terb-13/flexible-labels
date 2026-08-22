@@ -13,6 +13,9 @@ import type {
 export const EXAMPLE_RATE_DISCLAIMER =
   "EXAMPLE rate — not a published Flexible Label machine or material cost.";
 
+export const EXAMPLE_FPM_DISCLAIMER =
+  "EXAMPLE fpm — not a published Flexible Label press speed.";
+
 export const EXAMPLE_DTC_COMPANY: Company = {
   id: "00000000-0000-4000-8000-000000000001",
   name: "Acme Brands",
@@ -62,6 +65,8 @@ export const EXAMPLE_EQUIPMENT: Equipment[] = [
     stage: "printer",
     cost_rate: 85,
     run_speed: 8000,
+    run_speed_unit: "fpm",
+    run_speed_fpm: 150,
     waste_percent: 3,
     setup_time_minutes: 15,
     capabilities: {
@@ -70,7 +75,7 @@ export const EXAMPLE_EQUIPMENT: Equipment[] = [
       max_width_in: 13,
       max_colors: 6,
     },
-    notes: EXAMPLE_RATE_DISCLAIMER,
+    notes: `${EXAMPLE_RATE_DISCLAIMER} ${EXAMPLE_FPM_DISCLAIMER} EXAMPLE 150 fpm.`,
     active: true,
   },
   {
@@ -79,6 +84,8 @@ export const EXAMPLE_EQUIPMENT: Equipment[] = [
     stage: "printer",
     cost_rate: 140,
     run_speed: 25000,
+    run_speed_unit: "fpm",
+    run_speed_fpm: 400,
     waste_percent: 5,
     setup_time_minutes: 45,
     capabilities: {
@@ -87,7 +94,7 @@ export const EXAMPLE_EQUIPMENT: Equipment[] = [
       max_width_in: 16,
       max_colors: 10,
     },
-    notes: EXAMPLE_RATE_DISCLAIMER,
+    notes: `${EXAMPLE_RATE_DISCLAIMER} ${EXAMPLE_FPM_DISCLAIMER} EXAMPLE 400 fpm.`,
     active: true,
   },
   {
@@ -96,6 +103,8 @@ export const EXAMPLE_EQUIPMENT: Equipment[] = [
     stage: "seamer",
     cost_rate: 45,
     run_speed: 20000,
+    run_speed_unit: "labels_per_hour",
+    run_speed_fpm: null,
     waste_percent: 1,
     setup_time_minutes: 10,
     capabilities: {
@@ -111,6 +120,8 @@ export const EXAMPLE_EQUIPMENT: Equipment[] = [
     stage: "finisher",
     cost_rate: 55,
     run_speed: 15000,
+    run_speed_unit: "labels_per_hour",
+    run_speed_fpm: null,
     waste_percent: 2,
     setup_time_minutes: 20,
     capabilities: {
@@ -126,6 +137,8 @@ export const EXAMPLE_EQUIPMENT: Equipment[] = [
     stage: "shipping",
     cost_rate: 35,
     run_speed: 40000,
+    run_speed_unit: "labels_per_hour",
+    run_speed_fpm: null,
     waste_percent: 0,
     setup_time_minutes: 15,
     capabilities: {

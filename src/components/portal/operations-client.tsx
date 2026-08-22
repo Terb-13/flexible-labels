@@ -2,24 +2,42 @@
 
 import { useState } from "react";
 import { rescheduleJobAction } from "@/app/operations/actions";
+import { DelayReport } from "@/components/portal/delay-report";
 import { GanttScheduler } from "@/components/portal/gantt-scheduler";
+import { OnPressNow } from "@/components/portal/on-press-now";
+import { OperatorClock } from "@/components/portal/operator-clock";
 import { OperationsEstimator } from "@/components/portal/operations-estimator";
-import { currentStepForEquipment } from "@/lib/erp/calendar";
-import type { Company, Equipment, Material, ScheduleJob } from "@/types";
+import { openClockOnEquipment } from "@/lib/erp/clocks";
+import type {
+  Company,
+  DelayReason,
+  Equipment,
+  Material,
+  PlantShift,
+  ScheduleJob,
+  ShopFloorClock,
+} from "@/types";
 import { useToast } from "@/components/ui/toaster";
 
 export function OperationsClient({
   initialJobs,
+  initialClocks,
   equipment,
   companies,
   materials,
+  reasons,
+  shifts,
 }: {
   initialJobs: ScheduleJob[];
+  initialClocks: ShopFloorClock[];
   equipment: Equipment[];
   companies: Company[];
   materials: Material[];
+  reasons: DelayReason[];
+  shifts: PlantShift[];
 }) {
   const [jobs, setJobs] = useState(initialJobs);
+  const [clocks, setClocks] = useState(initialClocks);
   const { toast } = useToast();
 
   async function onReschedule(jobId: string, startedAt: string) {
@@ -31,15 +49,44 @@ export function OperationsClient({
     }
   }
 
+  const shiftLabel = shifts.length
+    ? `EXAMPLE plant window ${shifts[0].start_time}–${shifts[0].end_time} Mon–Fri`
+    : "No plant shifts";
+
   return (
     <div className="space-y-8">
+      <OnPressNow clocks={clocks} jobs={jobs} equipment={equipment} />
+
       <div className="space-y-4">
-        <h2 className="font-semibold text-xl">Production Gantt</h2>
+        <div>
+          <h2 className="font-semibold text-xl">Press floor</h2>
+          <p className="text-sm text-slate-500">
+            Finite board — one running clock per press. {shiftLabel}. Not a full
+            APS.
+          </p>
+        </div>
         <GanttScheduler
           jobs={jobs}
           equipment={equipment}
+          runningEquipmentIds={equipment
+            .filter((eq) => openClockOnEquipment(clocks, eq.id))
+            .map((eq) => eq.id)}
           onReschedule={onReschedule}
         />
+      </div>
+
+      <OperatorClock
+        equipment={equipment}
+        jobs={jobs}
+        clocks={clocks}
+        reasons={reasons}
+        onClocksChange={setClocks}
+        onJobsChange={setJobs}
+      />
+
+      <div>
+        <h2 className="font-semibold text-xl mb-4">Owner board</h2>
+        <DelayReport jobs={jobs} clocks={clocks} reasons={reasons} />
       </div>
 
       <div>
@@ -54,59 +101,6 @@ export function OperationsClient({
             })
           }
         />
-      </div>
-
-      <div className="grid md:grid-cols-2 gap-6">
-        <div className="bg-white border rounded-3xl p-6">
-          <h3 className="font-semibold mb-3">Plant equipment</h3>
-          <ul className="space-y-3 text-sm">
-            {equipment.map((eq) => {
-              const current = currentStepForEquipment(eq, jobs);
-              return (
-                <li key={eq.id} className="flex justify-between border-b pb-2">
-                  <div>
-                    <div className="font-medium">{eq.name}</div>
-                    <div className="text-xs text-slate-500">
-                      {eq.stage} · EXAMPLE ${eq.cost_rate}/hr ·{" "}
-                      {eq.run_speed.toLocaleString()} /hr
-                    </div>
-                    <div className="text-xs text-slate-500">
-                      {current
-                        ? `${current.job.job_number} — ${current.job.name}`
-                        : "Idle"}
-                    </div>
-                  </div>
-                  <div className="text-xs font-semibold text-teal capitalize">
-                    {eq.stage}
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-        <div className="bg-white border rounded-3xl p-6">
-          <h3 className="font-semibold mb-3">Scheduled jobs</h3>
-          {jobs.length === 0 ? (
-            <p className="text-sm text-slate-500">
-              Save and approve a quote, then generate a job ticket to put it on
-              the calendar.
-            </p>
-          ) : (
-            <ul className="space-y-3 text-sm">
-              {jobs.map((job) => (
-                <li key={job.id} className="border-b pb-2">
-                  <div className="font-mono text-xs text-slate-500">
-                    {job.job_number} · {job.status}
-                  </div>
-                  <div className="font-medium">{job.name}</div>
-                  <div className="text-xs text-slate-500">
-                    {job.steps.length} steps · due {job.due_date}
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
       </div>
     </div>
   );

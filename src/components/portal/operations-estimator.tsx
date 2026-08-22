@@ -134,6 +134,16 @@ export function OperationsEstimator({
                 ? " · EXAMPLE rates — not published plant costs"
                 : " · from the plant catalog"}
             </p>
+            <p className="text-xs text-slate-600 mt-2">
+              {breakdown.productionFeet.toLocaleString("en-US", {
+                maximumFractionDigits: 1,
+              })}{" "}
+              production feet · {breakdown.plannedPressHours.toFixed(2)} planned
+              press hours
+              {spec.across > 0 && spec.repeatIn > 0
+                ? ` · ${spec.across} across · ${spec.repeatIn}" repeat`
+                : " · enter repeat and across for press time"}
+            </p>
             <div className="mt-4 space-y-2 text-sm">
               <Row
                 label={`Substrate${breakdown.substrateCost ? "" : ""}`}

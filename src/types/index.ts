@@ -16,6 +16,16 @@ export type MaterialKind = "substrate" | "dye";
 export type JobStatus = "scheduled" | "running" | "done";
 export type JobStepStatus = "pending" | "running" | "done";
 export type QuoteStatus = "draft" | "pending_approval" | "approved" | "sent";
+export type RunSpeedUnit = "fpm" | "labels_per_hour";
+export type ClockActivity = "setup" | "run" | "delay";
+export type DelayCategory =
+  | "wait_material"
+  | "wait_art"
+  | "breakdown"
+  | "changeover"
+  | "operator"
+  | "quality"
+  | "other";
 
 export interface Product {
   id: string;
@@ -61,6 +71,8 @@ export interface Equipment {
   stage: EquipmentStage;
   cost_rate: number;
   run_speed: number;
+  run_speed_unit: RunSpeedUnit;
+  run_speed_fpm: number | null;
   waste_percent: number;
   capabilities: EquipmentCapabilities;
   setup_time_minutes: number;
@@ -166,6 +178,9 @@ export interface JobStep {
   equipment?: Equipment;
   started_at?: string;
   ended_at?: string;
+  production_feet: number | null;
+  repeat_in: number | null;
+  across: number | null;
 }
 
 export interface ScheduleJob {
@@ -182,10 +197,44 @@ export interface ScheduleJob {
   ended_at: string | null;
   status: JobStatus;
   steps: JobStep[];
+  repeat_in?: number | null;
+  across?: number | null;
+  production_feet?: number | null;
   /** @deprecated display-only leftovers from the demo gantt */
   resource?: string | null;
   start_day?: number | null;
   duration?: number | null;
+}
+
+export interface DelayReason {
+  id: string;
+  code: string;
+  name: string;
+  category: DelayCategory;
+}
+
+export interface PlantShift {
+  id: string;
+  weekday: number;
+  start_time: string;
+  end_time: string;
+  notes?: string;
+}
+
+export interface ShopFloorClock {
+  id: string;
+  job_step_id: string;
+  equipment_id: string;
+  operator_id: string | null;
+  activity: ClockActivity;
+  started_at: string;
+  ended_at: string | null;
+  delay_reason_id: string | null;
+  notes: string | null;
+  qty_good: number | null;
+  qty_waste: number | null;
+  delay_reason?: DelayReason;
+  operator_name?: string | null;
 }
 
 export interface QuoteSpec {
@@ -199,6 +248,10 @@ export interface QuoteSpec {
   finish?: string;
   variableData?: boolean;
   quoteNumber?: string;
+  /** Circumference / label repeat in inches. Required for press hours. */
+  repeatIn: number;
+  /** Labels across the web. Required for press hours. */
+  across: number;
   /** @deprecated use product */
   productType?: string;
 }
@@ -212,6 +265,8 @@ export interface RouteCostLine {
   qualified: boolean;
   setupMinutes: number;
   wastePercent: number;
+  productionFeet?: number;
+  runSpeedUnit?: RunSpeedUnit;
 }
 
 export interface QuoteBreakdown {
@@ -235,6 +290,8 @@ export interface QuoteBreakdown {
   routeId: string;
   lines: RouteCostLine[];
   catalogSource: "supabase" | "example";
+  productionFeet: number;
+  plannedPressHours: number;
 }
 
 export interface SavedQuote {
@@ -260,6 +317,8 @@ export interface ParsedDocumentSpec {
   material?: string;
   finish?: string;
   variableData?: boolean;
+  repeatIn?: number;
+  across?: number;
   notes?: string;
   missingFields: string[];
   confidence: number;

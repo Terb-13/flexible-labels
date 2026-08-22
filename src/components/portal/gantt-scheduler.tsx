@@ -20,10 +20,12 @@ const STAGE_COLORS: Record<string, string> = {
 export function GanttScheduler({
   jobs,
   equipment,
+  runningEquipmentIds = [],
   onReschedule,
 }: {
   jobs: ScheduleJob[];
   equipment: Equipment[];
+  runningEquipmentIds?: string[];
   onReschedule?: (jobId: string, startedAt: string) => void;
 }) {
   const datedJobs = useMemo(() => jobs.map(withStepWindows), [jobs]);
@@ -43,7 +45,7 @@ export function GanttScheduler({
   return (
     <div className="border rounded-2xl bg-white overflow-hidden">
       <div className="p-3 bg-slate-50 border-b flex items-center justify-between text-xs font-semibold">
-        <div>Production calendar — jobs and steps</div>
+        <div>Press board — jobs by asset</div>
         <div className="text-slate-500 font-medium">
           {datedJobs.length} job{datedJobs.length === 1 ? "" : "s"}
         </div>
@@ -66,8 +68,13 @@ export function GanttScheduler({
             className="grid gap-1 mb-2 min-w-[900px] relative"
             style={{ gridTemplateColumns: `160px repeat(${days.length}, 1fr)` }}
           >
-            <div className="text-[11px] font-semibold text-slate-600 pr-2 flex items-center">
-              {row.name}
+            <div className="text-[11px] font-semibold text-slate-600 pr-2 flex items-center gap-1">
+              <span>{row.name}</span>
+              {runningEquipmentIds.includes(row.id) && (
+                <span className="text-[9px] uppercase tracking-wide text-teal">
+                  run
+                </span>
+              )}
             </div>
             {days.map((day) => (
               <div
@@ -96,7 +103,11 @@ export function GanttScheduler({
                         left: `calc(160px + ((100% - 160px) / ${days.length}) * ${span.startIndex} + 4px)`,
                         width: `calc(((100% - 160px) / ${days.length}) * ${span.span} - 8px)`,
                       }}
-                      title={`${job.job_number} • ${job.name} • ${step.planned_hours}h`}
+                      title={`${job.job_number} • ${job.name} • ${step.planned_hours}h${
+                        step.production_feet
+                          ? ` • ${step.production_feet} ft`
+                          : ""
+                      }`}
                     >
                       {job.job_number}
                     </div>
@@ -115,7 +126,8 @@ export function GanttScheduler({
         ))}
       </div>
       <div className="text-xs text-slate-500 mt-2 px-4 pb-3">
-        Drag a bar to reschedule on the calendar.
+        Drag a bar to a day. The scheduler snaps to plant shift hours and will
+        not overlap another block on the same press.
       </div>
     </div>
   );

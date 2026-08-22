@@ -14,6 +14,11 @@ import {
   EXAMPLE_RATE_DISCLAIMER,
   EXAMPLE_ROUTES,
 } from "../src/lib/data/example-catalog";
+import {
+  EXAMPLE_DELAY_REASONS,
+  EXAMPLE_FLOOR_DISCLAIMER,
+  EXAMPLE_PLANT_SHIFTS,
+} from "../src/lib/data/example-floor";
 
 async function main() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -48,6 +53,8 @@ async function main() {
       stage: eq.stage,
       cost_rate: eq.cost_rate,
       run_speed: eq.run_speed,
+      run_speed_unit: eq.run_speed_unit,
+      run_speed_fpm: eq.run_speed_fpm,
       waste_percent: eq.waste_percent,
       capabilities: eq.capabilities,
       setup_time_minutes: eq.setup_time_minutes,
@@ -97,8 +104,31 @@ async function main() {
   );
   if (stepError) throw stepError;
 
-  console.log("Seeded EXAMPLE companies, equipment, materials, and routes.");
-  console.log("These rates are EXAMPLE only — replace them in Supabase before go-live.");
+  const { error: reasonError } = await supabase.from("delay_reasons").upsert(
+    EXAMPLE_DELAY_REASONS.map((r) => ({
+      id: r.id,
+      code: r.code,
+      name: r.name,
+      category: r.category,
+    })),
+    { onConflict: "id" }
+  );
+  if (reasonError) throw reasonError;
+
+  const { error: shiftError } = await supabase.from("plant_shifts").upsert(
+    EXAMPLE_PLANT_SHIFTS.map((s) => ({
+      id: s.id,
+      weekday: s.weekday,
+      start_time: s.start_time,
+      end_time: s.end_time,
+      notes: s.notes ?? EXAMPLE_FLOOR_DISCLAIMER,
+    })),
+    { onConflict: "id" }
+  );
+  if (shiftError) throw shiftError;
+
+  console.log("Seeded EXAMPLE companies, equipment, materials, routes, delay reasons, and plant shifts.");
+  console.log("These rates and FPM values are EXAMPLE only — replace them in Supabase before go-live.");
 }
 
 main().catch((err) => {
