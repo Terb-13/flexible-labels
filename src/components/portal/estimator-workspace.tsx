@@ -140,6 +140,7 @@ export function EstimatorWorkspace({
   initialSpec,
   initialStep,
   materials = [],
+  materialNamesByProduct,
   equipment = [],
   companies: initialCompanies = [],
   lockedCompany = null,
@@ -154,6 +155,7 @@ export function EstimatorWorkspace({
   initialSpec?: QuoteSpec;
   initialStep?: number;
   materials?: Material[];
+  materialNamesByProduct?: Record<string, string[]>;
   equipment?: Equipment[];
   companies?: Company[];
   lockedCompany?: Company | null;
@@ -275,6 +277,7 @@ export function EstimatorWorkspace({
           onChange={applySpec}
           company={company}
           materials={materials}
+          materialNamesByProduct={materialNamesByProduct}
           equipment={equipment}
           step={step}
           onStep={setStep}

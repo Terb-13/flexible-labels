@@ -33,6 +33,7 @@ export function EstimateWizard({
   onChange,
   company,
   materials,
+  materialNamesByProduct,
   equipment = [],
   step,
   onStep,
@@ -55,6 +56,7 @@ export function EstimateWizard({
   onChange: (spec: QuoteSpec) => void;
   company: Company | null;
   materials: Material[];
+  materialNamesByProduct?: Record<string, string[]>;
   equipment?: PricingCatalog["equipment"];
   step: number;
   onStep: (step: number) => void;
@@ -73,10 +75,14 @@ export function EstimateWizard({
   onCheckout?: () => void;
   onChangeCustomer?: () => void;
 }) {
-  const filtered = useMemo(
-    () => materialsForProduct(spec.product, { materials, equipment }),
-    [spec.product, materials, equipment]
-  );
+  const filtered = useMemo(() => {
+    const allowed = materialNamesByProduct?.[spec.product];
+    if (allowed?.length) {
+      const named = materials.filter((m) => allowed.includes(m.name));
+      if (named.length) return named;
+    }
+    return materialsForProduct(spec.product, { materials, equipment });
+  }, [spec.product, materials, equipment, materialNamesByProduct]);
 
   function patch(next: Partial<QuoteSpec>) {
     onChange({ ...spec, ...next });

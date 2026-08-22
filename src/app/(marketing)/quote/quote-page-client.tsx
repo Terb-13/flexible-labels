@@ -6,11 +6,13 @@ import type { Company, Material } from "@/types";
 
 export default function QuotePageClient({
   materials,
+  materialNamesByProduct,
   companies,
   lockedCompany,
   loggedIn,
 }: {
   materials: Material[];
+  materialNamesByProduct?: Record<string, string[]>;
   companies: Company[];
   lockedCompany: Company | null;
   loggedIn: boolean;
@@ -38,6 +40,7 @@ export default function QuotePageClient({
           enableCheckout
           initialProductSlug={product}
           materials={materials}
+          materialNamesByProduct={materialNamesByProduct}
           companies={companies}
           lockedCompany={lockedCompany}
           loggedIn={loggedIn}

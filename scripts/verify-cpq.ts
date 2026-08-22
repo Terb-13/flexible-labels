@@ -5,7 +5,11 @@ import {
   EXAMPLE_DTC_COMPANY,
 } from "../src/lib/data/example-catalog";
 import { clusterArtworkColors } from "../src/lib/pricing/artwork-colors";
-import { materialsForProduct } from "../src/lib/pricing/materials";
+import {
+  materialsForProduct,
+  publicMaterialsByProduct,
+  toPublicMaterials,
+} from "../src/lib/pricing/materials";
 import {
   calculateLayouts,
   calculateQuote,
@@ -110,6 +114,15 @@ const bumperMats = materialsForProduct("Bumper Stickers", EXAMPLE_CATALOG).map(
   (m) => m.name
 );
 assert.ok(bumperMats.includes("UV Vinyl"));
+const publicByProduct = publicMaterialsByProduct(EXAMPLE_CATALOG);
+assert.ok(publicByProduct["Roll Labels"].includes("Matte BOPP"));
+assert.ok(publicByProduct["Roll Labels"].length > 0);
+const publicMats = toPublicMaterials(EXAMPLE_CATALOG.materials);
+assert.ok(publicMats.every((m) => m.cost_per_sqin === 0 && m.cost_per_unit === 0));
+assert.ok(
+  materialsForProduct("Roll Labels", { materials: publicMats, equipment: [] })
+    .length > 0
+);
 
 const redPixels = Array.from({ length: 80 }, () => ({
   r: 200,

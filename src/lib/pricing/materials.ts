@@ -1,3 +1,4 @@
+import { PRODUCT_OPTIONS } from "@/lib/data/example-catalog";
 import type { Material, PricingCatalog } from "@/types";
 
 export function materialGroup(name: string): string {
@@ -37,8 +38,38 @@ export function materialsForProduct(
     for (const mat of cap.materials ?? []) eqMats.add(mat);
   }
 
-  if (!eqMats.size) return byAttr;
-  return byAttr.filter((m) => eqMats.has(m.name));
+  if (!eqMats.size) return byAttr.length ? byAttr : substrates;
+  const matched = byAttr.filter((m) => eqMats.has(m.name));
+  return matched.length ? matched : byAttr;
+}
+
+/** Names the customer door can show — computed with the full catalog, no equipment sent. */
+export function publicMaterialsByProduct(
+  catalog: PricingCatalog
+): Record<string, string[]> {
+  return Object.fromEntries(
+    PRODUCT_OPTIONS.map((product) => [
+      product,
+      materialsForProduct(product, catalog).map((m) => m.name),
+    ])
+  );
+}
+
+/** Substrate list for customer pages — names only, no rates or notes. */
+export function toPublicMaterials(materials: Material[]): Material[] {
+  return materials
+    .filter((m) => m.kind === "substrate" && m.active !== false)
+    .map((m) => ({
+      id: m.id,
+      name: m.name,
+      kind: m.kind,
+      cost_per_sqin: 0,
+      cost_per_unit: 0,
+      attributes: {
+        products: Array.isArray(m.attributes?.products) ? m.attributes.products : [],
+      },
+      active: true,
+    }));
 }
 
 export function groupedMaterials(materials: Material[]): {
