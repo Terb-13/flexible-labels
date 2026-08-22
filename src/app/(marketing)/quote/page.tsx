@@ -21,7 +21,6 @@ export default async function QuotePage() {
     >
         <QuotePageClient
           materials={catalog.materials}
-          equipment={catalog.equipment}
           companies={locked ? [locked] : []}
           lockedCompany={locked}
           loggedIn={session.role === "customer"}

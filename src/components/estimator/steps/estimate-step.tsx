@@ -85,8 +85,47 @@ export function EstimateStep({
         <p className="mt-2 mx-auto max-w-md font-mono text-xs text-slate-500">
           {employee
             ? "Nothing in the EXAMPLE catalog qualifies for this product, material, width, and color count. Check size against press max width, or pick another material. The estimator did not invent a layout."
-            : "Try a different size or material. We’ll confirm the estimate after review."}
+            : "Try a different size or material. We’ll confirm after review."}
         </p>
+      </div>
+    );
+  }
+
+  if (!employee) {
+    return (
+      <div className="max-w-xl">
+        <div className="rounded-3xl bg-navy px-6 py-6 text-white">
+          <div className="font-mono text-[10px] uppercase tracking-widest text-slate-400">
+            Estimated total
+          </div>
+          <div className="heading-font mt-1 text-4xl md:text-5xl">
+            {formatCurrency(viewing.finalPrice, true)}
+          </div>
+          <div className="mt-2 font-mono text-sm text-teal">
+            {formatCurrency(viewing.finalPrice / viewQty, true)} / unit ·{" "}
+            {formatQuantity(viewQty)} units
+          </div>
+        </div>
+        <div className="mt-4 space-y-2">
+          <Button
+            className="w-full"
+            variant="cta"
+            disabled={Boolean(busy) || !viewing}
+            onClick={onSave}
+          >
+            {busy === "save" ? "Saving…" : saved ? "Quote saved" : "Save quote"}
+          </Button>
+          {onCheckout && (
+            <Button
+              className="w-full"
+              variant="outline"
+              disabled={!viewing}
+              onClick={onCheckout}
+            >
+              Place order — pay now
+            </Button>
+          )}
+        </div>
       </div>
     );
   }
@@ -99,12 +138,14 @@ export function EstimateStep({
     .filter(Boolean)
     .join(" → ");
 
-  const productRows = (
+  const jobRows = (
     [
       ["Product", spec.product],
       ["Material", spec.material],
       ["Size", `${spec.widthIn}" × ${spec.heightIn}"`],
-      ["Colors", String(stations)],
+      ["Stations", String(stations)],
+      ["Across / repeat", `${spec.across} / ${spec.repeatIn}"`],
+      ["Route", viewing.routeName],
       ["Timeline", spec.rush ? "Rush" : "Standard"],
       spec.shape ? ["Shape", spec.shape] : null,
       spec.unwind ? ["Unwind", `Wind ${spec.unwind}`] : null,
@@ -113,21 +154,13 @@ export function EstimateStep({
     ] as ([string, string] | null)[]
   ).filter(Boolean) as [string, string][];
 
-  const employeeRows: [string, string][] = [
-    ["Stations", String(stations)],
-    ["Across / repeat", `${spec.across} / ${spec.repeatIn}"`],
-    ["Route", viewing.routeName],
-  ];
-
   return (
     <div>
       <h2 className="heading-font text-3xl md:text-4xl font-semibold tracking-tight">
-        {employee ? STEP_TITLES[6] : "Your estimate"}
+        {STEP_TITLES[6]}
       </h2>
       <p className="mt-2 font-mono text-xs text-slate-500 max-w-xl">
-        {employee
-          ? STEP_SUBTITLES[6]
-          : "Estimated sell price — we’ll confirm after review."}
+        {STEP_SUBTITLES[6]}
       </p>
 
       <div className="mt-6 grid lg:grid-cols-[1fr_280px] gap-6">
@@ -143,77 +176,63 @@ export function EstimateStep({
               {formatCurrency(viewing.finalPrice / viewQty, true)} / unit ·{" "}
               {formatQuantity(viewQty)} units
             </div>
-            {employee && (
-              <>
-                <div className="mt-3 font-mono text-[11px] text-slate-400">
-                  {viewing.productionFeet.toLocaleString("en-US", {
-                    maximumFractionDigits: 1,
-                  })}{" "}
-                  production feet · {viewing.plannedPressHours.toFixed(2)} planned
-                  press hours
-                  {spec.rush ? " · rush requested" : ""}
-                </div>
-                <div className="mt-3 rounded-2xl bg-white/5 px-3 py-2 font-mono text-[11px] text-slate-300">
-                  Route {viewing.routeName}
-                  {viewing.catalogSource === "example"
-                    ? " · EXAMPLE rates — not published plant costs"
-                    : " · plant catalog"}
-                </div>
-              </>
-            )}
-            {!employee && spec.rush && (
-              <div className="mt-3 font-mono text-[11px] text-slate-400">
-                Rush requested — we’ll confirm timing after review.
-              </div>
-            )}
+            <div className="mt-3 font-mono text-[11px] text-slate-400">
+              {viewing.productionFeet.toLocaleString("en-US", {
+                maximumFractionDigits: 1,
+              })}{" "}
+              production feet · {viewing.plannedPressHours.toFixed(2)} planned
+              press hours
+              {spec.rush ? " · rush requested" : ""}
+            </div>
+            <div className="mt-3 rounded-2xl bg-white/5 px-3 py-2 font-mono text-[11px] text-slate-300">
+              Route {viewing.routeName}
+              {viewing.catalogSource === "example"
+                ? " · EXAMPLE rates — not published plant costs"
+                : " · plant catalog"}
+            </div>
           </div>
 
-          {employee && (
-            <div className="rounded-3xl border border-slate-200 bg-white p-5">
-              <div className="font-semibold">Cost buckets</div>
-              <div className="mt-3 space-y-2">
-                {bd.map((b) => (
-                  <div key={b.label} className="flex items-center gap-3">
-                    <div className="w-20 font-mono text-[11px] text-slate-500">
-                      {b.label}
-                    </div>
-                    <div className="h-3 flex-1 overflow-hidden rounded-full bg-slate-100">
-                      <div
-                        className="h-full rounded-full bg-teal/70"
-                        style={{ width: `${(b.value / maxBd) * 100}%` }}
-                      />
-                    </div>
-                    <div className="w-16 text-right font-mono text-[11px] font-semibold">
-                      {formatCurrency(b.value, true)}
-                    </div>
+          <div className="rounded-3xl border border-slate-200 bg-white p-5">
+            <div className="font-semibold">Cost buckets</div>
+            <div className="mt-3 space-y-2">
+              {bd.map((b) => (
+                <div key={b.label} className="flex items-center gap-3">
+                  <div className="w-20 font-mono text-[11px] text-slate-500">
+                    {b.label}
                   </div>
-                ))}
-                <div className="flex justify-between border-t pt-2 text-sm font-semibold">
-                  <span>Total cost</span>
-                  <span>{formatCurrency(viewing.totalCost, true)}</span>
+                  <div className="h-3 flex-1 overflow-hidden rounded-full bg-slate-100">
+                    <div
+                      className="h-full rounded-full bg-teal/70"
+                      style={{ width: `${(b.value / maxBd) * 100}%` }}
+                    />
+                  </div>
+                  <div className="w-16 text-right font-mono text-[11px] font-semibold">
+                    {formatCurrency(b.value, true)}
+                  </div>
                 </div>
-                <div className="flex justify-between text-sm text-teal">
-                  <span>
-                    Margin ({viewing.marginPercent}%)
-                    {viewing.discountPercent > 0
-                      ? ` after ${viewing.discountPercent}% customer discount`
-                      : ""}
-                  </span>
-                  <span>{formatCurrency(viewing.marginAmount, true)}</span>
-                </div>
+              ))}
+              <div className="flex justify-between border-t pt-2 text-sm font-semibold">
+                <span>Total cost</span>
+                <span>{formatCurrency(viewing.totalCost, true)}</span>
+              </div>
+              <div className="flex justify-between text-sm text-teal">
+                <span>
+                  Margin ({viewing.marginPercent}%)
+                  {viewing.discountPercent > 0
+                    ? ` after ${viewing.discountPercent}% customer discount`
+                    : ""}
+                </span>
+                <span>{formatCurrency(viewing.marginAmount, true)}</span>
               </div>
             </div>
-          )}
+          </div>
 
           {layouts.length > 0 && onSelectAcross && (
             <div className="rounded-3xl border border-slate-200 bg-white p-5">
-              <div className="font-semibold">
-                {employee ? "Production layout" : "Layout options"}
-              </div>
+              <div className="font-semibold">Production layout</div>
               <p className="mt-1 font-mono text-[11px] text-slate-500">
-                {employee
-                  ? "Across 1–6 that fit a catalog press max width. Cheapest first. No invented web SKUs."
-                  : "How many labels across. Price only."}
+                Across 1–6 that fit a catalog press max width. Cheapest first.
+                No invented web SKUs.
               </p>
               <div className="mt-3 space-y-2">
                 {layouts.map((lo, i) => {
@@ -230,15 +249,14 @@ export function EstimateStep({
                     >
                       <div>
                         <div className="font-semibold">
-                          {lo.across}-across
-                          {employee && ` · ${lo.webIn.toFixed(2)}" web`}
-                          {employee && i === 0 && (
+                          {lo.across}-across · {lo.webIn.toFixed(2)}&quot; web
+                          {i === 0 && (
                             <span className="ml-2 rounded bg-teal/10 px-1.5 py-0.5 font-mono text-[10px] text-teal">
                               Lowest cost
                             </span>
                           )}
                         </div>
-                        {employee && lo.routeName && (
+                        {lo.routeName && (
                           <div className="font-mono text-[11px] text-slate-500">
                             {lo.routeName}
                           </div>
@@ -254,29 +272,26 @@ export function EstimateStep({
             </div>
           )}
 
-          {employee && (
-            <div className="rounded-3xl border border-slate-200 bg-white p-5">
-              <div className="font-semibold">Production route</div>
-              <p className="mt-1 font-mono text-[11px] text-slate-500">
-                Chosen automatically from the specs — press → finish → ship. Not a
-                plant picker.
-              </p>
-              <div className="mt-3 space-y-2 text-sm">
-                {viewing.lines.map((line) => (
-                  <div key={line.stage} className="flex justify-between text-slate-600">
-                    <span>
-                      {line.equipmentName}
-                      {!line.qualified ? " (unqualified)" : ""}
-                    </span>
-                    <span className="font-mono text-xs">
-                      {line.hours.toFixed(2)} h · {formatCurrency(line.cost, true)}
-                    </span>
-                  </div>
-                ))}
-              </div>
-              <p className="mt-3 font-mono text-[11px] text-slate-400">{route}</p>
+          <div className="rounded-3xl border border-slate-200 bg-white p-5">
+            <div className="font-semibold">Production route</div>
+            <p className="mt-1 font-mono text-[11px] text-slate-500">
+              Chosen automatically from the specs — press → finish → ship.
+            </p>
+            <div className="mt-3 space-y-2 text-sm">
+              {viewing.lines.map((line) => (
+                <div key={line.stage} className="flex justify-between text-slate-600">
+                  <span>
+                    {line.equipmentName}
+                    {!line.qualified ? " (unqualified)" : ""}
+                  </span>
+                  <span className="font-mono text-xs">
+                    {line.hours.toFixed(2)} h · {formatCurrency(line.cost, true)}
+                  </span>
+                </div>
+              ))}
             </div>
-          )}
+            <p className="mt-3 font-mono text-[11px] text-slate-400">{route}</p>
+          </div>
 
           <div className="rounded-3xl border border-slate-200 bg-white p-5">
             <div className="font-semibold uppercase tracking-wide text-navy text-sm">
@@ -357,13 +372,7 @@ export function EstimateStep({
             <div className="mb-3 font-mono text-[10px] uppercase tracking-widest text-slate-400">
               Job configuration
             </div>
-            {(employee
-              ? [
-                  ...productRows.filter(([label]) => label !== "Colors"),
-                  ...employeeRows,
-                ]
-              : productRows
-            ).map((row) => (
+            {jobRows.map((row) => (
               <div
                 key={row[0]}
                 className="flex justify-between gap-3 border-b border-slate-200/80 py-1.5"
@@ -373,7 +382,7 @@ export function EstimateStep({
               </div>
             ))}
           </div>
-          {employee && viewing.needsApproval && (
+          {viewing.needsApproval && (
             <div className="rounded-2xl border border-red-200 bg-red-50 p-3 text-sm text-red-800">
               Below target margin ({viewing.targetMarginPercent}%). Approval
               required before a job ticket.
@@ -387,17 +396,7 @@ export function EstimateStep({
           >
             {busy === "save" ? "Saving…" : saved ? "Quote saved" : "Save quote"}
           </Button>
-          {!employee && onCheckout && (
-            <Button
-              className="w-full"
-              variant="outline"
-              disabled={!viewing}
-              onClick={onCheckout}
-            >
-              Place order — pay now
-            </Button>
-          )}
-          {employee && saved?.needs_approval && saved.status !== "approved" && (
+          {saved?.needs_approval && saved.status !== "approved" && (
             <Button
               className="w-full"
               variant="outline"
@@ -407,7 +406,7 @@ export function EstimateStep({
               Submit for review / approve
             </Button>
           )}
-          {employee && onJob && (
+          {onJob && (
             <Button
               className="w-full"
               disabled={!saved || saved.status !== "approved" || busy === "job"}

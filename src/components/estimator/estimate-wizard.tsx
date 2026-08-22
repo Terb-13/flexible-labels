@@ -11,8 +11,10 @@ import { SpecsStep } from "@/components/estimator/steps/specs-step";
 import { WizardNav } from "@/components/estimator/wizard-nav";
 import {
   canOpenStep,
-  STEP_LABELS,
+  nextWizardStep,
+  prevWizardStep,
   stepIsValid,
+  stepLabel,
 } from "@/components/estimator/wizard-constants";
 import { Button } from "@/components/ui/button";
 import { materialsForProduct } from "@/lib/pricing/materials";
@@ -31,7 +33,7 @@ export function EstimateWizard({
   onChange,
   company,
   materials,
-  equipment,
+  equipment = [],
   step,
   onStep,
   artworkUrl,
@@ -53,7 +55,7 @@ export function EstimateWizard({
   onChange: (spec: QuoteSpec) => void;
   company: Company | null;
   materials: Material[];
-  equipment: PricingCatalog["equipment"];
+  equipment?: PricingCatalog["equipment"];
   step: number;
   onStep: (step: number) => void;
   artworkUrl: string | null;
@@ -108,6 +110,7 @@ export function EstimateWizard({
       <WizardNav
         current={step}
         spec={spec}
+        mode={mode}
         onGo={(i) => {
           if (canOpenStep(i, step, spec)) onStep(i);
         }}
@@ -147,16 +150,18 @@ export function EstimateWizard({
           />
         )}
         {step === 4 && <SpecsStep spec={spec} onChange={patch} mode={mode} />}
-        {step === 5 && <QuantityStep spec={spec} onChange={patch} />}
+        {step === 5 && <QuantityStep spec={spec} onChange={patch} mode={mode} />}
         {step === 6 && (
           <EstimateStep
             spec={spec}
             loading={loading}
             breaks={breaks}
-            layouts={layouts}
+            layouts={mode === "employee" ? layouts : []}
             viable={viable}
             onSelectQty={(qty) => patch({ quantity: qty })}
-            onSelectAcross={(across) => patch({ across })}
+            onSelectAcross={
+              mode === "employee" ? (across) => patch({ across }) : undefined
+            }
             mode={mode}
             busy={busy}
             saved={saved}
@@ -173,7 +178,7 @@ export function EstimateWizard({
             type="button"
             variant="outline"
             disabled={step === 0}
-            onClick={() => onStep(Math.max(0, step - 1))}
+            onClick={() => onStep(prevWizardStep(step, mode))}
           >
             ← Back
           </Button>
@@ -181,9 +186,9 @@ export function EstimateWizard({
             type="button"
             variant="cta"
             disabled={!canContinue}
-            onClick={() => canContinue && onStep(step + 1)}
+            onClick={() => canContinue && onStep(nextWizardStep(step, mode))}
           >
-            {step === 5 ? "See Estimate →" : `Continue → ${STEP_LABELS[step + 1] ?? ""}`}
+            {`Continue → ${stepLabel(nextWizardStep(step, mode), mode)}`}
           </Button>
         </div>
       )}

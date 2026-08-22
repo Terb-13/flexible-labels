@@ -22,9 +22,11 @@ function commit(
 export function QuantityStep({
   spec,
   onChange,
+  mode = "employee",
 }: {
   spec: QuoteSpec;
   onChange: (patch: Partial<QuoteSpec>) => void;
+  mode?: "public" | "employee";
 }) {
   const breaks =
     spec.qtyBreaks && spec.qtyBreaks.length
@@ -46,8 +48,44 @@ export function QuantityStep({
         {STEP_TITLES[5]}
       </h2>
       <p className="mt-2 font-mono text-xs text-slate-500 max-w-xl">
-        {STEP_SUBTITLES[5]}
+        {mode === "public"
+          ? "Enter the quantity you want priced."
+          : STEP_SUBTITLES[5]}
       </p>
+      {mode === "public" ? (
+        <div className="mt-8 max-w-lg space-y-4">
+          <Input
+            type="number"
+            min={0}
+            step={100}
+            className="max-w-[220px] font-mono text-base font-bold"
+            value={spec.quantity || ""}
+            placeholder="quantity"
+            onChange={(e) => {
+              const quantity = Number(e.target.value) || 0;
+              onChange({ quantity, qtyBreaks: [quantity], grouped: false });
+            }}
+          />
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="font-mono text-[10px] uppercase tracking-wider text-slate-400">
+              Quick add
+            </span>
+            {QTY_PRESETS.map((p) => (
+              <button
+                key={p}
+                type="button"
+                className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 font-mono text-xs font-semibold text-slate-600 hover:border-teal"
+                onClick={() =>
+                  onChange({ quantity: p, qtyBreaks: [p], grouped: false })
+                }
+              >
+                {formatQuantity(p)}
+              </button>
+            ))}
+          </div>
+        </div>
+      ) : (
+      <>
       <div className="mt-8 max-w-lg space-y-2">
         {breaks.map((qty, i) => (
           <div key={i} className="flex items-center gap-3">
@@ -151,6 +189,8 @@ export function QuantityStep({
           </div>
         )}
       </div>
+      </>
+      )}
     </div>
   );
 }

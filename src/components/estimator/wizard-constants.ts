@@ -23,7 +23,7 @@ export const STEP_TITLES = [
 export const STEP_SUBTITLES = [
   "Select the product category to get started.",
   "Pick the substrate this job can actually run on.",
-  "Finished size in inches. Repeat and across drive press footage.",
+  "Finished size in inches. Repeat drives press footage.",
   "Upload artwork to extract colors, or configure stations manually.",
   "Capture finishes and production specs — only catalog-priced fields hit the engine.",
   "Enter up to 7 quantity breaks. Group them as a family run, or price each independently.",
@@ -92,7 +92,7 @@ export const EMPTY_WIZARD_SPEC: QuoteSpec = {
   colors: 4,
   variableData: false,
   repeatIn: 0,
-  across: 1,
+  across: 0,
   colorMethod: "process",
   frontColors: 4,
   backColors: 0,
@@ -124,6 +124,26 @@ export function canOpenStep(target: number, current: number, spec: QuoteSpec): b
   if (target === 2) return Boolean(spec.material);
   if (target <= current) return true;
   return spec.widthIn > 0 && spec.heightIn > 0;
+}
+
+export function wizardSteps(mode: "public" | "employee"): number[] {
+  return mode === "public" ? [0, 1, 2, 3, 5, 6] : [0, 1, 2, 3, 4, 5, 6];
+}
+
+export function stepLabel(step: number, mode: "public" | "employee"): string {
+  if (mode === "public" && step === 6) return "Price";
+  return STEP_LABELS[step] ?? "";
+}
+
+export function nextWizardStep(step: number, mode: "public" | "employee"): number {
+  const steps = wizardSteps(mode);
+  return steps[steps.indexOf(step) + 1] ?? step;
+}
+
+export function prevWizardStep(step: number, mode: "public" | "employee"): number {
+  const steps = wizardSteps(mode);
+  const i = steps.indexOf(step);
+  return i > 0 ? steps[i - 1] : step;
 }
 
 export function specFromProductName(name: string, base: QuoteSpec = EMPTY_WIZARD_SPEC): QuoteSpec {

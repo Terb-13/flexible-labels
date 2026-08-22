@@ -18,11 +18,9 @@ import {
   specFromProductName,
 } from "@/components/estimator/wizard-constants";
 import { PRODUCTS } from "@/lib/data/demo-data";
-import { EXAMPLE_EQUIPMENT } from "@/lib/data/example-catalog";
 import {
-  toSellPriceBreaks,
   toSellPriceBreakdown,
-  toSellPriceLayouts,
+  toSellPriceBreaks,
 } from "@/lib/pricing/sell-price";
 import type {
   Company,
@@ -47,7 +45,6 @@ export const DEFAULT_SPEC: QuoteSpec = {
   quantity: 10000,
   colors: 4,
   repeatIn: 3.5,
-  across: 2,
   qtyBreaks: [10000],
 };
 
@@ -95,9 +92,32 @@ export function useLiveEstimate(spec: QuoteSpec, companyId?: string) {
           body: JSON.stringify({ ...spec, companyId }),
         });
         const data = await res.json();
-        setPrimary((data.breakdown as QuoteBreakdown | null) ?? null);
-        setBreaks((data.breaks as QuoteBreakResult[]) ?? []);
-        setLayouts((data.layouts as QuoteLayoutOption[]) ?? []);
+        if (data.breakdown) {
+          setPrimary((data.breakdown as QuoteBreakdown | null) ?? null);
+          setBreaks((data.breaks as QuoteBreakResult[]) ?? []);
+          setLayouts((data.layouts as QuoteLayoutOption[]) ?? []);
+        } else {
+          const finalPrice =
+            typeof data.finalPrice === "number" ? data.finalPrice : null;
+          setPrimary(
+            finalPrice == null
+              ? null
+              : toSellPriceBreakdown({
+                  finalPrice,
+                  viable: data.viable !== false,
+                })
+          );
+          setBreaks(
+            ((data.breaks as { quantity: number; finalPrice: number }[]) ?? []).map(
+              (item) => ({
+                quantity: item.quantity,
+                viable: true,
+                breakdown: toSellPriceBreakdown({ finalPrice: item.finalPrice }),
+              })
+            )
+          );
+          setLayouts([]);
+        }
         setViable(data.viable !== false);
       } catch {
         setPrimary(null);
@@ -120,7 +140,7 @@ export function EstimatorWorkspace({
   initialSpec,
   initialStep,
   materials = [],
-  equipment = EXAMPLE_EQUIPMENT,
+  equipment = [],
   companies: initialCompanies = [],
   lockedCompany = null,
   loggedIn = false,
@@ -170,8 +190,6 @@ export function EstimatorWorkspace({
 
   const publicBreaks =
     mode === "public" ? toSellPriceBreaks(estimate.breaks) : estimate.breaks;
-  const publicLayouts =
-    mode === "public" ? toSellPriceLayouts(estimate.layouts) : estimate.layouts;
 
   function applySpec(next: QuoteSpec) {
     setSpec(next);
@@ -264,7 +282,7 @@ export function EstimatorWorkspace({
           onArtwork={setArtworkUrl}
           loading={loading}
           breaks={publicBreaks}
-          layouts={publicLayouts}
+          layouts={mode === "public" ? [] : estimate.layouts}
           viable={estimate.viable}
           mode={mode}
           busy={busy}

@@ -2,17 +2,15 @@
 
 import { useSearchParams } from "next/navigation";
 import { EstimatorWorkspace } from "@/components/portal/estimator-workspace";
-import type { Company, Equipment, Material } from "@/types";
+import type { Company, Material } from "@/types";
 
 export default function QuotePageClient({
   materials,
-  equipment,
   companies,
   lockedCompany,
   loggedIn,
 }: {
   materials: Material[];
-  equipment: Equipment[];
   companies: Company[];
   lockedCompany: Company | null;
   loggedIn: boolean;
@@ -32,15 +30,14 @@ export default function QuotePageClient({
           </h1>
           <p className="text-slate-600 mt-3">
             {lockedCompany
-              ? "Seven steps — product through estimate. You’ll see an estimated sell price. Type and discount come from your account, not this form."
-              : "Walk product, material, size, colors, specs, and quantity. You’ll see an estimated sell price — we’ll confirm after review."}
+              ? "You’ll see an estimated sell price. Type and discount come from your account, not this form."
+              : "Walk product, material, size, colors, and quantity. You’ll see an estimated sell price — we’ll confirm after review."}
           </p>
         </div>
         <EstimatorWorkspace
           enableCheckout
           initialProductSlug={product}
           materials={materials}
-          equipment={equipment}
           companies={companies}
           lockedCompany={lockedCompany}
           loggedIn={loggedIn}

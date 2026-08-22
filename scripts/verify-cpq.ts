@@ -16,8 +16,8 @@ import {
   viableAcrossValues,
 } from "../src/lib/pricing/engine";
 import {
+  toPublicCalculateResponse,
   toSellPriceBreakdown,
-  toSellPriceLayouts,
 } from "../src/lib/pricing/sell-price";
 import type { QuoteSpec } from "../src/types";
 
@@ -163,17 +163,22 @@ assert.equal(sell.lines.length, 0);
 assert.equal(sell.productionFeet, 0);
 assert.equal(sell.plannedPressHours, 0);
 assert.equal(sell.needsApproval, false);
-const publicLayouts = toSellPriceLayouts(
-  layouts.map((l) => ({
-    across: l.across,
-    webIn: l.webIn,
-    viable: l.viable,
-    finalPrice: l.breakdown.finalPrice,
-    perUnit: l.breakdown.finalPrice / Math.max(base.quantity, 1),
-    routeName: l.breakdown.routeName,
-  }))
+
+const publicCalc = toPublicCalculateResponse(separate);
+assert.equal(publicCalc.finalPrice, separate.primary?.finalPrice);
+assert.ok(publicCalc.breaks.every((b) => typeof b.finalPrice === "number"));
+assert.equal(JSON.stringify(publicCalc).includes("margin"), false);
+assert.equal(JSON.stringify(publicCalc).includes("routeName"), false);
+assert.equal(JSON.stringify(publicCalc).includes("webIn"), false);
+assert.equal(JSON.stringify(publicCalc).includes("hours"), false);
+
+const autoAcross = calculateQuote(
+  { ...base, across: 0 },
+  EXAMPLE_DTC_COMPANY,
+  EXAMPLE_CATALOG
 );
-assert.ok(publicLayouts.every((l) => l.routeName === "" && l.finalPrice > 0));
+assert.ok(autoAcross.finalPrice > 0);
+assert.ok((autoAcross.productionFeet ?? 0) > 0);
 
 assert.ok(!JSON.stringify(EXAMPLE_CATALOG).includes("Fortis"));
 assert.ok(!JSON.stringify(EXAMPLE_CATALOG).includes("Novi"));

@@ -1,11 +1,9 @@
-import type {
-  QuoteBreakdown,
-  QuoteBreakResult,
-  QuoteLayoutOption,
-} from "@/types";
+import type { QuoteBreakdown, QuoteBreakResult, QuoteEstimate } from "@/types";
 
 /** Price-only breakdown for customer-facing UI. Zeros internals. */
-export function toSellPriceBreakdown(breakdown: QuoteBreakdown): QuoteBreakdown {
+export function toSellPriceBreakdown(
+  breakdown: Pick<QuoteBreakdown, "finalPrice"> & { viable?: boolean }
+): QuoteBreakdown {
   return {
     materialCost: 0,
     substrateCost: 0,
@@ -41,13 +39,24 @@ export function toSellPriceBreaks(breaks: QuoteBreakResult[]): QuoteBreakResult[
   }));
 }
 
-export function toSellPriceLayouts(layouts: QuoteLayoutOption[]): QuoteLayoutOption[] {
-  return layouts.map((layout) => ({
-    across: layout.across,
-    webIn: layout.webIn,
-    viable: layout.viable,
-    finalPrice: layout.finalPrice,
-    perUnit: layout.perUnit,
-    routeName: "",
-  }));
+export type PublicCalculateResponse = {
+  viable: boolean;
+  finalPrice: number | null;
+  quantity: number;
+  breaks: { quantity: number; finalPrice: number }[];
+};
+
+/** Public / customer calculate payload — sell prices only. */
+export function toPublicCalculateResponse(
+  estimate: QuoteEstimate
+): PublicCalculateResponse {
+  return {
+    viable: estimate.viable,
+    finalPrice: estimate.primary?.finalPrice ?? null,
+    quantity: estimate.pricedQuantity,
+    breaks: estimate.breaks.map((item) => ({
+      quantity: item.quantity,
+      finalPrice: item.breakdown.finalPrice,
+    })),
+  };
 }

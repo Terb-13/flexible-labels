@@ -28,7 +28,7 @@ export function materialsForProduct(
   });
 
   const eqMats = new Set<string>();
-  for (const eq of catalog.equipment) {
+  for (const eq of catalog.equipment ?? []) {
     if (eq.active === false) continue;
     const cap = eq.capabilities ?? {};
     if (cap.products?.length && product && !cap.products.includes(product)) {
