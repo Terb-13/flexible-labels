@@ -101,10 +101,13 @@ export async function loadCatalog(): Promise<PricingCatalog> {
   const materials = (materialsRes.data as Record<string, unknown>[]).map(
     mapMaterial
   );
+  const hasSubstrate = materials.some(
+    (m) => m.kind === "substrate" && m.active !== false
+  );
 
   return {
     equipment: (equipmentRes.data as Record<string, unknown>[]).map(mapEquipment),
-    materials: materials.length ? materials : EXAMPLE_CATALOG.materials,
+    materials: hasSubstrate ? materials : EXAMPLE_CATALOG.materials,
     routes: routes.length ? routes : EXAMPLE_CATALOG.routes,
     source: "supabase",
   };

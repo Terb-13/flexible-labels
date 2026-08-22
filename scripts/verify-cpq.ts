@@ -8,6 +8,8 @@ import { clusterArtworkColors } from "../src/lib/pricing/artwork-colors";
 import {
   materialsForProduct,
   publicMaterialsByProduct,
+  publicPickerMaterials,
+  publicPickerMaterialsByProduct,
   toPublicMaterials,
 } from "../src/lib/pricing/materials";
 import {
@@ -133,6 +135,29 @@ assert.ok(
     equipment: [],
   }).some((m) => m.name === "UV Vinyl")
 );
+
+const liveShapeEmptyMaterials = {
+  ...EXAMPLE_CATALOG,
+  materials: [],
+  source: "supabase" as const,
+};
+const liveShapeNames = publicMaterialsByProduct(liveShapeEmptyMaterials);
+assert.deepEqual(publicPickerMaterialsByProduct()["Roll Labels"], [
+  "Matte BOPP",
+  "Gloss BOPP",
+  "Gloss PET",
+  "Foil Laminate",
+]);
+assert.ok(liveShapeNames["Roll Labels"].includes("Matte BOPP"));
+assert.ok(liveShapeNames["Bumper Stickers"].includes("UV Vinyl"));
+assert.ok(
+  materialsForProduct("Roll Labels", liveShapeEmptyMaterials).some(
+    (m) => m.name === "Matte BOPP"
+  )
+);
+assert.ok(toPublicMaterials([]).some((m) => m.name === "Gloss PET"));
+assert.ok(publicPickerMaterials().some((m) => m.name === "Foil Laminate"));
+assert.ok(publicPickerMaterials().every((m) => m.cost_per_sqin === 0));
 
 const redPixels = Array.from({ length: 80 }, () => ({
   r: 200,

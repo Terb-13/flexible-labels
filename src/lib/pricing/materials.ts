@@ -38,9 +38,19 @@ export function materialsForProduct(
     for (const mat of cap.materials ?? []) eqMats.add(mat);
   }
 
-  if (!eqMats.size) return byAttr.length ? byAttr : substrates;
-  const matched = byAttr.filter((m) => eqMats.has(m.name));
-  return matched.length ? matched : byAttr;
+  if (!eqMats.size) {
+    if (byAttr.length) return byAttr;
+    if (substrates.length) return substrates;
+  } else {
+    const matched = byAttr.filter((m) => eqMats.has(m.name));
+    if (matched.length) return matched;
+    if (byAttr.length) return byAttr;
+  }
+
+  // Live-shape catalogs can have equipment rows and an empty materials table.
+  // Never invent stocks — fall back to EXAMPLE substrates only.
+  if (catalog.materials === EXAMPLE_CATALOG.materials) return [];
+  return materialsForProduct(product, EXAMPLE_CATALOG);
 }
 
 function stripPublicMaterial(material: Material): Material {
