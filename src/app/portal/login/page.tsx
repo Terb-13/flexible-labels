@@ -1,6 +1,5 @@
 import { Lock } from "lucide-react";
 import { DoorLoginForm } from "@/components/auth/door-login-form";
-import { isDemoLoginAllowed } from "@/lib/supabase/config";
 
 export default async function PortalLoginPage({
   searchParams,
@@ -20,7 +19,7 @@ export default async function PortalLoginPage({
         <div className="text-sm text-slate-600 mt-1">
           Sign in to review proofs, track orders, and pay invoices.
         </div>
-        <DoorLoginForm door="customer" next={dest} allowDemo={isDemoLoginAllowed()} />
+        <DoorLoginForm door="customer" next={dest} />
         <div className="mt-4 text-xs text-slate-500">
           Use the email on your account to sign in.
         </div>

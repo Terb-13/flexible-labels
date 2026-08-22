@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { loginDemo, loginWithPassword } from "@/app/auth/actions";
+import { loginWithPassword } from "@/app/auth/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,11 +10,9 @@ import type { UserRole } from "@/types";
 export function DoorLoginForm({
   door,
   next,
-  allowDemo,
 }: {
   door: UserRole;
   next: string;
-  allowDemo: boolean;
 }) {
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -62,14 +60,6 @@ export function DoorLoginForm({
           {pending ? "Signing in…" : "Sign in"}
         </Button>
       </form>
-
-      {allowDemo && (
-        <form action={() => loginDemo(door, next)}>
-          <Button type="submit" variant="outline" className="w-full h-12">
-            Sample account — won&apos;t affect real orders.
-          </Button>
-        </form>
-      )}
     </div>
   );
 }

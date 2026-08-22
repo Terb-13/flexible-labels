@@ -1,25 +1,10 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { homePathFor, loginPathFor } from "@/lib/auth/session";
-import { isDemoLoginAllowed, isSupabaseConfigured } from "@/lib/supabase/config";
+import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/server";
 import type { UserRole } from "@/types";
-
-export async function loginDemo(role: UserRole, next?: string) {
-  if (!isDemoLoginAllowed()) {
-    redirect(loginPathFor(role));
-  }
-  const cookieStore = await cookies();
-  cookieStore.set("flg_demo_session", role, {
-    httpOnly: true,
-    sameSite: "lax",
-    path: "/",
-    maxAge: 60 * 60 * 24 * 7,
-  });
-  redirect(next || homePathFor(role));
-}
 
 export async function loginWithPassword(
   door: UserRole,
@@ -61,8 +46,6 @@ export async function loginWithPassword(
     };
   }
 
-  const cookieStore = await cookies();
-  cookieStore.delete("flg_demo_session");
   redirect(next.startsWith("/") ? next : homePathFor(door));
 }
 
@@ -75,7 +58,5 @@ export async function logout(door: UserRole = "customer") {
       // Ignore missing env during local preview.
     }
   }
-  const cookieStore = await cookies();
-  cookieStore.delete("flg_demo_session");
   redirect(loginPathFor(door));
 }

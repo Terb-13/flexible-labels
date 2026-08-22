@@ -11,9 +11,7 @@ Next.js 15 app for the Flexible Label marketing site, customer portal, and a lig
 
 Customers never see an Operations control on the customer login page, marketing nav, or portal. A customer session that hits `/operations` or `/operations/login` is sent back to `/portal` with no employee language.
 
-Production auth is **Supabase Auth + `profiles.role`**. Create a `profiles` row with `role = 'customer'` or `role = 'employee'` for each auth user.
-
-A sample-account bypass is **local only**. It never appears on Vercel production or preview. Set `NEXT_PUBLIC_ENABLE_DEMO_LOGIN=true` only on a private machine if you need it. The button reads “Sample account — won’t affect real orders.”
+Production auth is **Supabase Auth + `profiles.role`**. Create a `profiles` row with `role = 'customer'` or `role = 'employee'` for each auth user. Sign-in is email and password only.
 
 ## Estimating loop
 
@@ -78,5 +76,4 @@ npm run build
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
-NEXT_PUBLIC_ENABLE_DEMO_LOGIN=   # optional; local preview cookie in production
 ```

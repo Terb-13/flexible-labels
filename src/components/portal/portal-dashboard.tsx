@@ -10,7 +10,7 @@ import { forCompany, quoteNumberOf } from "@/lib/data/tenant";
 import { formatCurrency } from "@/lib/pricing/engine";
 import type { Company, Invoice, Order, Proof, ProofComment, SavedQuote } from "@/types";
 import type { Profile } from "@/types";
-import { logoutDemo } from "@/app/portal/actions";
+import { logoutPortal } from "@/app/portal/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/toaster";
@@ -165,7 +165,7 @@ export function PortalDashboard({
               <span className="text-slate-400">•</span>
               <span className="text-slate-500">{profile.job_title}</span>
             </div>
-            <form action={logoutDemo}>
+            <form action={logoutPortal}>
               <Button type="submit" variant="outline" size="sm">
                 Sign out
               </Button>
@@ -580,11 +580,6 @@ export function PortalDashboard({
         </div>
       )}
 
-      {profile.id === "demo-customer" && (
-        <div className="px-6 pb-4 text-xs text-slate-500">
-          Sample account — won&apos;t affect real orders.
-        </div>
-      )}
     </div>
   );
 }

@@ -1,6 +1,5 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { isDemoLoginAllowed } from "@/lib/supabase/config";
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
@@ -13,10 +12,8 @@ export async function updateSession(request: NextRequest) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   const supabaseReady = Boolean(supabaseUrl && supabaseAnonKey);
-  const rawDemo = request.cookies.get("flg_demo_session")?.value;
-  const demoRole = isDemoLoginAllowed() ? rawDemo : undefined;
 
-  let authRole: "customer" | "employee" | null = null;
+  let role: "customer" | "employee" | null = null;
 
   if (supabaseReady) {
     const supabase = createServerClient(supabaseUrl!, supabaseAnonKey!, {
@@ -53,12 +50,10 @@ export async function updateSession(request: NextRequest) {
         .eq("id", user.id)
         .single();
       if (profile?.role === "customer" || profile?.role === "employee") {
-        authRole = profile.role;
+        role = profile.role;
       }
     }
   }
-
-  const role = authRole ?? (demoRole === "customer" || demoRole === "employee" ? demoRole : null);
 
   if (isOpsApp) {
     if (role === "employee") return supabaseResponse;
