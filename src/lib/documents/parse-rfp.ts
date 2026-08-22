@@ -57,7 +57,8 @@ export function parseSpecText(text: string): ParsedDocumentSpec {
   const heightIn = dimMatch ? Number(dimMatch[2]) : undefined;
   if (!widthIn || !heightIn) missingFields.push("dimensions");
 
-  const product = matchProduct(text) ?? "Roll Labels";
+  const product = matchProduct(text);
+  if (!product) missingFields.push("product");
   const material = matchMaterial(text);
   if (!material) missingFields.push("material");
 

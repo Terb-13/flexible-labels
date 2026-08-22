@@ -138,6 +138,10 @@ UV Vinyl 4 x 2, 5000 qty, 2 colors`);
 assert.equal(rfp[0].parsed.product, "Bumper Stickers");
 assert.equal(rfp[0].ready, true);
 
+const incomplete = parseRfpDocument("Matte BOPP 2.25 x 3.5, 10000");
+assert.equal(incomplete[0].ready, false);
+assert.ok(incomplete[0].missing.includes("Product"));
+
 const acrosses = viableAcrossValues(base, EXAMPLE_CATALOG);
 assert.ok(acrosses.includes(1));
 assert.ok(acrosses.includes(2));
