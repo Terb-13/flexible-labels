@@ -31,6 +31,7 @@ import type {
   Company,
   CompanyType,
   DelayReason,
+  Equipment,
   JobStep,
   PlantShift,
   QuoteBreakdown,
