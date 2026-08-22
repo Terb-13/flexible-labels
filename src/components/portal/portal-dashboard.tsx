@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import {
   DEMO_COMPANY,
   DEMO_HISTORY,
@@ -9,32 +9,26 @@ import {
   DEMO_ORDERS,
   DEMO_PROOF,
   DEMO_PROOF_COMMENTS,
-  DEMO_SCHEDULE_JOBS,
-  GANTT_DAYS,
   ORDER_TIMELINE_STAGES,
 } from "@/lib/data/demo-data";
 import { formatCurrency } from "@/lib/pricing/engine";
-import type { Invoice, Order, ProofComment, ScheduleJob } from "@/types";
+import type { Invoice, Order, ProofComment } from "@/types";
 import type { Profile } from "@/types";
 import { logoutDemo } from "@/app/portal/actions";
-import { GanttScheduler } from "@/components/portal/gantt-scheduler";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
 import { Check, Upload } from "lucide-react";
 
-type Tab = "proofing" | "tracking" | "payments" | "history" | "estimator";
+type Tab = "proofing" | "tracking" | "payments" | "history";
 
 export function PortalDashboard({
   profile,
-  isEmployee,
 }: {
   profile: Profile;
-  isEmployee: boolean;
 }) {
   const { toast } = useToast();
-  const [viewMode, setViewMode] = useState<"customer" | "business">("customer");
   const [tab, setTab] = useState<Tab>("proofing");
   const [proofStatus, setProofStatus] = useState(DEMO_PROOF.status);
   const [proofImage, setProofImage] = useState(DEMO_PROOF.image_url);
@@ -44,13 +38,7 @@ export function PortalDashboard({
   const [invoices, setInvoices] = useState(DEMO_INVOICES);
   const [history] = useState(DEMO_HISTORY);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-  const [jobs, setJobs] = useState<ScheduleJob[]>(DEMO_SCHEDULE_JOBS);
   const [payModal, setPayModal] = useState<Invoice | null>(null);
-
-  const activeTabContent = useMemo(() => {
-    if (viewMode === "business") return null;
-    return tab;
-  }, [viewMode, tab]);
 
   function addComment() {
     if (!commentInput.trim()) return;
@@ -168,50 +156,9 @@ export function PortalDashboard({
           </div>
         </div>
 
-        {isEmployee && (
-          <div className="mt-3 flex items-center justify-between border-t pt-3">
-            <div>
-              <span className="text-xs font-semibold text-slate-500 mr-2">
-                VIEW MODE
-              </span>
-              <div className="inline-flex rounded-2xl border p-0.5 bg-white text-sm">
-                <button
-                  type="button"
-                  onClick={() => setViewMode("customer")}
-                  className={cn(
-                    "px-4 py-1 rounded-[14px] text-xs font-semibold",
-                    viewMode === "customer"
-                      ? "view-toggle-active"
-                      : "text-slate-600"
-                  )}
-                >
-                  Customer View
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setViewMode("business")}
-                  className={cn(
-                    "px-4 py-1 rounded-[14px] text-xs font-semibold",
-                    viewMode === "business"
-                      ? "view-toggle-active"
-                      : "text-slate-600"
-                  )}
-                >
-                  Business Operations
-                </button>
-              </div>
-            </div>
-            {viewMode === "customer" && (
-              <div className="text-xs px-3 py-1 bg-amber-50 text-amber-700 rounded-full hidden md:block">
-                Customers only see simplified status. This is your internal tool.
-              </div>
-            )}
-          </div>
-        )}
       </div>
 
-      {viewMode === "customer" && (
-        <>
+      <>
           <div className="px-2 pt-2 border-b bg-white flex flex-wrap gap-x-1">
             {(
               [
@@ -243,7 +190,7 @@ export function PortalDashboard({
             </Link>
           </div>
 
-          {activeTabContent === "proofing" && (
+          {tab === "proofing" && (
             <div className="p-6 md:p-8">
               <div className="flex items-center justify-between mb-5">
                 <div>
@@ -352,7 +299,7 @@ export function PortalDashboard({
             </div>
           )}
 
-          {activeTabContent === "tracking" && (
+          {tab === "tracking" && (
             <div className="p-6 md:p-8">
               <div className="text-xs font-semibold mb-2 tracking-wider text-slate-500">
                 YOUR ACTIVE & RECENT ORDERS
@@ -445,7 +392,7 @@ export function PortalDashboard({
             </div>
           )}
 
-          {activeTabContent === "payments" && (
+          {tab === "payments" && (
             <div className="p-6 md:p-8">
               <div className="flex justify-between items-center mb-4">
                 <div className="text-sm font-semibold">Open & Recent Invoices</div>
@@ -509,7 +456,7 @@ export function PortalDashboard({
             </div>
           )}
 
-          {activeTabContent === "history" && (
+          {tab === "history" && (
             <div className="p-6 md:p-8">
               <div className="text-xs font-semibold mb-3 tracking-wider text-slate-500">
                 COMPLETED ORDERS — LAST 12 MONTHS
@@ -549,13 +496,6 @@ export function PortalDashboard({
             </div>
           )}
         </>
-      )}
-
-      {viewMode === "business" && isEmployee && (
-        <div className="p-6 md:p-8 border-t">
-          <BusinessOpsPanel jobs={jobs} setJobs={setJobs} />
-        </div>
-      )}
 
       {payModal && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] p-4">
@@ -591,62 +531,5 @@ export function PortalDashboard({
         Fully interactive demo. Changes persist during your session.
       </div>
     </div>
-  );
-}
-
-function BusinessOpsPanel({
-  jobs,
-  setJobs,
-}: {
-  jobs: ScheduleJob[];
-  setJobs: React.Dispatch<React.SetStateAction<ScheduleJob[]>>;
-}) {
-  const { toast } = useToast();
-
-  return (
-    <>
-      <div className="mb-6">
-        <div className="flex items-center justify-between mb-3">
-          <div>
-            <span className="font-semibold text-lg">Internal Manufacturing Operations</span>
-            <span className="ml-3 px-2.5 py-px text-xs font-medium bg-amber-100 text-amber-700 rounded">
-              FOR FLG TEAM ONLY
-            </span>
-          </div>
-          <Button onClick={() => toast("Schedule re-optimized with AI.", true)}>
-            Re-optimize with AI
-          </Button>
-        </div>
-        <div className="text-xs text-amber-700 mb-4">
-          Internal operations view. Customers only see simplified status and ship dates.
-        </div>
-        <h4 className="text-sm font-semibold text-slate-700 mb-2">
-          Acme Brands — Account Dashboard
-        </h4>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-          {[
-            ["YTD ORDER VOLUME", "$142,850", "+18% vs last year"],
-            ["ON-TIME DELIVERY", "96%", "Above target (92%)"],
-            ["OPEN INVOICES", "$2,780", "2 pending • 1 overdue"],
-            ["ACTIVE ORDERS", "8", "5 in production"],
-            ["AVG LEAD TIME", "6.2 days", "-0.8 days vs prior period"],
-          ].map(([label, value, sub]) => (
-            <div key={label} className="bg-white border border-slate-200 rounded-2xl p-4">
-              <div className="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">
-                {label}
-              </div>
-              <div className="text-2xl font-semibold text-navy mt-1">{value}</div>
-              <div className="text-xs text-emerald-600 mt-0.5">{sub}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-      <GanttScheduler jobs={jobs} days={GANTT_DAYS} onJobsChange={setJobs} />
-      <div className="mt-4 flex gap-3">
-        <Button asChild variant="outline">
-          <Link href="/operations">Open full operations workspace →</Link>
-        </Button>
-      </div>
-    </>
   );
 }

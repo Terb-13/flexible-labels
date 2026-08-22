@@ -1,8 +1,11 @@
 import Link from "next/link";
 import { EstimatorWorkspace } from "@/components/portal/estimator-workspace";
 import { Button } from "@/components/ui/button";
+import { loadCatalog } from "@/lib/pricing/catalog";
 
-export default function PortalEstimatorPage() {
+export default async function PortalEstimatorPage() {
+  const catalog = await loadCatalog();
+
   return (
     <section className="pt-8 pb-20 px-5 md:px-8">
       <div className="max-w-screen-xl mx-auto">
@@ -12,14 +15,15 @@ export default function PortalEstimatorPage() {
               Account Estimator
             </h1>
             <p className="text-slate-600 mt-1">
-              Saved quotes and reorder specs for your account team.
+              Product attributes only. Price comes from the plant catalog and your
+              company record.
             </p>
           </div>
           <Button asChild variant="cta">
             <Link href="/quote">Open public quote & checkout →</Link>
           </Button>
         </div>
-        <EstimatorWorkspace enableCheckout />
+        <EstimatorWorkspace enableCheckout materials={catalog.materials} />
       </div>
     </section>
   );
