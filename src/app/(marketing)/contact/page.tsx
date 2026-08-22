@@ -47,11 +47,11 @@ export default function ContactPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <Label>YOUR NAME</Label>
-                    <Input required defaultValue="Taylor Kim" className="mt-1" />
+                    <Input required placeholder="Your name" className="mt-1" />
                   </div>
                   <div>
                     <Label>COMPANY</Label>
-                    <Input required className="mt-1" />
+                    <Input required placeholder="Company name" className="mt-1" />
                   </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -60,13 +60,13 @@ export default function ContactPage() {
                     <Input
                       type="email"
                       required
-                      defaultValue="taylor@acmebrands.co"
+                      placeholder="you@company.com"
                       className="mt-1"
                     />
                   </div>
                   <div>
                     <Label>PHONE</Label>
-                    <Input type="tel" defaultValue="(615) 555-0174" className="mt-1" />
+                    <Input type="tel" placeholder="Phone number" className="mt-1" />
                   </div>
                 </div>
                 <div>
@@ -74,7 +74,7 @@ export default function ContactPage() {
                   <Textarea
                     required
                     rows={4}
-                    defaultValue='Need 18,000 matte BOPP roll labels for refrigerated beverage. 2.25" x 3.5". Need samples by March 18.'
+                    placeholder="Product, size, quantity, and any timing"
                     className="mt-1"
                   />
                 </div>
