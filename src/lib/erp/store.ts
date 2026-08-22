@@ -134,12 +134,13 @@ export async function listQuotes(): Promise<SavedQuote[]> {
   if (!client) return localListQuotes().map(hydrateQuote);
 
   let data: unknown[] | null = null;
-  let { data: firstData, error } = await client
+  const { data: firstData, error: firstError } = await client
     .from("quotes")
     .select("id, company_id, spec, breakdown, status, needs_approval, order_id, created_at, qty_breaks, grouped")
     .order("created_at", { ascending: false })
     .limit(50);
   data = firstData;
+  let error = firstError;
 
   if (error && /qty_breaks|grouped/.test(error.message ?? "")) {
     const retry = await client
@@ -201,7 +202,7 @@ export async function saveQuote(input: {
   };
 
   let data: unknown = null;
-  let { data: firstRow, error } = await client
+  const { data: firstRow, error: firstInsertError } = await client
     .from("quotes")
     .insert({
       ...base,
@@ -211,6 +212,7 @@ export async function saveQuote(input: {
     .select("id, company_id, spec, breakdown, status, needs_approval, order_id, created_at, qty_breaks, grouped")
     .single();
   data = firstRow;
+  let error = firstInsertError;
 
   if (error && /qty_breaks|grouped/.test(error.message ?? "")) {
     const retry = await client
