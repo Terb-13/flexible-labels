@@ -68,6 +68,7 @@ export function useLiveEstimate(spec: QuoteSpec, companyId?: string) {
   const [layouts, setLayouts] = useState<QuoteLayoutOption[]>([]);
   const [viable, setViable] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [pickedAcross, setPickedAcross] = useState(0);
 
   const ready =
     Boolean(spec.product) &&
@@ -81,6 +82,7 @@ export function useLiveEstimate(spec: QuoteSpec, companyId?: string) {
       setBreaks([]);
       setPrimary(null);
       setLayouts([]);
+      setPickedAcross(0);
       return;
     }
     const handle = window.setTimeout(async () => {
@@ -119,6 +121,14 @@ export function useLiveEstimate(spec: QuoteSpec, companyId?: string) {
           setLayouts([]);
         }
         setViable(data.viable !== false);
+        const picked =
+          typeof (data.spec as { across?: number } | undefined)?.across ===
+          "number"
+            ? (data.spec as { across: number }).across
+            : typeof data.across === "number"
+              ? data.across
+              : 0;
+        setPickedAcross(picked > 0 ? picked : 0);
       } catch {
         setPrimary(null);
         setBreaks([]);
@@ -131,7 +141,7 @@ export function useLiveEstimate(spec: QuoteSpec, companyId?: string) {
     return () => window.clearTimeout(handle);
   }, [spec, companyId, ready]);
 
-  return { estimate: { primary, breaks, layouts, viable }, loading };
+  return { estimate: { primary, breaks, layouts, viable }, loading, pickedAcross };
 }
 
 export function EstimatorWorkspace({
@@ -180,7 +190,20 @@ export function EstimatorWorkspace({
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [busy, setBusy] = useState<string | null>(null);
   const [saved, setSaved] = useState<SavedQuote | null>(null);
-  const { estimate, loading } = useLiveEstimate(spec, companyId || undefined);
+  const { estimate, loading, pickedAcross } = useLiveEstimate(
+    spec,
+    companyId || undefined
+  );
+
+  useEffect(() => {
+    if (pickedAcross > 0 && spec.across !== pickedAcross) {
+      setSpec((current) =>
+        current.across === pickedAcross
+          ? current
+          : { ...current, across: pickedAcross }
+      );
+    }
+  }, [pickedAcross, spec.across]);
 
   const company = useMemo(
     () => companies.find((c) => c.id === companyId) ?? lockedCompany,

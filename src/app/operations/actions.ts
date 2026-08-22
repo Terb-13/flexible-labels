@@ -12,7 +12,11 @@ import {
   saveQuote,
 } from "@/lib/erp/store";
 import { loadCatalog, loadCompany } from "@/lib/pricing/catalog";
-import { calculateQuote, calculateQuoteBreaks } from "@/lib/pricing/engine";
+import {
+  calculateQuote,
+  calculateQuoteBreaks,
+  withAutoAcross,
+} from "@/lib/pricing/engine";
 import type { ClockActivity, CompanyType, QuoteSpec } from "@/types";
 
 async function requireEmployee() {
@@ -51,6 +55,7 @@ export async function saveQuoteAction(input: {
   const breakdown = estimate.primary ?? calculateQuote(input.spec, company, catalog);
   const spec = {
     ...input.spec,
+    ...withAutoAcross(input.spec, company, catalog),
     quantity: estimate.pricedQuantity || input.spec.quantity,
     qtyBreaks: estimate.quantities,
     grouped: estimate.grouped,

@@ -21,6 +21,7 @@ import {
   stationCount,
   validQtyBreaks,
   viableAcrossValues,
+  withAutoAcross,
 } from "../src/lib/pricing/engine";
 import {
   toPublicCalculateResponse,
@@ -242,6 +243,13 @@ const autoAcross = calculateQuote(
 );
 assert.ok(autoAcross.finalPrice > 0);
 assert.ok((autoAcross.productionFeet ?? 0) > 0);
+const resolvedAcross = withAutoAcross(
+  { ...base, across: 0 },
+  EXAMPLE_DTC_COMPANY,
+  EXAMPLE_CATALOG
+);
+assert.ok(resolvedAcross.across > 0);
+assert.ok(resolvedAcross.repeatIn > 0);
 
 assert.ok(!JSON.stringify(EXAMPLE_CATALOG).includes("Fortis"));
 assert.ok(!JSON.stringify(EXAMPLE_CATALOG).includes("Novi"));

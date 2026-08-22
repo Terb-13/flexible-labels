@@ -22,7 +22,7 @@ import {
 import { assertCanClockIn, ClockError, clockHours } from "@/lib/erp/clocks";
 import { scheduleJobSteps, snapToShift } from "@/lib/erp/shifts";
 import { loadCatalog, loadCompanies, loadCompany, mapCompany } from "@/lib/pricing/catalog";
-import { calculateQuote, normalizeSpec } from "@/lib/pricing/engine";
+import { calculateQuote, withAutoAcross } from "@/lib/pricing/engine";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/server";
@@ -424,11 +424,11 @@ export async function createJobFromQuote(quoteId: string): Promise<ScheduleJob> 
   const already = existingJobs.find((j) => j.quote_id === quoteId);
   if (already) return already;
 
-  const spec = normalizeSpec(quote.spec);
+  const company = (await loadCompany(quote.company_id)) ?? EXAMPLE_COMPANIES[0];
+  const spec = withAutoAcross(quote.spec, company, catalog);
   if (!(spec.across > 0) || !(spec.repeatIn > 0)) {
     throw new Error("Repeat (in) and across are required before writing a press job");
   }
-  const company = (await loadCompany(quote.company_id)) ?? EXAMPLE_COMPANIES[0];
   const breakdown = calculateQuote(spec, company, catalog);
 
   const shifts = await listPlantShifts();

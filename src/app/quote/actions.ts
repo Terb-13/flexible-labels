@@ -3,7 +3,11 @@
 import { getAppSession } from "@/lib/auth/session";
 import { createCompany, saveQuote } from "@/lib/erp/store";
 import { defaultDtcCompany, loadCatalog, loadCompany } from "@/lib/pricing/catalog";
-import { calculateQuote, calculateQuoteBreaks } from "@/lib/pricing/engine";
+import {
+  calculateQuote,
+  calculateQuoteBreaks,
+  withAutoAcross,
+} from "@/lib/pricing/engine";
 import type { CompanyType, QuoteSpec } from "@/types";
 
 export async function addPublicCompanyAction(input: {
@@ -29,6 +33,7 @@ export async function savePublicQuoteAction(input: {
   const breakdown = estimate.primary ?? calculateQuote(input.spec, company, catalog);
   const spec = {
     ...input.spec,
+    ...withAutoAcross(input.spec, company, catalog),
     quantity: estimate.pricedQuantity || input.spec.quantity,
     qtyBreaks: estimate.quantities,
     grouped: estimate.grouped,
