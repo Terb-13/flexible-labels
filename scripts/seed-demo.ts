@@ -34,8 +34,17 @@ function loadLocalEnv() {
   }
 }
 
+type SeedClient = {
+  from: (table: string) => {
+    upsert: (
+      rows: object[],
+      options: { onConflict: string }
+    ) => Promise<{ error: { message: string } | null }>;
+  };
+};
+
 async function upsert(
-  client: ReturnType<typeof createClient>,
+  client: SeedClient,
   table: string,
   rows: readonly object[]
 ) {
@@ -63,7 +72,7 @@ async function main() {
 
   const client = createClient(url, serviceKey, {
     auth: { persistSession: false, autoRefreshToken: false },
-  });
+  }) as unknown as SeedClient;
 
   await upsert(client, "companies", SEED_COMPANIES);
   await upsert(client, "equipment", SEED_EQUIPMENT);
