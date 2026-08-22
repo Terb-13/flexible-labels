@@ -22,7 +22,7 @@ export const STEP_TITLES = [
 
 export const STEP_SUBTITLES = [
   "Select the product category to get started.",
-  "Pick the substrate this job can actually run on.",
+  "Pick a material for this product.",
   "Finished size in inches. Repeat drives press footage.",
   "Upload artwork to extract colors, or configure stations manually.",
   "Capture finishes and production specs — only catalog-priced fields hit the engine.",

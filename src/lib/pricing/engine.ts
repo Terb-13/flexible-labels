@@ -209,6 +209,20 @@ function stepHours(equipment: Equipment, spec: QuoteSpec): {
  * Cost-plus from catalog lookups + the company’s type/margin/discount.
  * Catalog rates must be treated as EXAMPLE unless replaced in Supabase.
  */
+/** Engine-chosen across. Always re-picks — a stale client value is not a lock. */
+export function withAutoAcross(
+  rawSpec: QuoteSpec,
+  company: Pick<
+    Company,
+    "margin_percent" | "target_margin_percent" | "is_reseller" | "discount_percent"
+  >,
+  catalog: PricingCatalog
+): QuoteSpec {
+  const spec = normalizeSpec({ ...rawSpec, across: 0 });
+  const picked = calculateLayouts({ ...spec, across: 1 }, company, catalog)[0];
+  return { ...spec, across: picked?.across ?? 1 };
+}
+
 export function calculateQuote(
   rawSpec: QuoteSpec,
   company: Pick<
@@ -219,8 +233,7 @@ export function calculateQuote(
 ): QuoteBreakdown {
   let spec = normalizeSpec(rawSpec);
   if (!(spec.across > 0)) {
-    const picked = calculateLayouts({ ...spec, across: 1 }, company, catalog)[0];
-    spec = { ...spec, across: picked?.across ?? 1 };
+    spec = withAutoAcross(spec, company, catalog);
   }
   const route = matchRoute(spec, catalog.routes);
   const orderedSteps = [...(route?.steps ?? [])].sort(

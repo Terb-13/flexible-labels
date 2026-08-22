@@ -4,18 +4,18 @@ import { defaultDtcCompany, loadCatalog, loadCompany } from "@/lib/pricing/catal
 import {
   calculateLayouts,
   calculateQuoteBreaks,
-  normalizeSpec,
+  withAutoAcross,
 } from "@/lib/pricing/engine";
 import { toPublicCalculateResponse } from "@/lib/pricing/sell-price";
 import type { QuoteSpec } from "@/types";
 
 export async function POST(request: Request) {
   const body = (await request.json()) as QuoteSpec & { companyId?: string };
-  const spec = normalizeSpec(body);
   const catalog = await loadCatalog();
   const company = body.companyId
     ? ((await loadCompany(body.companyId)) ?? (await defaultDtcCompany()))
     : await defaultDtcCompany();
+  const spec = withAutoAcross(body, company, catalog);
 
   const estimate = calculateQuoteBreaks(spec, company, catalog);
   const session = await getAppSession();

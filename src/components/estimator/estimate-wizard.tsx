@@ -23,7 +23,6 @@ import type {
   Material,
   PricingCatalog,
   QuoteBreakResult,
-  QuoteLayoutOption,
   QuoteSpec,
   SavedQuote,
 } from "@/types";
@@ -41,7 +40,6 @@ export function EstimateWizard({
   onArtwork,
   loading,
   breaks,
-  layouts,
   viable,
   mode,
   busy,
@@ -64,7 +62,6 @@ export function EstimateWizard({
   onArtwork: (url: string | null) => void;
   loading: boolean;
   breaks: QuoteBreakResult[];
-  layouts: QuoteLayoutOption[];
   viable: boolean;
   mode: "public" | "employee";
   busy?: string | null;
@@ -158,6 +155,7 @@ export function EstimateWizard({
             artworkUrl={artworkUrl}
             onChange={patch}
             onArtwork={onArtwork}
+            mode={mode}
           />
         )}
         {step === 4 && <SpecsStep spec={spec} onChange={patch} mode={mode} />}
@@ -167,12 +165,8 @@ export function EstimateWizard({
             spec={spec}
             loading={loading}
             breaks={breaks}
-            layouts={mode === "employee" ? layouts : []}
             viable={viable}
             onSelectQty={(qty) => patch({ quantity: qty })}
-            onSelectAcross={
-              mode === "employee" ? (across) => patch({ across }) : undefined
-            }
             mode={mode}
             busy={busy}
             saved={saved}
