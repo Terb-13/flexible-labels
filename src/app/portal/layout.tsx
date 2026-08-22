@@ -1,12 +1,16 @@
 import Link from "next/link";
 import { LogoMark } from "@/components/layout/logo-mark";
 import { ToastProvider } from "@/components/ui/toaster";
+import { getAppSession } from "@/lib/auth/session";
 
-export default function PortalLayout({
+export default async function PortalLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await getAppSession();
+  const showEstimator = session.role === "customer";
+
   return (
     <ToastProvider>
       <div className="min-h-screen bg-slate-50">
@@ -19,9 +23,11 @@ export default function PortalLayout({
               </span>
             </Link>
             <div className="flex items-center gap-3 text-sm">
-              <Link href="/portal/estimator" className="text-slate-600 hover:text-teal">
-                Estimator
-              </Link>
+              {showEstimator && (
+                <Link href="/portal/estimator" className="text-slate-600 hover:text-teal">
+                  Estimator
+                </Link>
+              )}
               <Link href="/" className="text-slate-600 hover:text-teal">
                 Back to site
               </Link>
