@@ -1,13 +1,21 @@
 import { redirect } from "next/navigation";
 import { PortalDashboard } from "@/components/portal/portal-dashboard";
 import { getAppSession } from "@/lib/auth/session";
+import { loadPortalAccount } from "@/lib/erp/portal-account";
 
-export default async function PortalPage() {
+export default async function PortalPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ quote?: string }>;
+}) {
   const session = await getAppSession();
+  const { quote } = await searchParams;
 
   if (!session.role) {
     redirect("/portal/login");
   }
+
+  const account = await loadPortalAccount(session.profile?.company_id ?? null);
 
   return (
     <section className="pt-8 pb-20 px-5 md:px-8">
@@ -24,7 +32,16 @@ export default async function PortalPage() {
             </p>
           </div>
         </div>
-        <PortalDashboard profile={session.profile!} />
+        <PortalDashboard
+          profile={session.profile!}
+          company={account.company}
+          orders={account.orders}
+          history={account.history}
+          invoices={account.invoices}
+          proof={account.proof}
+          quotes={account.quotes}
+          highlightQuote={quote ?? null}
+        />
       </div>
     </section>
   );

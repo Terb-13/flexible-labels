@@ -115,7 +115,7 @@ export function GanttScheduler({
         ))}
       </div>
       <div className="text-xs text-slate-500 mt-2 px-4 pb-3">
-        Bars are job_steps on equipment. Drag a bar to change schedule_jobs.started_at.
+        Drag a bar to reschedule on the calendar.
       </div>
     </div>
   );

@@ -26,6 +26,15 @@ export const DEMO_RESELLER: Company = {
   discount_percent: 5,
 };
 
+/** Other tenants — never shown in the Acme portal. */
+const APEX_ID = "00000000-0000-4000-8000-000000000011";
+const HORIZON_ID = "00000000-0000-4000-8000-000000000012";
+const DELTA_ID = "00000000-0000-4000-8000-000000000013";
+const PINNACLE_ID = "00000000-0000-4000-8000-000000000014";
+const METRO_ID = "00000000-0000-4000-8000-000000000015";
+const SUMMIT_ID = "00000000-0000-4000-8000-000000000016";
+const TITAN_ID = "00000000-0000-4000-8000-000000000017";
+
 export const PRODUCTS: Product[] = [
   {
     id: "1",
@@ -130,7 +139,7 @@ export const DEMO_ORDERS: Order[] = [
     id: "o1",
     order_number: "FLG-48302",
     company_id: DEMO_COMPANY.id,
-    description: "Apex Brewing 16oz Rolls",
+    description: "Acme Classic Sparkling 12oz",
     quantity: 62500,
     status: "On Press",
     ship_by: "Mar 10",
@@ -141,7 +150,7 @@ export const DEMO_ORDERS: Order[] = [
   {
     id: "o2",
     order_number: "FLG-48102",
-    company_id: DEMO_COMPANY.id,
+    company_id: HORIZON_ID,
     description: "Horizon Foods Jar Labels",
     quantity: 41000,
     status: "Printing",
@@ -165,7 +174,7 @@ export const DEMO_ORDERS: Order[] = [
   {
     id: "o4",
     order_number: "FLG-47851",
-    company_id: DEMO_COMPANY.id,
+    company_id: DELTA_ID,
     description: "Delta ChemGuard Safety",
     quantity: 27200,
     status: "Finishing Line",
@@ -177,7 +186,7 @@ export const DEMO_ORDERS: Order[] = [
   {
     id: "o5",
     order_number: "FLG-47988",
-    company_id: DEMO_COMPANY.id,
+    company_id: PINNACLE_ID,
     description: "Pinnacle Promo Die-Cuts",
     quantity: 8200,
     status: "Proof Approved",
@@ -189,7 +198,7 @@ export const DEMO_ORDERS: Order[] = [
   {
     id: "o6",
     order_number: "FLG-48341",
-    company_id: DEMO_COMPANY.id,
+    company_id: METRO_ID,
     description: "Metro Fleet UV Bumpers",
     quantity: 9800,
     status: "Finishing Line",
@@ -201,7 +210,7 @@ export const DEMO_ORDERS: Order[] = [
   {
     id: "o7",
     order_number: "FLG-48407",
-    company_id: DEMO_COMPANY.id,
+    company_id: SUMMIT_ID,
     description: "Summit Pharma Tamper Vials",
     quantity: 18400,
     status: "Rewind / Inspection",
@@ -213,7 +222,7 @@ export const DEMO_ORDERS: Order[] = [
   {
     id: "o8",
     order_number: "FLG-48422",
-    company_id: DEMO_COMPANY.id,
+    company_id: TITAN_ID,
     description: "Titan Branded Tape 3in",
     quantity: 14500,
     status: "Prepress",
@@ -228,7 +237,7 @@ export const DEMO_HISTORY: Order[] = [
   {
     id: "h1",
     order_number: "FLG-47721",
-    company_id: DEMO_COMPANY.id,
+    company_id: APEX_ID,
     description: "Apex Brewing 16oz Roll Labels - Matte BOPP",
     quantity: 62000,
     status: "Completed",
@@ -240,7 +249,7 @@ export const DEMO_HISTORY: Order[] = [
   {
     id: "h2",
     order_number: "FLG-47588",
-    company_id: DEMO_COMPANY.id,
+    company_id: PINNACLE_ID,
     description: "Pinnacle Retail Die-Cut Stickers - Matte Vinyl",
     quantity: 14500,
     status: "Completed",
@@ -252,7 +261,7 @@ export const DEMO_HISTORY: Order[] = [
   {
     id: "h3",
     order_number: "FLG-47402",
-    company_id: DEMO_COMPANY.id,
+    company_id: METRO_ID,
     description: "Metro City Fleet Bumper Stickers - UV Vinyl",
     quantity: 8200,
     status: "Completed",
@@ -264,7 +273,7 @@ export const DEMO_HISTORY: Order[] = [
   {
     id: "h4",
     order_number: "FLG-47266",
-    company_id: DEMO_COMPANY.id,
+    company_id: HORIZON_ID,
     description: "Horizon Foods 4oz Jar Labels - Gloss BOPP",
     quantity: 39000,
     status: "Completed",
@@ -276,7 +285,7 @@ export const DEMO_HISTORY: Order[] = [
   {
     id: "h5",
     order_number: "FLG-47119",
-    company_id: DEMO_COMPANY.id,
+    company_id: SUMMIT_ID,
     description: "Summit Pharma Tamper-Evident Vials",
     quantity: 22500,
     status: "Completed",
@@ -288,7 +297,7 @@ export const DEMO_HISTORY: Order[] = [
   {
     id: "h6",
     order_number: "FLG-46981",
-    company_id: DEMO_COMPANY.id,
+    company_id: DELTA_ID,
     description: "Delta ChemGuard Chemical Safety Rolls",
     quantity: 31000,
     status: "Completed",
@@ -300,7 +309,7 @@ export const DEMO_HISTORY: Order[] = [
   {
     id: "h7",
     order_number: "FLG-46840",
-    company_id: DEMO_COMPANY.id,
+    company_id: TITAN_ID,
     description: "Titan Logistics 3in Branded Packaging Tape",
     quantity: 12800,
     status: "Completed",
@@ -449,7 +458,7 @@ export function getBotResponse(message: string): string {
       ? "Matte BOPP + permanent acrylic adhesive is ideal for refrigerated beverages."
       : "BOPP for most CPG, polyester for durability and heat, vinyl for outdoor. Give me environment and quantity.";
   if (m.includes("quote") || m.includes("price") || m.includes("cost"))
-    return "Typical 10k 2x3 matte BOPP rolls run $1,180–$1,360. Bumper stickers and magnets are priced by square inch. I can give you a precise number — what are the specs?";
+    return "Share dimensions, quantity, material, and application and I can help you start a quote.";
   if (m.includes("lead") || m.includes("turn"))
     return "Standard is 5–7 business days from approved proof. Rush (2–3 days) is available.";
   if (m.includes("status") || m.includes("48219"))

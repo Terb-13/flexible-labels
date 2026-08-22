@@ -18,11 +18,11 @@ export default async function OperationsLoginPage({
         </div>
         <div className="font-semibold text-xl">Operations</div>
         <div className="text-sm text-slate-600 mt-1">
-          Employee sign-in for estimating, job tickets, and the plant calendar.
+          Sign in to estimate jobs and view the plant calendar.
         </div>
         <DoorLoginForm door="employee" next={dest} allowDemo={isDemoLoginAllowed()} />
         <div className="mt-4 text-xs text-slate-500">
-          Production sign-in uses Supabase Auth and profiles.role = employee.
+          For the plant team.
         </div>
       </div>
     </section>

@@ -5,8 +5,9 @@ export function isSupabaseConfigured(): boolean {
   );
 }
 
+/** Sample-account bypass. Never on Vercel (production or preview). Local only, or explicit flag. */
 export function isDemoLoginAllowed(): boolean {
-  if (!isSupabaseConfigured()) return true;
   if (process.env.NEXT_PUBLIC_ENABLE_DEMO_LOGIN === "true") return true;
-  return process.env.NODE_ENV !== "production";
+  if (process.env.VERCEL) return false;
+  return !isSupabaseConfigured();
 }

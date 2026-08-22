@@ -1,12 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { FileUp, Sparkles } from "lucide-react";
+import { addPublicCompanyAction, savePublicQuoteAction } from "@/app/quote/actions";
+import { CustomerPicker } from "@/components/estimator/customer-picker";
 import { PRODUCTS } from "@/lib/data/demo-data";
 import { PRODUCT_OPTIONS, TYPE_OPTIONS } from "@/lib/data/example-catalog";
 import { formatCurrency } from "@/lib/pricing/engine";
-import type { Material, ParsedDocumentSpec, QuoteBreakdown, QuoteSpec } from "@/types";
+import type {
+  Company,
+  Material,
+  ParsedDocumentSpec,
+  QuoteBreakdown,
+  QuoteSpec,
+} from "@/types";
 import { QuoteCheckout } from "@/components/quote/quote-checkout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -180,12 +188,21 @@ export function EstimatorWorkspace({
   enableCheckout = false,
   initialProductSlug = null,
   materials = [],
+  companies: initialCompanies = [],
+  lockedCompany = null,
+  loggedIn = false,
 }: {
   enableCheckout?: boolean;
   initialProductSlug?: string | null;
   materials?: Material[];
+  companies?: Company[];
+  lockedCompany?: Company | null;
+  loggedIn?: boolean;
 }) {
   const { toast } = useToast();
+  const router = useRouter();
+  const [companies, setCompanies] = useState(initialCompanies);
+  const [companyId, setCompanyId] = useState(lockedCompany?.id ?? "");
   const [spec, setSpec] = useState<QuoteSpec>(() =>
     productFromSlug(initialProductSlug)
   );
@@ -194,7 +211,8 @@ export function EstimatorWorkspace({
   const [missingFields, setMissingFields] = useState<string[]>([]);
   const [uploadName, setUploadName] = useState<string | null>(null);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
-  const { breakdown, loading } = useLiveQuote(spec);
+  const [busy, setBusy] = useState(false);
+  const { breakdown, loading } = useLiveQuote(spec, companyId || undefined);
 
   async function parseDocument(file?: File) {
     setParsing(true);
@@ -236,10 +254,44 @@ export function EstimatorWorkspace({
     }
   }
 
+  async function persistQuote() {
+    if (!companyId) {
+      toast("Pick or add a customer first");
+      return null;
+    }
+    setBusy(true);
+    try {
+      const quote = await savePublicQuoteAction({ companyId, spec });
+      toast(`Quote ${quote.quote_number} saved`, true);
+      return quote;
+    } catch (err) {
+      toast(err instanceof Error ? err.message : "Could not save quote");
+      return null;
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
     <>
       <div className="grid lg:grid-cols-2 gap-6">
         <div className="space-y-6">
+          <CustomerPicker
+            companies={companies}
+            companyId={companyId}
+            locked={Boolean(lockedCompany)}
+            showInternalTerms={false}
+            busy={busy}
+            onSelect={setCompanyId}
+            onCreate={async (input) => {
+              const created = await addPublicCompanyAction(input);
+              setCompanies((prev) =>
+                [...prev, created].sort((a, b) => a.name.localeCompare(b.name))
+              );
+              setCompanyId(created.id);
+              toast(`Added ${created.name}`, true);
+            }}
+          />
           <div className="border border-slate-200 rounded-3xl p-6 bg-white">
             <div className="flex items-center gap-2 mb-4">
               <FileUp className="w-5 h-5 text-teal" />
@@ -302,42 +354,65 @@ export function EstimatorWorkspace({
 
         <div className="border border-slate-200 rounded-3xl p-6 bg-white h-fit lg:sticky lg:top-24">
           <div className="text-xs font-semibold text-slate-500 tracking-wider">
-            INSTANT QUOTE
+            ESTIMATED TOTAL
           </div>
           <div className="text-4xl font-semibold text-navy mt-2">
-            {breakdown
-              ? formatCurrency(breakdown.finalPrice)
-              : loading
-                ? "…"
-                : "—"}
+            {!companyId
+              ? "—"
+              : breakdown
+                ? formatCurrency(breakdown.finalPrice)
+                : loading
+                  ? "…"
+                  : "—"}
           </div>
-          {breakdown && (
+          {companyId && breakdown && (
             <p className="text-sm text-slate-600 mt-2">
               {formatCurrency(breakdown.finalPrice / Math.max(spec.quantity, 1), true)}{" "}
               per unit · {spec.quantity.toLocaleString()} {spec.product.toLowerCase()}
             </p>
           )}
           <div className="mt-3 text-xs text-slate-500">
-            Lead time 5–7 business days from approved proof
-            {breakdown?.catalogSource === "example" ? " · EXAMPLE rates" : ""}
+            {!companyId
+              ? "Pick or add a customer to estimate."
+              : "Estimated total — we’ll confirm after review. Lead time 5–7 business days from approved proof."}
           </div>
           {enableCheckout ? (
             <div className="mt-6 space-y-2">
               <Button
                 className="w-full"
                 variant="cta"
-                disabled={!breakdown}
+                disabled={!breakdown || !companyId}
                 onClick={() => setCheckoutOpen(true)}
               >
                 Place Order — Pay Now
               </Button>
-              <Button asChild variant="outline" className="w-full">
-                <Link href="/portal/login">Save to account & track order</Link>
+              <Button
+                variant="outline"
+                className="w-full"
+                disabled={!breakdown || !companyId || busy}
+                onClick={async () => {
+                  const quote = await persistQuote();
+                  if (!quote) return;
+                  const dest = `/portal?quote=${encodeURIComponent(quote.quote_number ?? "")}`;
+                  router.push(loggedIn ? dest : `/portal/login?next=${encodeURIComponent(dest)}`);
+                }}
+              >
+                Save to account & track order
               </Button>
             </div>
           ) : (
-            <Button asChild className="mt-6 w-full" variant="cta">
-              <Link href="/portal/login">Request formal quote</Link>
+            <Button
+              className="mt-6 w-full"
+              variant="cta"
+              disabled={!breakdown || !companyId || busy}
+              onClick={async () => {
+                const quote = await persistQuote();
+                if (!quote) return;
+                const dest = `/portal?quote=${encodeURIComponent(quote.quote_number ?? "")}`;
+                router.push(loggedIn ? dest : `/portal/login?next=${encodeURIComponent(dest)}`);
+              }}
+            >
+              Save quote to portal
             </Button>
           )}
         </div>
@@ -347,6 +422,8 @@ export function EstimatorWorkspace({
         <QuoteCheckout
           spec={spec}
           breakdown={breakdown}
+          companyId={companyId}
+          loggedIn={loggedIn}
           onClose={() => setCheckoutOpen(false)}
         />
       )}

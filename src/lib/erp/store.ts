@@ -94,9 +94,25 @@ export async function listEquipment(): Promise<Equipment[]> {
   return catalog.equipment.length ? catalog.equipment : EXAMPLE_EQUIPMENT;
 }
 
+function newQuoteNumber(): string {
+  return `Q-${10000 + Math.floor(Math.random() * 90000)}`;
+}
+
+function hydrateQuote(row: SavedQuote): SavedQuote {
+  const quote_number =
+    row.quote_number ||
+    row.spec?.quoteNumber ||
+    `Q-${row.id.replace(/-/g, "").slice(0, 5).toUpperCase()}`;
+  return {
+    ...row,
+    quote_number,
+    spec: { ...row.spec, quoteNumber: quote_number },
+  };
+}
+
 export async function listQuotes(): Promise<SavedQuote[]> {
   const client = await writer();
-  if (!client) return localListQuotes();
+  if (!client) return localListQuotes().map(hydrateQuote);
 
   const { data, error } = await client
     .from("quotes")
@@ -104,8 +120,13 @@ export async function listQuotes(): Promise<SavedQuote[]> {
     .order("created_at", { ascending: false })
     .limit(50);
 
-  if (error || !data) return localListQuotes();
-  return data as SavedQuote[];
+  if (error || !data) return localListQuotes().map(hydrateQuote);
+  return (data as SavedQuote[]).map(hydrateQuote);
+}
+
+export async function listQuotesForCompany(companyId: string): Promise<SavedQuote[]> {
+  const all = await listQuotes();
+  return all.filter((q) => q.company_id === companyId);
 }
 
 export async function saveQuote(input: {
@@ -117,15 +138,18 @@ export async function saveQuote(input: {
   const status: QuoteStatus = input.breakdown.needsApproval
     ? "pending_approval"
     : "approved";
+  const quote_number = input.spec.quoteNumber || newQuoteNumber();
+  const spec: QuoteSpec = { ...input.spec, quoteNumber: quote_number };
   const quote: SavedQuote = {
     id: randomUUID(),
     company_id: input.companyId,
-    spec: input.spec,
+    spec,
     breakdown: input.breakdown,
     status,
     needs_approval: input.breakdown.needsApproval,
     order_id: null,
     created_at: new Date().toISOString(),
+    quote_number,
   };
 
   const client = await writer();
@@ -148,7 +172,7 @@ export async function saveQuote(input: {
   if (error || !data) {
     throw new Error(error?.message ?? "Could not save quote");
   }
-  return data as SavedQuote;
+  return hydrateQuote(data as SavedQuote);
 }
 
 export async function approveQuote(quoteId: string): Promise<SavedQuote> {
