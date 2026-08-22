@@ -8,9 +8,11 @@ import type { QuoteSpec } from "@/types";
 export function SizeStep({
   spec,
   onChange,
+  mode = "public",
 }: {
   spec: QuoteSpec;
   onChange: (patch: Partial<QuoteSpec>) => void;
+  mode?: "public" | "employee";
 }) {
   const area = spec.widthIn > 0 && spec.heightIn > 0 ? spec.widthIn * spec.heightIn : 0;
 
@@ -20,7 +22,9 @@ export function SizeStep({
         {STEP_TITLES[2]}
       </h2>
       <p className="mt-2 font-mono text-xs text-slate-500 max-w-xl">
-        {STEP_SUBTITLES[2]}
+        {mode === "employee"
+          ? STEP_SUBTITLES[2]
+          : "Finished size in inches."}
       </p>
       <div className="mt-8 grid max-w-md grid-cols-[1fr_auto_1fr] items-end gap-3">
         <div>
@@ -69,6 +73,7 @@ export function SizeStep({
           </span>
         </div>
       )}
+      {mode === "employee" && (
       <div className="mt-8 grid max-w-md sm:grid-cols-2 gap-4">
         <div>
           <Label>Repeat (in)</Label>
@@ -99,6 +104,7 @@ export function SizeStep({
           </p>
         </div>
       </div>
+      )}
     </div>
   );
 }

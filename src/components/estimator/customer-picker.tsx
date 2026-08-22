@@ -29,7 +29,7 @@ export function CustomerPicker({
   locked?: boolean;
   busy?: boolean;
   showInternalTerms?: boolean;
-  /** Public door: name only. Terms stay on the company record. */
+  /** Public door: name only. Terms stay on the customer record. */
   allowTermsOnCreate?: boolean;
 }) {
   const [adding, setAdding] = useState(false);
@@ -48,7 +48,7 @@ export function CustomerPicker({
       <p className="text-sm text-slate-600 mb-4">
         {locked
           ? "This quote is for your account. Type and discount come from the customer record."
-          : "Select an existing company or add one. Type, margin, and discount come from the customer record — not from the estimate form."}
+          : "Select an existing customer or add one. Type, margin, and discount come from the customer record — not from the estimate form."}
       </p>
       {locked && company ? (
         <div className="text-sm font-medium">{company.name}</div>

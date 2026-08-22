@@ -35,9 +35,11 @@ function toggle(list: string[] | undefined, id: string): string[] {
 export function SpecsStep({
   spec,
   onChange,
+  mode = "public",
 }: {
   spec: QuoteSpec;
   onChange: (patch: Partial<QuoteSpec>) => void;
+  mode?: "public" | "employee";
 }) {
   const eight = spec.shape === "rectangle" || spec.shape === "oval";
   const winds = eight ? [1, 2, 3, 4, 5, 6, 7, 8] : [1, 2, 3, 4];
@@ -48,10 +50,19 @@ export function SpecsStep({
         {STEP_TITLES[4]}
       </h2>
       <p className="mt-2 font-mono text-xs text-slate-500 max-w-xl">
-        {STEP_SUBTITLES[4]}
+        {mode === "employee"
+          ? STEP_SUBTITLES[4]
+          : "Finishes and options for this job."}
       </p>
 
-      <Head title="Product type" sub="Catalog type used by route match — not customer DTC/reseller." />
+      <Head
+        title="Product type"
+        sub={
+          mode === "employee"
+            ? "Catalog type used by route match — not customer DTC/reseller."
+            : "How this label is used."
+        }
+      />
       <div className="flex flex-wrap gap-2">
         {TYPE_OPTIONS.map((type) => (
           <Pill key={type} on={spec.type === type} onClick={() => onChange({ type })}>
@@ -62,7 +73,14 @@ export function SpecsStep({
         ))}
       </div>
 
-      <Head title="Premium finishes" sub="Captured on the quote. Priced only when a catalog rate exists." />
+      <Head
+        title="Premium finishes"
+        sub={
+          mode === "employee"
+            ? "Captured on the quote. Priced only when a catalog rate exists."
+            : "Select any premium finishes you need."
+        }
+      />
       <div className="grid sm:grid-cols-2 gap-2 max-w-2xl">
         {PREMIUM_FINISHES.map((finish) => {
           const on = (spec.premiumFinishes ?? []).includes(finish);
@@ -94,7 +112,9 @@ export function SpecsStep({
         >
           <div className={cn("font-semibold", spec.rush && "text-teal")}>Rush</div>
           <div className="font-mono text-[11px] text-slate-400">
-            Captured — no invented rush adder
+            {mode === "employee"
+              ? "Captured — no invented rush adder"
+              : "We’ll confirm timing after review"}
           </div>
         </Pill>
       </div>

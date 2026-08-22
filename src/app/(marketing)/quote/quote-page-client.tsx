@@ -28,14 +28,12 @@ export default function QuotePageClient({
             ONLINE QUOTING
           </div>
           <h1 className="heading-font text-4xl md:text-5xl tracking-tighter font-semibold mt-1">
-            {lockedCompany
-              ? "Tell us what you need. We’ll price it."
-              : "Pick a customer, then walk the estimate."}
+            Tell us what you need. We’ll price it.
           </h1>
           <p className="text-slate-600 mt-3">
             {lockedCompany
-              ? "Seven steps — product through estimate. Type and discount come from your account, not this form."
-              : "Customer first. Then product, material, size, colors, specs, and quantity breaks. No reseller toggle and no discount field on the estimate."}
+              ? "Seven steps — product through estimate. You’ll see an estimated sell price. Type and discount come from your account, not this form."
+              : "Walk product, material, size, colors, specs, and quantity. You’ll see an estimated sell price — we’ll confirm after review."}
           </p>
         </div>
         <EstimatorWorkspace
@@ -46,6 +44,8 @@ export default function QuotePageClient({
           companies={companies}
           lockedCompany={lockedCompany}
           loggedIn={loggedIn}
+          mode="public"
+          allowChangeCustomer={false}
         />
       </div>
     </section>

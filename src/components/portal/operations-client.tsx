@@ -79,7 +79,9 @@ export function OperationsClient({
         <div>
           <h2 className="font-semibold text-xl">Estimating</h2>
           <p className="text-sm text-slate-500">
-            Pick a customer first, then walk the same 7-step wizard as /quote.
+            Pick a customer first (the account this quote is for), then walk the
+            same 7-step wizard as /quote. Production route is chosen
+            automatically from the specs.
           </p>
         </div>
         <Button variant="cta" onClick={() => startNewEstimate()}>

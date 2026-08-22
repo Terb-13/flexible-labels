@@ -1,16 +1,21 @@
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import { EstimatorWorkspace } from "@/components/portal/estimator-workspace";
 import { Button } from "@/components/ui/button";
 import { getAppSession } from "@/lib/auth/session";
-import { listCompanies } from "@/lib/erp/store";
 import { loadCatalog, loadCompany } from "@/lib/pricing/catalog";
 
 export default async function PortalEstimatorPage() {
-  const [catalog, session, companies] = await Promise.all([
+  const [catalog, session] = await Promise.all([
     loadCatalog(),
     getAppSession(),
-    listCompanies(),
   ]);
+  if (!session.role) {
+    redirect("/portal/login");
+  }
+  if (session.role === "employee") {
+    redirect("/operations");
+  }
   const locked =
     session.profile?.company_id
       ? ((await loadCompany(session.profile.company_id)) ?? null)
@@ -25,7 +30,8 @@ export default async function PortalEstimatorPage() {
               Account Estimator
             </h1>
             <p className="text-slate-600 mt-1">
-              Same 7-step estimate as /quote. This quote stays on your account.
+              Same 7-step estimate as /quote. You’ll see an estimated sell
+              price. This quote stays on your account.
             </p>
           </div>
           <Button asChild variant="cta">
@@ -36,9 +42,11 @@ export default async function PortalEstimatorPage() {
           enableCheckout
           materials={catalog.materials}
           equipment={catalog.equipment}
-          companies={locked ? [locked] : companies}
+          companies={locked ? [locked] : []}
           lockedCompany={locked}
           loggedIn
+          mode="public"
+          allowChangeCustomer={false}
         />
       </div>
     </section>

@@ -1,13 +1,11 @@
 import { Suspense } from "react";
 import QuotePageClient from "./quote-page-client";
 import { getAppSession } from "@/lib/auth/session";
-import { listCompanies } from "@/lib/erp/store";
 import { loadCatalog, loadCompany } from "@/lib/pricing/catalog";
 
 export default async function QuotePage() {
-  const [catalog, companies, session] = await Promise.all([
+  const [catalog, session] = await Promise.all([
     loadCatalog(),
-    listCompanies(),
     getAppSession(),
   ]);
   const locked =
@@ -24,7 +22,7 @@ export default async function QuotePage() {
         <QuotePageClient
           materials={catalog.materials}
           equipment={catalog.equipment}
-          companies={locked ? [locked] : companies}
+          companies={locked ? [locked] : []}
           lockedCompany={locked}
           loggedIn={session.role === "customer"}
         />

@@ -88,9 +88,11 @@ export function EstimateWizard({
         <div className="flex items-center justify-between gap-3 border-b border-slate-100 px-5 py-3">
           <div className="text-sm">
             Estimating for <span className="font-semibold">{company.name}</span>
+            {mode === "employee" && (
             <span className="ml-2 font-mono text-[10px] uppercase tracking-wider text-slate-400">
               {company.is_reseller ? "Reseller" : "DTC"} terms from customer record
             </span>
+            )}
           </div>
           {onChangeCustomer && (
             <button
@@ -128,13 +130,14 @@ export function EstimateWizard({
           <MaterialStep
             materials={filtered}
             selected={spec.material}
+            mode={mode}
             onPick={(name) => {
               patch({ material: name });
               onStep(2);
             }}
           />
         )}
-        {step === 2 && <SizeStep spec={spec} onChange={patch} />}
+        {step === 2 && <SizeStep spec={spec} onChange={patch} mode={mode} />}
         {step === 3 && (
           <ColorsStep
             spec={spec}
@@ -143,7 +146,7 @@ export function EstimateWizard({
             onArtwork={onArtwork}
           />
         )}
-        {step === 4 && <SpecsStep spec={spec} onChange={patch} />}
+        {step === 4 && <SpecsStep spec={spec} onChange={patch} mode={mode} />}
         {step === 5 && <QuantityStep spec={spec} onChange={patch} />}
         {step === 6 && (
           <EstimateStep

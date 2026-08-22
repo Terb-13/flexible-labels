@@ -19,6 +19,11 @@ import {
 } from "@/components/estimator/wizard-constants";
 import { PRODUCTS } from "@/lib/data/demo-data";
 import { EXAMPLE_EQUIPMENT } from "@/lib/data/example-catalog";
+import {
+  toSellPriceBreaks,
+  toSellPriceBreakdown,
+  toSellPriceLayouts,
+} from "@/lib/pricing/sell-price";
 import type {
   Company,
   Equipment,
@@ -68,7 +73,6 @@ export function useLiveEstimate(spec: QuoteSpec, companyId?: string) {
   const [loading, setLoading] = useState(false);
 
   const ready =
-    Boolean(companyId) &&
     Boolean(spec.product) &&
     Boolean(spec.material) &&
     spec.widthIn > 0 &&
@@ -161,7 +165,13 @@ export function EstimatorWorkspace({
     [companies, companyId, lockedCompany]
   );
 
-  const customerReady = Boolean(lockedCompany || companyId);
+  const customerReady =
+    mode === "public" || Boolean(lockedCompany || companyId);
+
+  const publicBreaks =
+    mode === "public" ? toSellPriceBreaks(estimate.breaks) : estimate.breaks;
+  const publicLayouts =
+    mode === "public" ? toSellPriceLayouts(estimate.layouts) : estimate.layouts;
 
   function applySpec(next: QuoteSpec) {
     setSpec(next);
@@ -169,7 +179,7 @@ export function EstimatorWorkspace({
   }
 
   async function persistQuote() {
-    if (!companyId) {
+    if (mode === "employee" && !companyId) {
       toast("Pick or add a customer first");
       return null;
     }
@@ -178,14 +188,17 @@ export function EstimatorWorkspace({
       const quote =
         mode === "employee"
           ? await saveQuoteAction({ companyId, spec })
-          : await savePublicQuoteAction({ companyId, spec });
+          : await savePublicQuoteAction({
+              companyId: companyId || undefined,
+              spec,
+            });
       setSaved(quote);
       onQuoteSaved?.(quote);
       toast(
-        quote.needs_approval
+        mode === "employee" && quote.needs_approval
           ? `Quote ${quote.quote_number} saved — below target margin`
           : `Quote ${quote.quote_number} saved`,
-        !quote.needs_approval
+        !(mode === "employee" && quote.needs_approval)
       );
       return quote;
     } catch (err) {
@@ -227,6 +240,7 @@ export function EstimatorWorkspace({
       ) : (
         <div className="space-y-4">
         <SpecPaste
+          mode={mode}
           onApply={(next) => {
             applySpec(next);
             const ready =
@@ -249,8 +263,8 @@ export function EstimatorWorkspace({
           artworkUrl={artworkUrl}
           onArtwork={setArtworkUrl}
           loading={loading}
-          breaks={estimate.breaks}
-          layouts={estimate.layouts}
+          breaks={publicBreaks}
+          layouts={publicLayouts}
           viable={estimate.viable}
           mode={mode}
           busy={busy}
@@ -292,7 +306,7 @@ export function EstimatorWorkspace({
           }}
           onCheckout={enableCheckout ? () => setCheckoutOpen(true) : undefined}
           onChangeCustomer={
-            allowChangeCustomer && !lockedCompany
+            mode === "employee" && allowChangeCustomer && !lockedCompany
               ? () => {
                   setCompanyId("");
                   setSaved(null);
@@ -306,8 +320,8 @@ export function EstimatorWorkspace({
       {checkoutOpen && estimate.primary && (
         <QuoteCheckout
           spec={spec}
-          breakdown={estimate.primary}
-          companyId={companyId}
+          finalPrice={toSellPriceBreakdown(estimate.primary).finalPrice}
+          companyId={companyId || undefined}
           loggedIn={loggedIn}
           onClose={() => setCheckoutOpen(false)}
         />

@@ -9,10 +9,12 @@ export function MaterialStep({
   materials,
   selected,
   onPick,
+  mode = "public",
 }: {
   materials: Material[];
   selected: string;
   onPick: (name: string) => void;
+  mode?: "public" | "employee";
 }) {
   const groups = groupedMaterials(materials);
 
@@ -26,8 +28,9 @@ export function MaterialStep({
       </p>
       {!groups.length ? (
         <div className="mt-10 rounded-3xl border border-dashed border-slate-200 p-10 text-center text-sm text-slate-500">
-          No catalog substrates match this product. Pick a different product or
-          add a material in the EXAMPLE catalog.
+          {mode === "employee"
+            ? "No catalog substrates match this product. Pick a different product or add a material in the EXAMPLE catalog."
+            : "No materials match this product. Try a different product."}
         </div>
       ) : (
         <div className="mt-8 space-y-8 max-w-xl">

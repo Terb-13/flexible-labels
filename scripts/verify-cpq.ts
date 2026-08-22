@@ -15,6 +15,10 @@ import {
   validQtyBreaks,
   viableAcrossValues,
 } from "../src/lib/pricing/engine";
+import {
+  toSellPriceBreakdown,
+  toSellPriceLayouts,
+} from "../src/lib/pricing/sell-price";
 import type { QuoteSpec } from "../src/types";
 
 const base: QuoteSpec = {
@@ -148,6 +152,28 @@ assert.ok(acrosses.includes(2));
 const layouts = calculateLayouts(base, EXAMPLE_DTC_COMPANY, EXAMPLE_CATALOG);
 assert.ok(layouts.length >= 2);
 assert.ok(layouts[0].breakdown.finalPrice <= layouts[layouts.length - 1].breakdown.finalPrice);
+
+const sell = toSellPriceBreakdown(priced);
+assert.equal(sell.finalPrice, priced.finalPrice);
+assert.equal(sell.totalCost, 0);
+assert.equal(sell.marginPercent, 0);
+assert.equal(sell.marginAmount, 0);
+assert.equal(sell.routeName, "");
+assert.equal(sell.lines.length, 0);
+assert.equal(sell.productionFeet, 0);
+assert.equal(sell.plannedPressHours, 0);
+assert.equal(sell.needsApproval, false);
+const publicLayouts = toSellPriceLayouts(
+  layouts.map((l) => ({
+    across: l.across,
+    webIn: l.webIn,
+    viable: l.viable,
+    finalPrice: l.breakdown.finalPrice,
+    perUnit: l.breakdown.finalPrice / Math.max(base.quantity, 1),
+    routeName: l.breakdown.routeName,
+  }))
+);
+assert.ok(publicLayouts.every((l) => l.routeName === "" && l.finalPrice > 0));
 
 assert.ok(!JSON.stringify(EXAMPLE_CATALOG).includes("Fortis"));
 assert.ok(!JSON.stringify(EXAMPLE_CATALOG).includes("Novi"));

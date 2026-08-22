@@ -2,7 +2,7 @@
 
 import { getAppSession } from "@/lib/auth/session";
 import { createCompany, saveQuote } from "@/lib/erp/store";
-import { loadCatalog, loadCompany } from "@/lib/pricing/catalog";
+import { defaultDtcCompany, loadCatalog, loadCompany } from "@/lib/pricing/catalog";
 import { calculateQuote, calculateQuoteBreaks } from "@/lib/pricing/engine";
 import type { CompanyType, QuoteSpec } from "@/types";
 
@@ -18,11 +18,12 @@ export async function addPublicCompanyAction(input: {
 }
 
 export async function savePublicQuoteAction(input: {
-  companyId: string;
+  companyId?: string;
   spec: QuoteSpec;
 }) {
-  const company = await loadCompany(input.companyId);
-  if (!company) throw new Error("Select a customer first");
+  const company = input.companyId
+    ? ((await loadCompany(input.companyId)) ?? (await defaultDtcCompany()))
+    : await defaultDtcCompany();
   const catalog = await loadCatalog();
   const estimate = calculateQuoteBreaks(input.spec, company, catalog);
   const breakdown = estimate.primary ?? calculateQuote(input.spec, company, catalog);
