@@ -98,9 +98,13 @@ export async function loadCatalog(): Promise<PricingCatalog> {
     steps: steps.filter((s) => s.route_id === row.id),
   }));
 
+  const materials = (materialsRes.data as Record<string, unknown>[]).map(
+    mapMaterial
+  );
+
   return {
     equipment: (equipmentRes.data as Record<string, unknown>[]).map(mapEquipment),
-    materials: (materialsRes.data as Record<string, unknown>[]).map(mapMaterial),
+    materials: materials.length ? materials : EXAMPLE_CATALOG.materials,
     routes,
     source: "supabase",
   };

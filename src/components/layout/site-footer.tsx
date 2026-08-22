@@ -9,11 +9,17 @@ export function SiteFooter() {
           <span className="hidden md:inline">•</span>
           <span>Memphis, Tennessee</span>
         </div>
-        <div className="flex items-center gap-x-4 text-xs">
+        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs">
           <span>Since 1951</span>
           <span>Women-Owned • HubZone Certified</span>
-          <Link href="/portal" className="hover:text-white">
-            Portal Login
+          <Link href="/about" className="hover:text-white">
+            About
+          </Link>
+          <Link href="/contact" className="hover:text-white">
+            Contact
+          </Link>
+          <Link href="/capabilities" className="hover:text-white">
+            Capabilities
           </Link>
         </div>
         <div className="text-xs">901-555-0123 • sales@flexiblelabelgroup.com</div>

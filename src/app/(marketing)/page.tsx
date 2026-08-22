@@ -143,8 +143,8 @@ export default function HomePage() {
               icon: Eye,
               title: "Full visibility. Real control.",
               body: "See exactly where every order is on the floor. Know your ship date. Approve or request changes instantly.",
-              href: "/portal",
-              cta: "Open live portal demo →",
+              href: "/portal/login",
+              cta: "Sign in to track orders →",
             },
           ].map((card) => (
             <div

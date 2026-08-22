@@ -1,7 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { ChatModal } from "@/components/chat/chat-modal";
 import { EstimatorWorkspace } from "@/components/portal/estimator-workspace";
+import { Button } from "@/components/ui/button";
 import type { Company, Material } from "@/types";
 
 export default function QuotePageClient({
@@ -19,6 +22,7 @@ export default function QuotePageClient({
 }) {
   const searchParams = useSearchParams();
   const product = searchParams.get("product");
+  const [chatOpen, setChatOpen] = useState(false);
 
   return (
     <section className="pt-8 pb-20 px-5 md:px-8">
@@ -35,6 +39,14 @@ export default function QuotePageClient({
               ? "You’ll see an estimated sell price. Type and discount come from your account, not this form."
               : "Walk product, material, size, colors, and quantity. You’ll see an estimated sell price — we’ll confirm after review."}
           </p>
+          <Button
+            type="button"
+            variant="outline"
+            className="mt-4"
+            onClick={() => setChatOpen(true)}
+          >
+            Ask AI
+          </Button>
         </div>
         <EstimatorWorkspace
           enableCheckout
@@ -47,6 +59,7 @@ export default function QuotePageClient({
           mode="public"
           allowChangeCustomer={false}
         />
+        <ChatModal open={chatOpen} onOpenChange={setChatOpen} />
       </div>
     </section>
   );

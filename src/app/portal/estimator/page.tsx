@@ -3,17 +3,14 @@ import Link from "next/link";
 import { EstimatorWorkspace } from "@/components/portal/estimator-workspace";
 import { Button } from "@/components/ui/button";
 import { getAppSession } from "@/lib/auth/session";
-import { loadCatalog, loadCompany } from "@/lib/pricing/catalog";
+import { loadCompany } from "@/lib/pricing/catalog";
 import {
-  publicMaterialsByProduct,
-  toPublicMaterials,
+  publicPickerMaterials,
+  publicPickerMaterialsByProduct,
 } from "@/lib/pricing/materials";
 
 export default async function PortalEstimatorPage() {
-  const [catalog, session] = await Promise.all([
-    loadCatalog(),
-    getAppSession(),
-  ]);
+  const session = await getAppSession();
   if (!session.role) {
     redirect("/portal/login");
   }
@@ -44,8 +41,8 @@ export default async function PortalEstimatorPage() {
         </div>
         <EstimatorWorkspace
           enableCheckout
-          materials={toPublicMaterials(catalog.materials)}
-          materialNamesByProduct={publicMaterialsByProduct(catalog)}
+          materials={publicPickerMaterials()}
+          materialNamesByProduct={publicPickerMaterialsByProduct()}
           companies={locked ? [locked] : []}
           lockedCompany={locked}
           loggedIn

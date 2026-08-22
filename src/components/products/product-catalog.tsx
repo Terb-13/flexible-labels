@@ -2,11 +2,17 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
+import { ChatModal } from "@/components/chat/chat-modal";
 import { PRODUCTS } from "@/lib/data/demo-data";
 import { Button } from "@/components/ui/button";
 
 export function ProductCatalog() {
+  const [chatOpen, setChatOpen] = useState(false);
+  const [chatSeed, setChatSeed] = useState<string | undefined>();
+
   return (
+    <>
     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
       {PRODUCTS.map((product) => (
         <div
@@ -48,16 +54,16 @@ export function ProductCatalog() {
               </Button>
               <div className="grid grid-cols-2 gap-2">
                 <Button
-                  asChild
+                  type="button"
                   variant="outline"
                   size="sm"
                   className="whitespace-normal h-auto min-h-9 py-2 text-xs"
+                  onClick={() => {
+                    setChatSeed(product.aiPrompt);
+                    setChatOpen(true);
+                  }}
                 >
-                  <Link
-                    href={`/ai-tools?prompt=${encodeURIComponent(product.aiPrompt)}`}
-                  >
-                    Ask AI
-                  </Link>
+                  Ask AI
                 </Button>
                 <Button
                   asChild
@@ -73,5 +79,11 @@ export function ProductCatalog() {
         </div>
       ))}
     </div>
+    <ChatModal
+      open={chatOpen}
+      onOpenChange={setChatOpen}
+      initialMessage={chatSeed}
+    />
+    </>
   );
 }

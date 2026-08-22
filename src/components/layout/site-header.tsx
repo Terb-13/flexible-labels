@@ -3,27 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { Bot, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { LogoMark } from "@/components/layout/logo-mark";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-const NAV_ITEMS = [
-  { href: "/", label: "Home" },
-  { href: "/products", label: "Products" },
-  { href: "/quote", label: "Get Quote" },
-  { href: "/capabilities", label: "Capabilities" },
-  { href: "/ai-tools", label: "AI Tools" },
-  { href: "/portal", label: "Customer Portal" },
-  { href: "/about", label: "About" },
-  { href: "/contact", label: "Contact" },
-];
+const NAV_ITEMS = [{ href: "/products", label: "Products" }] as const;
 
-export function SiteHeader({
-  onOpenChat,
-}: {
-  onOpenChat?: () => void;
-}) {
+export function SiteHeader() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -61,15 +48,11 @@ export function SiteHeader({
           </nav>
 
           <div className="hidden md:flex items-center gap-x-2">
-            <Button variant="outline" onClick={onOpenChat}>
-              <Bot className="text-teal" />
-              Talk to AI
-            </Button>
             <Button asChild variant="cta">
-              <Link href="/quote">Get Instant Quote</Link>
+              <Link href="/quote">Get a quote</Link>
             </Button>
             <Button asChild variant="outline">
-              <Link href="/portal">Portal</Link>
+              <Link href="/portal/login">Sign in</Link>
             </Button>
           </div>
 
@@ -99,15 +82,12 @@ export function SiteHeader({
               <div className="flex flex-col gap-y-2 pt-3 mt-2 border-t">
                 <Button asChild variant="cta">
                   <Link href="/quote" onClick={() => setMobileOpen(false)}>
-                    Get Instant Quote
+                    Get a quote
                   </Link>
                 </Button>
-                <Button variant="outline" onClick={() => { onOpenChat?.(); setMobileOpen(false); }}>
-                  <Bot /> Talk to AI Assistant
-                </Button>
                 <Button asChild variant="outline">
-                  <Link href="/portal" onClick={() => setMobileOpen(false)}>
-                    Customer Portal
+                  <Link href="/portal/login" onClick={() => setMobileOpen(false)}>
+                    Sign in
                   </Link>
                 </Button>
               </div>

@@ -1,4 +1,4 @@
-import { PRODUCT_OPTIONS } from "@/lib/data/example-catalog";
+import { EXAMPLE_CATALOG, PRODUCT_OPTIONS } from "@/lib/data/example-catalog";
 import type { Material, PricingCatalog } from "@/types";
 
 export function materialGroup(name: string): string {
@@ -43,33 +43,56 @@ export function materialsForProduct(
   return matched.length ? matched : byAttr;
 }
 
-/** Names the customer door can show — computed with the full catalog, no equipment sent. */
+function stripPublicMaterial(material: Material): Material {
+  return {
+    id: material.id,
+    name: material.name,
+    kind: material.kind,
+    cost_per_sqin: 0,
+    cost_per_unit: 0,
+    attributes: {
+      products: Array.isArray(material.attributes?.products)
+        ? material.attributes.products
+        : [],
+    },
+    active: true,
+  };
+}
+
+/** Names the customer door can show — EXAMPLE substrates if the live catalog is empty. */
 export function publicMaterialsByProduct(
   catalog: PricingCatalog
 ): Record<string, string[]> {
   return Object.fromEntries(
-    PRODUCT_OPTIONS.map((product) => [
-      product,
-      materialsForProduct(product, catalog).map((m) => m.name),
-    ])
+    PRODUCT_OPTIONS.map((product) => {
+      const names = materialsForProduct(product, catalog).map((m) => m.name);
+      if (names.length) return [product, names];
+      return [
+        product,
+        materialsForProduct(product, EXAMPLE_CATALOG).map((m) => m.name),
+      ];
+    })
   );
 }
 
 /** Substrate list for customer pages — names only, no rates or notes. */
 export function toPublicMaterials(materials: Material[]): Material[] {
-  return materials
+  const mapped = materials
     .filter((m) => m.kind === "substrate" && m.active !== false)
-    .map((m) => ({
-      id: m.id,
-      name: m.name,
-      kind: m.kind,
-      cost_per_sqin: 0,
-      cost_per_unit: 0,
-      attributes: {
-        products: Array.isArray(m.attributes?.products) ? m.attributes.products : [],
-      },
-      active: true,
-    }));
+    .map(stripPublicMaterial);
+  if (mapped.length) return mapped;
+  return EXAMPLE_CATALOG.materials
+    .filter((m) => m.kind === "substrate" && m.active !== false)
+    .map(stripPublicMaterial);
+}
+
+/** Customer picker always uses EXAMPLE substrates — no plant equipment catalog. */
+export function publicPickerMaterials(): Material[] {
+  return toPublicMaterials(EXAMPLE_CATALOG.materials);
+}
+
+export function publicPickerMaterialsByProduct(): Record<string, string[]> {
+  return publicMaterialsByProduct(EXAMPLE_CATALOG);
 }
 
 export function groupedMaterials(materials: Material[]): {
