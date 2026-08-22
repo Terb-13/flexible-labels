@@ -2,11 +2,11 @@
 
 import { useSearchParams } from "next/navigation";
 import { EstimatorWorkspace } from "@/components/portal/estimator-workspace";
+import type { Material } from "@/types";
 
-export default function QuotePageClient() {
+export default function QuotePageClient({ materials }: { materials: Material[] }) {
   const searchParams = useSearchParams();
   const product = searchParams.get("product");
-  const tier = searchParams.get("tier") === "reseller" ? "reseller" : "business";
 
   return (
     <section className="pt-8 pb-20 px-5 md:px-8">
@@ -19,15 +19,14 @@ export default function QuotePageClient() {
             Get your price in seconds. Order online.
           </h1>
           <p className="text-slate-600 mt-3">
-            Enter your specs below for an immediate quote — no waiting for email.
-            Business and reseller pricing are calculated automatically. Prefer AI
-            guidance? That&apos;s optional, not required.
+            Enter product attributes for an immediate quote. Pricing is cost-plus
+            from the plant catalog — not a reseller toggle on this page.
           </p>
         </div>
         <EstimatorWorkspace
           enableCheckout
           initialProductSlug={product}
-          defaultTier={tier}
+          materials={materials}
         />
       </div>
     </section>

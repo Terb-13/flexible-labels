@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Check } from "lucide-react";
 import { formatCurrency } from "@/lib/pricing/engine";
 import type { QuoteBreakdown, QuoteSpec } from "@/types";
-import type { CustomerTier } from "@/components/portal/estimator-workspace";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,12 +12,10 @@ import { useToast } from "@/components/ui/toaster";
 export function QuoteCheckout({
   spec,
   breakdown,
-  tier,
   onClose,
 }: {
   spec: QuoteSpec;
   breakdown: QuoteBreakdown;
-  tier: CustomerTier;
   onClose: () => void;
 }) {
   const { toast } = useToast();
@@ -41,7 +38,7 @@ export function QuoteCheckout({
               {step === "done" ? "Order confirmed" : "Checkout"}
             </div>
             <div className="text-sm text-slate-600 mt-0.5">
-              {tier === "reseller" ? "Wholesale order" : "Business order"}
+              {spec.product} · {spec.material}
             </div>
           </div>
           <button type="button" className="text-slate-400 text-sm" onClick={onClose}>
@@ -52,7 +49,7 @@ export function QuoteCheckout({
         {step === "review" && (
           <>
             <div className="border rounded-2xl p-4 text-sm space-y-2 bg-slate-50">
-              <div className="font-semibold">{spec.productType}</div>
+              <div className="font-semibold">{spec.product}</div>
               <div className="text-slate-600">
                 {spec.widthIn}&quot; × {spec.heightIn}&quot; · {spec.quantity.toLocaleString()} qty ·{" "}
                 {spec.colors} colors · {spec.material}
@@ -111,11 +108,6 @@ export function QuoteCheckout({
                 </div>
               </div>
             </div>
-            {tier === "reseller" && (
-              <p className="text-xs text-amber-700 mt-3 bg-amber-50 border border-amber-200 rounded-xl p-3">
-                Reseller accounts may use Net 30 after approval. Demo checkout uses card payment.
-              </p>
-            )}
             <div className="mt-6 flex gap-3">
               <Button variant="outline" className="flex-1" onClick={() => setStep("review")}>
                 Back

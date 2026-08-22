@@ -10,7 +10,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "db:seed": "tsx scripts/seed-demo.ts"
+    "db:seed": "tsx scripts/seed-demo.ts",
+    "verify:erp": "tsx scripts/verify-erp.ts"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.10",

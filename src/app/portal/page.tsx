@@ -1,18 +1,13 @@
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { PortalDashboard } from "@/components/portal/portal-dashboard";
-import { getDemoProfile } from "@/lib/auth/demo-session";
-import type { UserRole } from "@/types";
+import { getAppSession } from "@/lib/auth/session";
 
 export default async function PortalPage() {
-  const cookieStore = await cookies();
-  const demoRole = cookieStore.get("flg_demo_session")?.value as UserRole | undefined;
+  const session = await getAppSession();
 
-  if (!demoRole) {
+  if (!session.role) {
     redirect("/portal/login");
   }
-
-  const profile = getDemoProfile(demoRole === "employee" ? "customer" : "customer");
 
   return (
     <section className="pt-8 pb-20 px-5 md:px-8">
@@ -23,19 +18,13 @@ export default async function PortalPage() {
               <h1 className="heading-font text-4xl tracking-tighter font-semibold">
                 Customer Portal
               </h1>
-              <span className="text-xs px-3 py-px bg-emerald-100 text-emerald-700 font-medium rounded-full">
-                LIVE DEMO
-              </span>
             </div>
             <p className="text-slate-600">
-              The exact tools your team will use daily. Clean, fast, and transparent.
+              Proofs, order tracking, and payments for your account.
             </p>
           </div>
         </div>
-        <PortalDashboard
-          profile={profile}
-          isEmployee={demoRole === "employee"}
-        />
+        <PortalDashboard profile={session.profile!} />
       </div>
     </section>
   );

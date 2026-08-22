@@ -6,7 +6,6 @@ import type {
   Product,
   Proof,
   ProofComment,
-  ScheduleJob,
 } from "@/types";
 
 export const DEMO_COMPANY: Company = {
@@ -15,14 +14,16 @@ export const DEMO_COMPANY: Company = {
   margin_percent: 32,
   is_reseller: false,
   target_margin_percent: 28,
+  discount_percent: 0,
 };
 
 export const DEMO_RESELLER: Company = {
   id: "00000000-0000-4000-8000-000000000002",
-  name: "Print Partners Reseller",
+  name: "Print Partners",
   margin_percent: 18,
   is_reseller: true,
   target_margin_percent: 22,
+  discount_percent: 5,
 };
 
 export const PRODUCTS: Product[] = [
@@ -387,141 +388,6 @@ export const DEMO_PROOF_COMMENTS: ProofComment[] = [
     author: "Prepress",
     body: "Adjusted saturation — new proof attached.",
     created_at: "Feb 28, 11:02am",
-  },
-];
-
-export const GANTT_DAYS = [
-  "Mar 3",
-  "Mar 4",
-  "Mar 5",
-  "Mar 6",
-  "Mar 7",
-  "Mar 8",
-  "Mar 9",
-  "Mar 10",
-  "Mar 11",
-  "Mar 12",
-  "Mar 13",
-  "Mar 14",
-  "Mar 15",
-  "Mar 16",
-  "Mar 17",
-  "Mar 18",
-  "Mar 19",
-];
-
-export const GANTT_RESOURCES = [
-  "Press Line 1 (Flexo)",
-  "Press Line 2 (Flexo)",
-  "Digital Press",
-  "Finishing Line",
-  "Rewind / Inspection",
-] as const;
-
-export const RESOURCE_COLORS: Record<string, string> = {
-  "Press Line 1 (Flexo)": "bg-teal",
-  "Press Line 2 (Flexo)": "bg-cta",
-  "Digital Press": "bg-blue-500",
-  "Finishing Line": "bg-purple-500",
-  "Rewind / Inspection": "bg-emerald-600",
-};
-
-export const DEMO_SCHEDULE_JOBS: ScheduleJob[] = [
-  {
-    id: "j1",
-    job_number: "J-3011",
-    name: "Apex Brewing 16oz Rolls",
-    quantity: "62.5k",
-    resource: "Press Line 1 (Flexo)",
-    start_day: 0,
-    duration: 4,
-    due_date: "Mar 10",
-    material: "Matte BOPP",
-    company_id: DEMO_COMPANY.id,
-  },
-  {
-    id: "j2",
-    job_number: "J-3015",
-    name: "Horizon Foods Jar Labels",
-    quantity: "41k",
-    resource: "Press Line 2 (Flexo)",
-    start_day: 1,
-    duration: 3,
-    due_date: "Mar 12",
-    material: "Gloss BOPP",
-    company_id: DEMO_COMPANY.id,
-  },
-  {
-    id: "j3",
-    job_number: "J-3020",
-    name: "Pinnacle Promo Die-Cuts",
-    quantity: "8.2k",
-    resource: "Digital Press",
-    start_day: 2,
-    duration: 2,
-    due_date: "Mar 11",
-    material: "Matte Vinyl",
-    company_id: DEMO_COMPANY.id,
-  },
-  {
-    id: "j4",
-    job_number: "J-3024",
-    name: "Delta ChemGuard Safety",
-    quantity: "27.2k",
-    resource: "Press Line 1 (Flexo)",
-    start_day: 5,
-    duration: 3,
-    due_date: "Mar 15",
-    material: "Chem-Resist PET",
-    company_id: DEMO_COMPANY.id,
-  },
-  {
-    id: "j5",
-    job_number: "J-3028",
-    name: "Titan Branded Tape 3in",
-    quantity: "14.5k",
-    resource: "Finishing Line",
-    start_day: 4,
-    duration: 2,
-    due_date: "Mar 13",
-    material: "Printed Kraft Tape",
-    company_id: DEMO_COMPANY.id,
-  },
-  {
-    id: "j6",
-    job_number: "J-3032",
-    name: "Metro Fleet UV Bumpers",
-    quantity: "9.8k",
-    resource: "Finishing Line",
-    start_day: 7,
-    duration: 2,
-    due_date: "Mar 14",
-    material: "UV Vinyl",
-    company_id: DEMO_COMPANY.id,
-  },
-  {
-    id: "j7",
-    job_number: "J-3036",
-    name: "Summit Pharma Tamper Vials",
-    quantity: "18.4k",
-    resource: "Rewind / Inspection",
-    start_day: 9,
-    duration: 2,
-    due_date: "Mar 16",
-    material: "Tamper-Evident PET",
-    company_id: DEMO_COMPANY.id,
-  },
-  {
-    id: "j8",
-    job_number: "J-3041",
-    name: "Acme Spring Refresh 12oz",
-    quantity: "53k",
-    resource: "Rewind / Inspection",
-    start_day: 12,
-    duration: 2,
-    due_date: "Mar 18",
-    material: "Matte BOPP",
-    company_id: DEMO_COMPANY.id,
   },
 ];
 

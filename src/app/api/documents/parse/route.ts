@@ -40,7 +40,9 @@ function parseText(text: string): ParsedDocumentSpec {
     lower.includes("qr");
 
   return {
+    product: productType,
     productType,
+    type: "Prime / pressure-sensitive",
     widthIn,
     heightIn,
     quantity,
