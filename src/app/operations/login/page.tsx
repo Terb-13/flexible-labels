@@ -1,6 +1,5 @@
 import { Factory } from "lucide-react";
 import { DoorLoginForm } from "@/components/auth/door-login-form";
-import { isDemoLoginAllowed } from "@/lib/supabase/config";
 
 export default async function OperationsLoginPage({
   searchParams,
@@ -20,7 +19,7 @@ export default async function OperationsLoginPage({
         <div className="text-sm text-slate-600 mt-1">
           Sign in to estimate jobs.
         </div>
-        <DoorLoginForm door="employee" next={dest} allowDemo={isDemoLoginAllowed()} />
+        <DoorLoginForm door="employee" next={dest} />
       </div>
     </section>
   );
