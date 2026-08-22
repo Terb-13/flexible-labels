@@ -6,7 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import type { ParsedDocumentSpec, QuoteSpec } from "@/types";
 
-export function SpecPaste({ onApply }: { onApply: (spec: QuoteSpec) => void }) {
+export function SpecPaste({
+  onApply,
+  mode = "public",
+}: {
+  onApply: (spec: QuoteSpec) => void;
+  mode?: "public" | "employee";
+}) {
   const [open, setOpen] = useState(false);
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
@@ -37,8 +43,9 @@ export function SpecPaste({ onApply }: { onApply: (spec: QuoteSpec) => void }) {
       {open && (
         <div className="mt-3">
           <p className="text-xs text-slate-500">
-            Extends the existing document parser — same path as operations RFP.
-            No new AI vendor.
+            {mode === "employee"
+              ? "Extends the existing document parser — same path as operations RFP. No new AI vendor."
+              : "Paste a spec or upload a text file to prefill the steps."}
           </p>
           <Textarea
             className="mt-2"

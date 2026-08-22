@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Check } from "lucide-react";
 import { savePublicQuoteAction } from "@/app/quote/actions";
 import { formatCurrency } from "@/lib/pricing/engine";
-import type { QuoteBreakdown, QuoteSpec } from "@/types";
+import type { QuoteSpec } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,14 +12,14 @@ import { useToast } from "@/components/ui/toaster";
 
 export function QuoteCheckout({
   spec,
-  breakdown,
+  finalPrice,
   companyId,
   loggedIn,
   onClose,
 }: {
   spec: QuoteSpec;
-  breakdown: QuoteBreakdown;
-  companyId: string;
+  finalPrice: number;
+  companyId?: string;
   loggedIn: boolean;
   onClose: () => void;
 }) {
@@ -82,7 +82,7 @@ export function QuoteCheckout({
               </div>
               <div className="border-t pt-2 flex justify-between font-semibold text-lg">
                 <span>Estimated total</span>
-                <span>{formatCurrency(breakdown.finalPrice)}</span>
+                <span>{formatCurrency(finalPrice)}</span>
               </div>
             </div>
             <div className="mt-4 grid sm:grid-cols-2 gap-3">
@@ -111,12 +111,12 @@ export function QuoteCheckout({
             <div className="text-sm text-slate-600 mb-4">
               Estimated total:{" "}
               <span className="font-semibold text-lg text-navy">
-                {formatCurrency(breakdown.finalPrice)}
+                {formatCurrency(finalPrice)}
               </span>
             </div>
             <p className="text-sm text-slate-600">
-              We’ll save this as a quote on your account. Payment is confirmed after
-              review — this does not invent a plant rate.
+              We’ll save this as a quote on your account. Payment is confirmed
+              after review.
             </p>
             <div className="mt-6 flex gap-3">
               <Button variant="outline" className="flex-1" onClick={() => setStep("review")}>

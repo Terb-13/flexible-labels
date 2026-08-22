@@ -11,8 +11,10 @@ import { SpecsStep } from "@/components/estimator/steps/specs-step";
 import { WizardNav } from "@/components/estimator/wizard-nav";
 import {
   canOpenStep,
-  STEP_LABELS,
+  nextWizardStep,
+  prevWizardStep,
   stepIsValid,
+  stepLabel,
 } from "@/components/estimator/wizard-constants";
 import { Button } from "@/components/ui/button";
 import { materialsForProduct } from "@/lib/pricing/materials";
@@ -31,7 +33,8 @@ export function EstimateWizard({
   onChange,
   company,
   materials,
-  equipment,
+  materialNamesByProduct,
+  equipment = [],
   step,
   onStep,
   artworkUrl,
@@ -53,7 +56,8 @@ export function EstimateWizard({
   onChange: (spec: QuoteSpec) => void;
   company: Company | null;
   materials: Material[];
-  equipment: PricingCatalog["equipment"];
+  materialNamesByProduct?: Record<string, string[]>;
+  equipment?: PricingCatalog["equipment"];
   step: number;
   onStep: (step: number) => void;
   artworkUrl: string | null;
@@ -71,10 +75,19 @@ export function EstimateWizard({
   onCheckout?: () => void;
   onChangeCustomer?: () => void;
 }) {
-  const filtered = useMemo(
-    () => materialsForProduct(spec.product, { materials, equipment }),
-    [spec.product, materials, equipment]
-  );
+  const filtered = useMemo(() => {
+    const substrates = materials.filter(
+      (m) => m.kind === "substrate" && m.active !== false
+    );
+    const allowed = materialNamesByProduct?.[spec.product];
+    if (allowed?.length) {
+      const named = substrates.filter((m) => allowed.includes(m.name));
+      if (named.length) return named;
+    }
+    const matched = materialsForProduct(spec.product, { materials, equipment });
+    if (matched.length) return matched;
+    return substrates;
+  }, [spec.product, materials, equipment, materialNamesByProduct]);
 
   function patch(next: Partial<QuoteSpec>) {
     onChange({ ...spec, ...next });
@@ -88,9 +101,11 @@ export function EstimateWizard({
         <div className="flex items-center justify-between gap-3 border-b border-slate-100 px-5 py-3">
           <div className="text-sm">
             Estimating for <span className="font-semibold">{company.name}</span>
+            {mode === "employee" && (
             <span className="ml-2 font-mono text-[10px] uppercase tracking-wider text-slate-400">
               {company.is_reseller ? "Reseller" : "DTC"} terms from customer record
             </span>
+            )}
           </div>
           {onChangeCustomer && (
             <button
@@ -106,6 +121,7 @@ export function EstimateWizard({
       <WizardNav
         current={step}
         spec={spec}
+        mode={mode}
         onGo={(i) => {
           if (canOpenStep(i, step, spec)) onStep(i);
         }}
@@ -128,13 +144,14 @@ export function EstimateWizard({
           <MaterialStep
             materials={filtered}
             selected={spec.material}
+            mode={mode}
             onPick={(name) => {
               patch({ material: name });
               onStep(2);
             }}
           />
         )}
-        {step === 2 && <SizeStep spec={spec} onChange={patch} />}
+        {step === 2 && <SizeStep spec={spec} onChange={patch} mode={mode} />}
         {step === 3 && (
           <ColorsStep
             spec={spec}
@@ -143,17 +160,19 @@ export function EstimateWizard({
             onArtwork={onArtwork}
           />
         )}
-        {step === 4 && <SpecsStep spec={spec} onChange={patch} />}
-        {step === 5 && <QuantityStep spec={spec} onChange={patch} />}
+        {step === 4 && <SpecsStep spec={spec} onChange={patch} mode={mode} />}
+        {step === 5 && <QuantityStep spec={spec} onChange={patch} mode={mode} />}
         {step === 6 && (
           <EstimateStep
             spec={spec}
             loading={loading}
             breaks={breaks}
-            layouts={layouts}
+            layouts={mode === "employee" ? layouts : []}
             viable={viable}
             onSelectQty={(qty) => patch({ quantity: qty })}
-            onSelectAcross={(across) => patch({ across })}
+            onSelectAcross={
+              mode === "employee" ? (across) => patch({ across }) : undefined
+            }
             mode={mode}
             busy={busy}
             saved={saved}
@@ -170,7 +189,7 @@ export function EstimateWizard({
             type="button"
             variant="outline"
             disabled={step === 0}
-            onClick={() => onStep(Math.max(0, step - 1))}
+            onClick={() => onStep(prevWizardStep(step, mode))}
           >
             ← Back
           </Button>
@@ -178,9 +197,9 @@ export function EstimateWizard({
             type="button"
             variant="cta"
             disabled={!canContinue}
-            onClick={() => canContinue && onStep(step + 1)}
+            onClick={() => canContinue && onStep(nextWizardStep(step, mode))}
           >
-            {step === 5 ? "See Estimate →" : `Continue → ${STEP_LABELS[step + 1] ?? ""}`}
+            {`Continue → ${stepLabel(nextWizardStep(step, mode), mode)}`}
           </Button>
         </div>
       )}

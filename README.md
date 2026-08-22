@@ -18,9 +18,11 @@ A sample-account bypass is **local only**. It never appears on Vercel production
 ## Estimating loop
 
 1. Employee signs in at `/operations/login`.
-2. Pick an existing **company** or add one (`name`, type via `is_reseller`, margin, discount). There is no `customers` table.
-3. Click **New estimate**, pick or add a **company** first, then walk the 7-step wizard: Product → Material → Size → Colors → Specs → Quantity → Estimate. Logged-in customers skip the picker. No reseller/DTC toggle and no discount field on the estimate.
-4. `POST /api/quotes/calculate` still calls `calculateQuote` (once per break, or once on the summed qty when “Group these together” is on). It matches a production route (`printer → seamer → finisher → shipping`), qualifies equipment, and cost-plus prices from:
+2. Pick the **buyer customer** first (the account the quote is for — not a plant; there is one plant). Add one if needed (`name`, type via `is_reseller`, margin, discount). There is no `customers` table.
+3. Two estimator doors, same `calculateQuote` engine:
+   - **Operations (employee):** pick the buyer customer, then walk Product → Material → Size → Colors → Specs → Quantity → Estimate. Last step shows margin, cost stack, and the auto-chosen production route (press → finish → ship). No plant/site picker.
+   - **Customer (`/quote` guest + `/portal`):** Product → Material → Size → Colors → Quantity → sell price. Guests skip the EXAMPLE customer dropdown and price under standard DTC terms. Logged-in portal stays locked to that customer record. Public calculate responses are sell price only.
+4. `POST /api/quotes/calculate` still calls `calculateQuote` (once per break, or once on the summed qty when “Group these together” is on). Employee callers get the full stack. Customer callers get sell prices only. It matches a production route (`printer → seamer → finisher → shipping`), qualifies equipment, and cost-plus prices from:
    - equipment: `cost_rate`, `run_speed`, `waste_percent`, `setup_time_minutes`
    - materials: substrate + dye
    - company: `is_reseller`, `margin_percent`, `target_margin_percent`, `discount_percent`

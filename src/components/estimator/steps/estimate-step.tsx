@@ -60,6 +60,7 @@ export function EstimateStep({
   onJob?: () => void;
   onCheckout?: () => void;
 }) {
+  const employee = mode === "employee";
   const grouped = Boolean(spec.grouped);
   const primary = breaks[0]?.breakdown ?? null;
   const viewing =
@@ -78,12 +79,53 @@ export function EstimateStep({
     return (
       <div className="rounded-3xl border border-dashed border-slate-200 bg-white px-6 py-16 text-center">
         <div className="text-3xl mb-3">⚠️</div>
-        <h2 className="heading-font text-2xl font-semibold">No viable route</h2>
+        <h2 className="heading-font text-2xl font-semibold">
+          {employee ? "No viable route" : "We couldn’t price this combination"}
+        </h2>
         <p className="mt-2 mx-auto max-w-md font-mono text-xs text-slate-500">
-          Nothing in the EXAMPLE catalog qualifies for this product, material,
-          width, and color count. Check size against press max width, or pick
-          another material. The estimator did not invent a layout.
+          {employee
+            ? "Nothing in the EXAMPLE catalog qualifies for this product, material, width, and color count. Check size against press max width, or pick another material. The estimator did not invent a layout."
+            : "Try a different size or material. We’ll confirm after review."}
         </p>
+      </div>
+    );
+  }
+
+  if (!employee) {
+    return (
+      <div className="max-w-xl">
+        <div className="rounded-3xl bg-navy px-6 py-6 text-white">
+          <div className="font-mono text-[10px] uppercase tracking-widest text-slate-400">
+            Estimated total
+          </div>
+          <div className="heading-font mt-1 text-4xl md:text-5xl">
+            {formatCurrency(viewing.finalPrice, true)}
+          </div>
+          <div className="mt-2 font-mono text-sm text-teal">
+            {formatCurrency(viewing.finalPrice / viewQty, true)} / unit ·{" "}
+            {formatQuantity(viewQty)} units
+          </div>
+        </div>
+        <div className="mt-4 space-y-2">
+          <Button
+            className="w-full"
+            variant="cta"
+            disabled={Boolean(busy) || !viewing}
+            onClick={onSave}
+          >
+            {busy === "save" ? "Saving…" : saved ? "Quote saved" : "Save quote"}
+          </Button>
+          {onCheckout && (
+            <Button
+              className="w-full"
+              variant="outline"
+              disabled={!viewing}
+              onClick={onCheckout}
+            >
+              Place order — pay now
+            </Button>
+          )}
+        </div>
       </div>
     );
   }
@@ -95,6 +137,22 @@ export function EstimateStep({
     .map((l) => l.equipmentName)
     .filter(Boolean)
     .join(" → ");
+
+  const jobRows = (
+    [
+      ["Product", spec.product],
+      ["Material", spec.material],
+      ["Size", `${spec.widthIn}" × ${spec.heightIn}"`],
+      ["Stations", String(stations)],
+      ["Across / repeat", `${spec.across} / ${spec.repeatIn}"`],
+      ["Route", viewing.routeName],
+      ["Timeline", spec.rush ? "Rush" : "Standard"],
+      spec.shape ? ["Shape", spec.shape] : null,
+      spec.unwind ? ["Unwind", `Wind ${spec.unwind}`] : null,
+      spec.coreSize ? ["Core", spec.coreSize] : null,
+      spec.features?.length ? ["Features", spec.features.join(", ")] : null,
+    ] as ([string, string] | null)[]
+  ).filter(Boolean) as [string, string][];
 
   return (
     <div>
@@ -161,7 +219,7 @@ export function EstimateStep({
                 <span>
                   Margin ({viewing.marginPercent}%)
                   {viewing.discountPercent > 0
-                    ? ` after ${viewing.discountPercent}% company discount`
+                    ? ` after ${viewing.discountPercent}% customer discount`
                     : ""}
                 </span>
                 <span>{formatCurrency(viewing.marginAmount, true)}</span>
@@ -198,9 +256,11 @@ export function EstimateStep({
                             </span>
                           )}
                         </div>
-                        <div className="font-mono text-[11px] text-slate-500">
-                          {lo.routeName}
-                        </div>
+                        {lo.routeName && (
+                          <div className="font-mono text-[11px] text-slate-500">
+                            {lo.routeName}
+                          </div>
+                        )}
                       </div>
                       <div className="font-mono font-bold">
                         {formatCurrency(lo.finalPrice, true)}
@@ -215,7 +275,7 @@ export function EstimateStep({
           <div className="rounded-3xl border border-slate-200 bg-white p-5">
             <div className="font-semibold">Production route</div>
             <p className="mt-1 font-mono text-[11px] text-slate-500">
-              Auto-selected printer → seamer/finisher → ship
+              Chosen automatically from the specs — press → finish → ship.
             </p>
             <div className="mt-3 space-y-2 text-sm">
               {viewing.lines.map((line) => (
@@ -312,31 +372,15 @@ export function EstimateStep({
             <div className="mb-3 font-mono text-[10px] uppercase tracking-widest text-slate-400">
               Job configuration
             </div>
-            {(
-              [
-                ["Product", spec.product],
-                ["Material", spec.material],
-                ["Size", `${spec.widthIn}" × ${spec.heightIn}"`],
-                ["Stations", String(stations)],
-                ["Across / repeat", `${spec.across} / ${spec.repeatIn}"`],
-                ["Route", viewing.routeName],
-                ["Timeline", spec.rush ? "Rush" : "Standard"],
-                spec.shape ? ["Shape", spec.shape] : null,
-                spec.unwind ? ["Unwind", `Wind ${spec.unwind}`] : null,
-                spec.coreSize ? ["Core", spec.coreSize] : null,
-                spec.features?.length ? ["Features", spec.features.join(", ")] : null,
-              ] as ([string, string] | null)[]
-            )
-              .filter(Boolean)
-              .map((row) => (
-                <div
-                  key={row![0]}
-                  className="flex justify-between gap-3 border-b border-slate-200/80 py-1.5"
-                >
-                  <span className="font-mono text-[10px] text-slate-400">{row![0]}</span>
-                  <span className="text-right text-xs font-semibold">{row![1]}</span>
-                </div>
-              ))}
+            {jobRows.map((row) => (
+              <div
+                key={row[0]}
+                className="flex justify-between gap-3 border-b border-slate-200/80 py-1.5"
+              >
+                <span className="font-mono text-[10px] text-slate-400">{row[0]}</span>
+                <span className="text-right text-xs font-semibold">{row[1]}</span>
+              </div>
+            ))}
           </div>
           {viewing.needsApproval && (
             <div className="rounded-2xl border border-red-200 bg-red-50 p-3 text-sm text-red-800">
@@ -352,17 +396,7 @@ export function EstimateStep({
           >
             {busy === "save" ? "Saving…" : saved ? "Quote saved" : "Save quote"}
           </Button>
-          {mode === "public" && onCheckout && (
-            <Button
-              className="w-full"
-              variant="outline"
-              disabled={!viewing}
-              onClick={onCheckout}
-            >
-              Place order — pay now
-            </Button>
-          )}
-          {mode === "employee" && saved?.needs_approval && saved.status !== "approved" && (
+          {saved?.needs_approval && saved.status !== "approved" && (
             <Button
               className="w-full"
               variant="outline"
@@ -372,7 +406,7 @@ export function EstimateStep({
               Submit for review / approve
             </Button>
           )}
-          {mode === "employee" && onJob && (
+          {onJob && (
             <Button
               className="w-full"
               disabled={!saved || saved.status !== "approved" || busy === "job"}

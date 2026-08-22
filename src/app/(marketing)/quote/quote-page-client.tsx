@@ -1,24 +1,28 @@
 "use client";
 
+import { useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { ChatModal } from "@/components/chat/chat-modal";
 import { EstimatorWorkspace } from "@/components/portal/estimator-workspace";
-import type { Company, Equipment, Material } from "@/types";
+import { Button } from "@/components/ui/button";
+import type { Company, Material } from "@/types";
 
 export default function QuotePageClient({
   materials,
-  equipment,
+  materialNamesByProduct,
   companies,
   lockedCompany,
   loggedIn,
 }: {
   materials: Material[];
-  equipment: Equipment[];
+  materialNamesByProduct?: Record<string, string[]>;
   companies: Company[];
   lockedCompany: Company | null;
   loggedIn: boolean;
 }) {
   const searchParams = useSearchParams();
   const product = searchParams.get("product");
+  const [chatOpen, setChatOpen] = useState(false);
 
   return (
     <section className="pt-8 pb-20 px-5 md:px-8">
@@ -28,25 +32,34 @@ export default function QuotePageClient({
             ONLINE QUOTING
           </div>
           <h1 className="heading-font text-4xl md:text-5xl tracking-tighter font-semibold mt-1">
-            {lockedCompany
-              ? "Tell us what you need. We’ll price it."
-              : "Pick a customer, then walk the estimate."}
+            Tell us what you need. We’ll price it.
           </h1>
           <p className="text-slate-600 mt-3">
             {lockedCompany
-              ? "Seven steps — product through estimate. Type and discount come from your account, not this form."
-              : "Customer first. Then product, material, size, colors, specs, and quantity breaks. No reseller toggle and no discount field on the estimate."}
+              ? "You’ll see an estimated sell price. Type and discount come from your account, not this form."
+              : "Walk product, material, size, colors, and quantity. You’ll see an estimated sell price — we’ll confirm after review."}
           </p>
+          <Button
+            type="button"
+            variant="outline"
+            className="mt-4"
+            onClick={() => setChatOpen(true)}
+          >
+            Ask AI
+          </Button>
         </div>
         <EstimatorWorkspace
           enableCheckout
           initialProductSlug={product}
           materials={materials}
-          equipment={equipment}
+          materialNamesByProduct={materialNamesByProduct}
           companies={companies}
           lockedCompany={lockedCompany}
           loggedIn={loggedIn}
+          mode="public"
+          allowChangeCustomer={false}
         />
+        <ChatModal open={chatOpen} onOpenChange={setChatOpen} />
       </div>
     </section>
   );

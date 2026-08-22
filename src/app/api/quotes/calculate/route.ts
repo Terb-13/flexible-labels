@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
+import { getAppSession } from "@/lib/auth/session";
 import { defaultDtcCompany, loadCatalog, loadCompany } from "@/lib/pricing/catalog";
 import {
   calculateLayouts,
   calculateQuoteBreaks,
   normalizeSpec,
 } from "@/lib/pricing/engine";
+import { toPublicCalculateResponse } from "@/lib/pricing/sell-price";
 import type { QuoteSpec } from "@/types";
 
 export async function POST(request: Request) {
@@ -16,6 +18,11 @@ export async function POST(request: Request) {
     : await defaultDtcCompany();
 
   const estimate = calculateQuoteBreaks(spec, company, catalog);
+  const session = await getAppSession();
+  if (session.role !== "employee") {
+    return NextResponse.json(toPublicCalculateResponse(estimate));
+  }
+
   const layouts = calculateLayouts(spec, company, catalog);
   return NextResponse.json({
     spec,

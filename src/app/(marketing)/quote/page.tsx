@@ -1,15 +1,14 @@
 import { Suspense } from "react";
 import QuotePageClient from "./quote-page-client";
 import { getAppSession } from "@/lib/auth/session";
-import { listCompanies } from "@/lib/erp/store";
-import { loadCatalog, loadCompany } from "@/lib/pricing/catalog";
+import { loadCompany } from "@/lib/pricing/catalog";
+import {
+  publicPickerMaterials,
+  publicPickerMaterialsByProduct,
+} from "@/lib/pricing/materials";
 
 export default async function QuotePage() {
-  const [catalog, companies, session] = await Promise.all([
-    loadCatalog(),
-    listCompanies(),
-    getAppSession(),
-  ]);
+  const session = await getAppSession();
   const locked =
     session.role === "customer" && session.profile?.company_id
       ? ((await loadCompany(session.profile.company_id)) ?? null)
@@ -22,9 +21,9 @@ export default async function QuotePage() {
       }
     >
         <QuotePageClient
-          materials={catalog.materials}
-          equipment={catalog.equipment}
-          companies={locked ? [locked] : companies}
+          materials={publicPickerMaterials()}
+          materialNamesByProduct={publicPickerMaterialsByProduct()}
+          companies={locked ? [locked] : []}
           lockedCompany={locked}
           loggedIn={session.role === "customer"}
         />

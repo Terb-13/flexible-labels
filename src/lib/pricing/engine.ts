@@ -217,7 +217,11 @@ export function calculateQuote(
   >,
   catalog: PricingCatalog
 ): QuoteBreakdown {
-  const spec = normalizeSpec(rawSpec);
+  let spec = normalizeSpec(rawSpec);
+  if (!(spec.across > 0)) {
+    const picked = calculateLayouts({ ...spec, across: 1 }, company, catalog)[0];
+    spec = { ...spec, across: picked?.across ?? 1 };
+  }
   const route = matchRoute(spec, catalog.routes);
   const orderedSteps = [...(route?.steps ?? [])].sort(
     (a, b) => a.step_order - b.step_order

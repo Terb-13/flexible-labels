@@ -4,8 +4,15 @@ import {
   EXAMPLE_CATALOG,
   EXAMPLE_DTC_COMPANY,
 } from "../src/lib/data/example-catalog";
+import { fillExampleCatalogGaps } from "../src/lib/pricing/catalog";
 import { clusterArtworkColors } from "../src/lib/pricing/artwork-colors";
-import { materialsForProduct } from "../src/lib/pricing/materials";
+import {
+  materialsForProduct,
+  publicMaterialsByProduct,
+  publicPickerMaterials,
+  publicPickerMaterialsByProduct,
+  toPublicMaterials,
+} from "../src/lib/pricing/materials";
 import {
   calculateLayouts,
   calculateQuote,
@@ -15,6 +22,10 @@ import {
   validQtyBreaks,
   viableAcrossValues,
 } from "../src/lib/pricing/engine";
+import {
+  toPublicCalculateResponse,
+  toSellPriceBreakdown,
+} from "../src/lib/pricing/sell-price";
 import type { QuoteSpec } from "../src/types";
 
 const base: QuoteSpec = {
@@ -106,6 +117,62 @@ const bumperMats = materialsForProduct("Bumper Stickers", EXAMPLE_CATALOG).map(
   (m) => m.name
 );
 assert.ok(bumperMats.includes("UV Vinyl"));
+const publicByProduct = publicMaterialsByProduct(EXAMPLE_CATALOG);
+assert.ok(publicByProduct["Roll Labels"].includes("Matte BOPP"));
+assert.ok(publicByProduct["Roll Labels"].length > 0);
+const publicMats = toPublicMaterials(EXAMPLE_CATALOG.materials);
+assert.ok(publicMats.every((m) => m.cost_per_sqin === 0 && m.cost_per_unit === 0));
+assert.ok(
+  materialsForProduct("Roll Labels", { materials: publicMats, equipment: [] })
+    .length > 0
+);
+assert.ok(
+  materialsForProduct("Roll Labels", { materials: publicMats, equipment: [] })
+    .some((m) => m.name === "Matte BOPP")
+);
+assert.ok(
+  materialsForProduct("Bumper Stickers", {
+    materials: publicMats,
+    equipment: [],
+  }).some((m) => m.name === "UV Vinyl")
+);
+
+const liveShapeEmptyMaterials = {
+  ...EXAMPLE_CATALOG,
+  materials: [],
+  source: "supabase" as const,
+};
+const liveShapeNames = publicMaterialsByProduct(liveShapeEmptyMaterials);
+assert.deepEqual(publicPickerMaterialsByProduct()["Roll Labels"], [
+  "Matte BOPP",
+  "Gloss BOPP",
+  "Gloss PET",
+  "Foil Laminate",
+]);
+assert.ok(liveShapeNames["Roll Labels"].includes("Matte BOPP"));
+assert.ok(liveShapeNames["Bumper Stickers"].includes("UV Vinyl"));
+assert.ok(
+  materialsForProduct("Roll Labels", liveShapeEmptyMaterials).some(
+    (m) => m.name === "Matte BOPP"
+  )
+);
+assert.ok(toPublicMaterials([]).some((m) => m.name === "Gloss PET"));
+assert.ok(publicPickerMaterials().some((m) => m.name === "Foil Laminate"));
+assert.ok(publicPickerMaterials().every((m) => m.cost_per_sqin === 0));
+
+const seededGaps = fillExampleCatalogGaps({
+  equipment: EXAMPLE_CATALOG.equipment,
+  materials: [],
+  routes: [],
+});
+assert.equal(seededGaps.materials, EXAMPLE_CATALOG.materials);
+assert.equal(seededGaps.routes, EXAMPLE_CATALOG.routes);
+assert.ok(seededGaps.materials.some((m) => m.name === "Matte BOPP"));
+assert.ok(seededGaps.materials.some((m) => m.name === "Gloss BOPP"));
+assert.ok(seededGaps.materials.some((m) => m.name === "UV Vinyl"));
+assert.ok(seededGaps.materials.some((m) => m.name === "Gloss PET"));
+assert.ok(seededGaps.materials.some((m) => m.name === "Foil Laminate"));
+assert.notEqual(seededGaps.source, "example");
 
 const redPixels = Array.from({ length: 80 }, () => ({
   r: 200,
@@ -148,6 +215,33 @@ assert.ok(acrosses.includes(2));
 const layouts = calculateLayouts(base, EXAMPLE_DTC_COMPANY, EXAMPLE_CATALOG);
 assert.ok(layouts.length >= 2);
 assert.ok(layouts[0].breakdown.finalPrice <= layouts[layouts.length - 1].breakdown.finalPrice);
+
+const sell = toSellPriceBreakdown(priced);
+assert.equal(sell.finalPrice, priced.finalPrice);
+assert.equal(sell.totalCost, 0);
+assert.equal(sell.marginPercent, 0);
+assert.equal(sell.marginAmount, 0);
+assert.equal(sell.routeName, "");
+assert.equal(sell.lines.length, 0);
+assert.equal(sell.productionFeet, 0);
+assert.equal(sell.plannedPressHours, 0);
+assert.equal(sell.needsApproval, false);
+
+const publicCalc = toPublicCalculateResponse(separate);
+assert.equal(publicCalc.finalPrice, separate.primary?.finalPrice);
+assert.ok(publicCalc.breaks.every((b) => typeof b.finalPrice === "number"));
+assert.equal(JSON.stringify(publicCalc).includes("margin"), false);
+assert.equal(JSON.stringify(publicCalc).includes("routeName"), false);
+assert.equal(JSON.stringify(publicCalc).includes("webIn"), false);
+assert.equal(JSON.stringify(publicCalc).includes("hours"), false);
+
+const autoAcross = calculateQuote(
+  { ...base, across: 0 },
+  EXAMPLE_DTC_COMPANY,
+  EXAMPLE_CATALOG
+);
+assert.ok(autoAcross.finalPrice > 0);
+assert.ok((autoAcross.productionFeet ?? 0) > 0);
 
 assert.ok(!JSON.stringify(EXAMPLE_CATALOG).includes("Fortis"));
 assert.ok(!JSON.stringify(EXAMPLE_CATALOG).includes("Novi"));
