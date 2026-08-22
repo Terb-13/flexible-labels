@@ -76,12 +76,17 @@ export function EstimateWizard({
   onChangeCustomer?: () => void;
 }) {
   const filtered = useMemo(() => {
+    const substrates = materials.filter(
+      (m) => m.kind === "substrate" && m.active !== false
+    );
     const allowed = materialNamesByProduct?.[spec.product];
     if (allowed?.length) {
-      const named = materials.filter((m) => allowed.includes(m.name));
+      const named = substrates.filter((m) => allowed.includes(m.name));
       if (named.length) return named;
     }
-    return materialsForProduct(spec.product, { materials, equipment });
+    const matched = materialsForProduct(spec.product, { materials, equipment });
+    if (matched.length) return matched;
+    return substrates;
   }, [spec.product, materials, equipment, materialNamesByProduct]);
 
   function patch(next: Partial<QuoteSpec>) {

@@ -123,6 +123,16 @@ assert.ok(
   materialsForProduct("Roll Labels", { materials: publicMats, equipment: [] })
     .length > 0
 );
+assert.ok(
+  materialsForProduct("Roll Labels", { materials: publicMats, equipment: [] })
+    .some((m) => m.name === "Matte BOPP")
+);
+assert.ok(
+  materialsForProduct("Bumper Stickers", {
+    materials: publicMats,
+    equipment: [],
+  }).some((m) => m.name === "UV Vinyl")
+);
 
 const redPixels = Array.from({ length: 80 }, () => ({
   r: 200,
