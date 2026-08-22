@@ -7,11 +7,13 @@ import {
 import { clusterArtworkColors } from "../src/lib/pricing/artwork-colors";
 import { materialsForProduct } from "../src/lib/pricing/materials";
 import {
+  calculateLayouts,
   calculateQuote,
   calculateQuoteBreaks,
   pricedQuantities,
   stationCount,
   validQtyBreaks,
+  viableAcrossValues,
 } from "../src/lib/pricing/engine";
 import type { QuoteSpec } from "../src/types";
 
@@ -135,6 +137,13 @@ const rfp = parseRfpDocument(`ITEM 1 — Bumper stickers
 UV Vinyl 4 x 2, 5000 qty, 2 colors`);
 assert.equal(rfp[0].parsed.product, "Bumper Stickers");
 assert.equal(rfp[0].ready, true);
+
+const acrosses = viableAcrossValues(base, EXAMPLE_CATALOG);
+assert.ok(acrosses.includes(1));
+assert.ok(acrosses.includes(2));
+const layouts = calculateLayouts(base, EXAMPLE_DTC_COMPANY, EXAMPLE_CATALOG);
+assert.ok(layouts.length >= 2);
+assert.ok(layouts[0].breakdown.finalPrice <= layouts[layouts.length - 1].breakdown.finalPrice);
 
 assert.ok(!JSON.stringify(EXAMPLE_CATALOG).includes("Fortis"));
 assert.ok(!JSON.stringify(EXAMPLE_CATALOG).includes("Novi"));

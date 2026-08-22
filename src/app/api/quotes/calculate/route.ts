@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { defaultDtcCompany, loadCatalog, loadCompany } from "@/lib/pricing/catalog";
-import { calculateQuoteBreaks, normalizeSpec } from "@/lib/pricing/engine";
+import {
+  calculateLayouts,
+  calculateQuoteBreaks,
+  normalizeSpec,
+} from "@/lib/pricing/engine";
 import type { QuoteSpec } from "@/types";
 
 export async function POST(request: Request) {
@@ -12,6 +16,7 @@ export async function POST(request: Request) {
     : await defaultDtcCompany();
 
   const estimate = calculateQuoteBreaks(spec, company, catalog);
+  const layouts = calculateLayouts(spec, company, catalog);
   return NextResponse.json({
     spec,
     company: {
@@ -28,5 +33,13 @@ export async function POST(request: Request) {
     quantities: estimate.quantities,
     pricedQuantity: estimate.pricedQuantity,
     viable: estimate.viable,
+    layouts: layouts.map((l) => ({
+      across: l.across,
+      webIn: l.webIn,
+      viable: l.viable,
+      finalPrice: l.breakdown.finalPrice,
+      perUnit: l.breakdown.finalPrice / Math.max(spec.quantity, 1),
+      routeName: l.breakdown.routeName,
+    })),
   });
 }

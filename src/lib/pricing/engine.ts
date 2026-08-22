@@ -352,6 +352,60 @@ export function isViableSpec(spec: QuoteSpec, catalog: PricingCatalog): boolean 
   });
 }
 
+/** Geometric fit only — not a stocked-web price table. */
+const LAYOUT_TRIM_IN = 0.25;
+const LAYOUT_GAP_IN = 0.125;
+
+export function webInchesForAcross(widthIn: number, across: number): number {
+  if (!(widthIn > 0) || !(across > 0)) return 0;
+  return across * widthIn + Math.max(0, across - 1) * LAYOUT_GAP_IN + 2 * LAYOUT_TRIM_IN;
+}
+
+export function viableAcrossValues(spec: QuoteSpec, catalog: PricingCatalog): number[] {
+  const printers = catalog.equipment.filter(
+    (eq) => eq.stage === "printer" && eq.active !== false
+  );
+  const withWeb = printers.filter((eq) => eq.capabilities?.max_width_in != null);
+  if (!withWeb.length || !(spec.widthIn > 0)) return [];
+
+  const fits = (across: number) => {
+    const web = webInchesForAcross(spec.widthIn, across);
+    return withWeb.some((eq) => {
+      const cap = eq.capabilities ?? {};
+      if (cap.products?.length && spec.product && !cap.products.includes(spec.product)) {
+        return false;
+      }
+      if (cap.materials?.length && spec.material && !cap.materials.includes(spec.material)) {
+        return false;
+      }
+      return web <= (cap.max_width_in ?? 0);
+    });
+  };
+
+  return [1, 2, 3, 4, 5, 6].filter(fits);
+}
+
+export function calculateLayouts(
+  rawSpec: QuoteSpec,
+  company: Pick<
+    Company,
+    "margin_percent" | "target_margin_percent" | "is_reseller" | "discount_percent"
+  >,
+  catalog: PricingCatalog
+) {
+  return viableAcrossValues(rawSpec, catalog)
+    .map((across) => {
+      const breakdown = calculateQuote({ ...rawSpec, across }, company, catalog);
+      return {
+        across,
+        webIn: webInchesForAcross(rawSpec.widthIn, across),
+        breakdown,
+        viable: breakdown.viable !== false,
+      };
+    })
+    .sort((a, b) => a.breakdown.finalPrice - b.breakdown.finalPrice);
+}
+
 export function calculateQuoteBreaks(
   rawSpec: QuoteSpec,
   company: Pick<

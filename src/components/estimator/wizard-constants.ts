@@ -119,9 +119,11 @@ export function stepIsValid(step: number, spec: QuoteSpec): boolean {
 }
 
 export function canOpenStep(target: number, current: number, spec: QuoteSpec): boolean {
-  if (target === current) return true;
-  if (target > current) return false;
-  return stepIsValid(target, spec);
+  if (target === 0) return true;
+  if (target === 1) return Boolean(spec.product);
+  if (target === 2) return Boolean(spec.material);
+  if (target <= current) return true;
+  return spec.widthIn > 0 && spec.heightIn > 0;
 }
 
 export function specFromProductName(name: string, base: QuoteSpec = EMPTY_WIZARD_SPEC): QuoteSpec {

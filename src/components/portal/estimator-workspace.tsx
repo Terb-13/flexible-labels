@@ -11,6 +11,7 @@ import {
 } from "@/app/operations/actions";
 import { CustomerPicker } from "@/components/estimator/customer-picker";
 import { EstimateWizard } from "@/components/estimator/estimate-wizard";
+import { SpecPaste } from "@/components/estimator/spec-paste";
 import {
   EMPTY_WIZARD_SPEC,
   specFromParsed,
@@ -24,6 +25,7 @@ import type {
   Material,
   QuoteBreakdown,
   QuoteBreakResult,
+  QuoteLayoutOption,
   QuoteSpec,
   SavedQuote,
   ScheduleJob,
@@ -61,6 +63,7 @@ export function useLiveQuote(spec: QuoteSpec, companyId?: string) {
 export function useLiveEstimate(spec: QuoteSpec, companyId?: string) {
   const [breaks, setBreaks] = useState<QuoteBreakResult[]>([]);
   const [primary, setPrimary] = useState<QuoteBreakdown | null>(null);
+  const [layouts, setLayouts] = useState<QuoteLayoutOption[]>([]);
   const [viable, setViable] = useState(true);
   const [loading, setLoading] = useState(false);
 
@@ -76,6 +79,7 @@ export function useLiveEstimate(spec: QuoteSpec, companyId?: string) {
     if (!ready) {
       setBreaks([]);
       setPrimary(null);
+      setLayouts([]);
       return;
     }
     const handle = window.setTimeout(async () => {
@@ -89,10 +93,12 @@ export function useLiveEstimate(spec: QuoteSpec, companyId?: string) {
         const data = await res.json();
         setPrimary((data.breakdown as QuoteBreakdown | null) ?? null);
         setBreaks((data.breaks as QuoteBreakResult[]) ?? []);
+        setLayouts((data.layouts as QuoteLayoutOption[]) ?? []);
         setViable(data.viable !== false);
       } catch {
         setPrimary(null);
         setBreaks([]);
+        setLayouts([]);
         setViable(false);
       } finally {
         setLoading(false);
@@ -101,7 +107,7 @@ export function useLiveEstimate(spec: QuoteSpec, companyId?: string) {
     return () => window.clearTimeout(handle);
   }, [spec, companyId, ready]);
 
-  return { estimate: { primary, breaks, viable }, loading };
+  return { estimate: { primary, breaks, layouts, viable }, loading };
 }
 
 export function EstimatorWorkspace({
@@ -198,6 +204,7 @@ export function EstimatorWorkspace({
           companyId={companyId}
           locked={Boolean(lockedCompany)}
           showInternalTerms={mode === "employee"}
+          allowTermsOnCreate={mode === "employee"}
           busy={busy === "company"}
           onSelect={setCompanyId}
           onCreate={async (input) => {
@@ -218,6 +225,19 @@ export function EstimatorWorkspace({
           }}
         />
       ) : (
+        <div className="space-y-4">
+        <SpecPaste
+          onApply={(next) => {
+            applySpec(next);
+            const ready =
+              Boolean(next.product) &&
+              Boolean(next.material) &&
+              next.widthIn > 0 &&
+              next.heightIn > 0 &&
+              next.quantity > 0;
+            setStep(ready ? 6 : 0);
+          }}
+        />
         <EstimateWizard
           spec={spec}
           onChange={applySpec}
@@ -230,6 +250,7 @@ export function EstimatorWorkspace({
           onArtwork={setArtworkUrl}
           loading={loading}
           breaks={estimate.breaks}
+          layouts={estimate.layouts}
           viable={estimate.viable}
           mode={mode}
           busy={busy}
@@ -279,6 +300,7 @@ export function EstimatorWorkspace({
               : undefined
           }
         />
+        </div>
       )}
 
       {checkoutOpen && estimate.primary && (

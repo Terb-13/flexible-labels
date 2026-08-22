@@ -12,6 +12,7 @@ import {
   UNWIND_DIRS,
 } from "@/components/estimator/wizard-constants";
 import { Pill } from "@/components/estimator/pill";
+import { TYPE_OPTIONS } from "@/lib/data/example-catalog";
 import { cn } from "@/lib/utils";
 import type { QuoteSpec } from "@/types";
 
@@ -49,6 +50,17 @@ export function SpecsStep({
       <p className="mt-2 font-mono text-xs text-slate-500 max-w-xl">
         {STEP_SUBTITLES[4]}
       </p>
+
+      <Head title="Product type" sub="Catalog type used by route match — not customer DTC/reseller." />
+      <div className="flex flex-wrap gap-2">
+        {TYPE_OPTIONS.map((type) => (
+          <Pill key={type} on={spec.type === type} onClick={() => onChange({ type })}>
+            <span className={cn("text-sm font-semibold", spec.type === type && "text-teal")}>
+              {type}
+            </span>
+          </Pill>
+        ))}
+      </div>
 
       <Head title="Premium finishes" sub="Captured on the quote. Priced only when a catalog rate exists." />
       <div className="grid sm:grid-cols-2 gap-2 max-w-2xl">

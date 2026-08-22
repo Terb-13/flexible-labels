@@ -309,6 +309,15 @@ export interface QuoteEstimate {
   viable: boolean;
 }
 
+export interface QuoteLayoutOption {
+  across: number;
+  webIn: number;
+  viable: boolean;
+  finalPrice: number;
+  perUnit: number;
+  routeName: string;
+}
+
 export interface RouteCostLine {
   stage: EquipmentStage;
   equipmentId: string;

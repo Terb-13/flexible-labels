@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import type {
   QuoteBreakdown,
   QuoteBreakResult,
+  QuoteLayoutOption,
   QuoteSpec,
   SavedQuote,
 } from "@/types";
@@ -32,8 +33,10 @@ export function EstimateStep({
   spec,
   loading,
   breaks,
+  layouts,
   viable,
   onSelectQty,
+  onSelectAcross,
   mode,
   busy,
   saved,
@@ -45,8 +48,10 @@ export function EstimateStep({
   spec: QuoteSpec;
   loading: boolean;
   breaks: QuoteBreakResult[];
+  layouts: QuoteLayoutOption[];
   viable: boolean;
   onSelectQty: (qty: number) => void;
+  onSelectAcross?: (across: number) => void;
   mode: "public" | "employee";
   busy?: string | null;
   saved?: SavedQuote | null;
@@ -163,6 +168,49 @@ export function EstimateStep({
               </div>
             </div>
           </div>
+
+          {layouts.length > 0 && onSelectAcross && (
+            <div className="rounded-3xl border border-slate-200 bg-white p-5">
+              <div className="font-semibold">Production layout</div>
+              <p className="mt-1 font-mono text-[11px] text-slate-500">
+                Across 1–6 that fit a catalog press max width. Cheapest first.
+                No invented web SKUs.
+              </p>
+              <div className="mt-3 space-y-2">
+                {layouts.map((lo, i) => {
+                  const on = lo.across === spec.across;
+                  return (
+                    <button
+                      key={lo.across}
+                      type="button"
+                      onClick={() => onSelectAcross(lo.across)}
+                      className={cn(
+                        "flex w-full items-center justify-between rounded-2xl border px-4 py-3 text-left",
+                        on ? "border-teal bg-teal/5" : "border-slate-200 bg-white"
+                      )}
+                    >
+                      <div>
+                        <div className="font-semibold">
+                          {lo.across}-across · {lo.webIn.toFixed(2)}&quot; web
+                          {i === 0 && (
+                            <span className="ml-2 rounded bg-teal/10 px-1.5 py-0.5 font-mono text-[10px] text-teal">
+                              Lowest cost
+                            </span>
+                          )}
+                        </div>
+                        <div className="font-mono text-[11px] text-slate-500">
+                          {lo.routeName}
+                        </div>
+                      </div>
+                      <div className="font-mono font-bold">
+                        {formatCurrency(lo.finalPrice, true)}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           <div className="rounded-3xl border border-slate-200 bg-white p-5">
             <div className="font-semibold">Production route</div>
