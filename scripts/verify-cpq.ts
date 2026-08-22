@@ -250,6 +250,16 @@ const resolvedAcross = withAutoAcross(
 );
 assert.ok(resolvedAcross.across > 0);
 assert.ok(resolvedAcross.repeatIn > 0);
+const staleWide = withAutoAcross(
+  { ...base, widthIn: 10, heightIn: 3.5, across: 6 },
+  EXAMPLE_DTC_COMPANY,
+  EXAMPLE_CATALOG
+);
+assert.ok(staleWide.across > 0);
+assert.ok(
+  staleWide.across < 6,
+  "geometry change must re-pick across — a leftover 6-across is not a lock"
+);
 
 assert.ok(!JSON.stringify(EXAMPLE_CATALOG).includes("Fortis"));
 assert.ok(!JSON.stringify(EXAMPLE_CATALOG).includes("Novi"));

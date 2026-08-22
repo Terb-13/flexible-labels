@@ -51,11 +51,12 @@ export async function saveQuoteAction(input: {
   const company = await loadCompany(input.companyId);
   if (!company) throw new Error("Select a customer first");
   const catalog = await loadCatalog();
-  const estimate = calculateQuoteBreaks(input.spec, company, catalog);
-  const breakdown = estimate.primary ?? calculateQuote(input.spec, company, catalog);
+  const resolved = withAutoAcross(input.spec, company, catalog);
+  const estimate = calculateQuoteBreaks(resolved, company, catalog);
+  const breakdown = estimate.primary ?? calculateQuote(resolved, company, catalog);
   const spec = {
     ...input.spec,
-    ...withAutoAcross(input.spec, company, catalog),
+    ...resolved,
     quantity: estimate.pricedQuantity || input.spec.quantity,
     qtyBreaks: estimate.quantities,
     grouped: estimate.grouped,
