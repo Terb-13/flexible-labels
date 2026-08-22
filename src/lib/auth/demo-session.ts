@@ -1,6 +1,8 @@
 import type { Profile, UserRole } from "@/types";
 import { DEMO_COMPANY } from "@/lib/data/demo-data";
 
+/** Local preview only. Production ignores flg_demo_session when Supabase env is set. */
+
 export const DEMO_CUSTOMER_PROFILE: Profile = {
   id: "demo-customer",
   email: "jenna@acmebrands.co",

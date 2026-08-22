@@ -10,6 +10,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "test": "tsx --test src/lib/auth/gates.test.ts scripts/seed-data.test.ts",
     "db:seed": "tsx scripts/seed-demo.ts"
   },
   "dependencies": {

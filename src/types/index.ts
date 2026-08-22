@@ -37,6 +37,7 @@ export interface Company {
   margin_percent: number;
   is_reseller: boolean;
   target_margin_percent: number;
+  discount_percent?: number;
 }
 
 export interface Order {
@@ -87,7 +88,9 @@ export interface ScheduleJob {
   job_number: string;
   name: string;
   quantity: string;
+  /** In-memory Gantt fixture only. DB source of truth is job_steps. */
   resource: string;
+  /** In-memory Gantt fixture only. Dropped from schedule_jobs in 002_erp_loop.sql. */
   start_day: number;
   duration: number;
   due_date: string;

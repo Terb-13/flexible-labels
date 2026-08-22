@@ -1,5 +1,3 @@
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 import { EstimatorWorkspace } from "@/components/portal/estimator-workspace";
 import {
   DEMO_KPIS,
@@ -8,14 +6,10 @@ import {
 } from "@/lib/data/demo-data";
 import { formatCurrency } from "@/lib/pricing/engine";
 import { OperationsClient } from "@/components/portal/operations-client";
+import { requireEmployeeSession } from "@/lib/auth/session";
 
 export default async function OperationsPage() {
-  const cookieStore = await cookies();
-  const role = cookieStore.get("flg_demo_session")?.value;
-
-  if (role !== "employee") {
-    redirect("/portal/login?next=/operations");
-  }
+  await requireEmployeeSession();
 
   return (
     <section className="pt-8 pb-20 px-5 md:px-8 bg-slate-50 min-h-screen">

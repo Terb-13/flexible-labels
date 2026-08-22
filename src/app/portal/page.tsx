@@ -1,18 +1,8 @@
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 import { PortalDashboard } from "@/components/portal/portal-dashboard";
-import { getDemoProfile } from "@/lib/auth/demo-session";
-import type { UserRole } from "@/types";
+import { requirePortalSession } from "@/lib/auth/session";
 
 export default async function PortalPage() {
-  const cookieStore = await cookies();
-  const demoRole = cookieStore.get("flg_demo_session")?.value as UserRole | undefined;
-
-  if (!demoRole) {
-    redirect("/portal/login");
-  }
-
-  const profile = getDemoProfile(demoRole === "employee" ? "customer" : "customer");
+  const session = await requirePortalSession();
 
   return (
     <section className="pt-8 pb-20 px-5 md:px-8">
@@ -24,7 +14,7 @@ export default async function PortalPage() {
                 Customer Portal
               </h1>
               <span className="text-xs px-3 py-px bg-emerald-100 text-emerald-700 font-medium rounded-full">
-                LIVE DEMO
+                {session.mode === "demo" ? "LOCAL DEMO" : "SIGNED IN"}
               </span>
             </div>
             <p className="text-slate-600">
@@ -33,8 +23,8 @@ export default async function PortalPage() {
           </div>
         </div>
         <PortalDashboard
-          profile={profile}
-          isEmployee={demoRole === "employee"}
+          profile={session.profile}
+          isEmployee={session.profile.role === "employee"}
         />
       </div>
     </section>
