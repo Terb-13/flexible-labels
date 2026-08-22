@@ -4,6 +4,7 @@ import {
   EXAMPLE_CATALOG,
   EXAMPLE_DTC_COMPANY,
 } from "../src/lib/data/example-catalog";
+import { fillExampleCatalogGaps } from "../src/lib/pricing/catalog";
 import { clusterArtworkColors } from "../src/lib/pricing/artwork-colors";
 import {
   materialsForProduct,
@@ -158,6 +159,19 @@ assert.ok(
 assert.ok(toPublicMaterials([]).some((m) => m.name === "Gloss PET"));
 assert.ok(publicPickerMaterials().some((m) => m.name === "Foil Laminate"));
 assert.ok(publicPickerMaterials().every((m) => m.cost_per_sqin === 0));
+
+const seededGaps = fillExampleCatalogGaps({
+  equipment: EXAMPLE_CATALOG.equipment,
+  materials: [],
+  routes: [],
+});
+assert.equal(seededGaps.materials, EXAMPLE_CATALOG.materials);
+assert.equal(seededGaps.routes, EXAMPLE_CATALOG.routes);
+assert.ok(seededGaps.materials.some((m) => m.name === "Matte BOPP"));
+assert.ok(seededGaps.materials.some((m) => m.name === "UV Vinyl"));
+assert.ok(seededGaps.materials.some((m) => m.name === "Gloss PET"));
+assert.ok(seededGaps.materials.some((m) => m.name === "Foil Laminate"));
+assert.notEqual(seededGaps.source, "example");
 
 const redPixels = Array.from({ length: 80 }, () => ({
   r: 200,

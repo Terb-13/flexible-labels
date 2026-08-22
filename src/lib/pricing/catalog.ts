@@ -68,6 +68,26 @@ async function supabaseReader() {
   }
 }
 
+/**
+ * Live equipment can exist while materials/routes were never seeded.
+ * Fill those gaps from EXAMPLE_CATALOG — no invented plant rates.
+ */
+export function fillExampleCatalogGaps(input: {
+  equipment: Equipment[];
+  materials: Material[];
+  routes: ProductionRoute[];
+}): PricingCatalog {
+  const hasSubstrate = input.materials.some(
+    (m) => m.kind === "substrate" && m.active !== false
+  );
+  return {
+    equipment: input.equipment,
+    materials: hasSubstrate ? input.materials : EXAMPLE_CATALOG.materials,
+    routes: input.routes.length ? input.routes : EXAMPLE_CATALOG.routes,
+    source: "supabase",
+  };
+}
+
 export async function loadCatalog(): Promise<PricingCatalog> {
   const client = await supabaseReader();
   if (!client) return EXAMPLE_CATALOG;
@@ -98,19 +118,11 @@ export async function loadCatalog(): Promise<PricingCatalog> {
     steps: steps.filter((s) => s.route_id === row.id),
   }));
 
-  const materials = (materialsRes.data as Record<string, unknown>[]).map(
-    mapMaterial
-  );
-  const hasSubstrate = materials.some(
-    (m) => m.kind === "substrate" && m.active !== false
-  );
-
-  return {
+  return fillExampleCatalogGaps({
     equipment: (equipmentRes.data as Record<string, unknown>[]).map(mapEquipment),
-    materials: hasSubstrate ? materials : EXAMPLE_CATALOG.materials,
-    routes: routes.length ? routes : EXAMPLE_CATALOG.routes,
-    source: "supabase",
-  };
+    materials: (materialsRes.data as Record<string, unknown>[]).map(mapMaterial),
+    routes,
+  });
 }
 
 export function mapCompany(row: Record<string, unknown>): Company {
