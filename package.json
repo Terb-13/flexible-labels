@@ -11,7 +11,8 @@
     "start": "next start",
     "lint": "next lint",
     "db:seed": "tsx scripts/seed-demo.ts",
-    "verify:erp": "tsx scripts/verify-erp.ts"
+    "verify:erp": "tsx scripts/verify-erp.ts",
+    "verify:floor": "tsx scripts/verify-floor.ts"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.10",

@@ -39,6 +39,11 @@ function parseText(text: string): ParsedDocumentSpec {
     lower.includes("serial") ||
     lower.includes("qr");
 
+  const acrossMatch = text.match(/(\d+)\s*(across|up)/i);
+  const across = acrossMatch ? Number(acrossMatch[1]) : undefined;
+  const repeatMatch = text.match(/repeat(?:\s*(?:of|at|:))?\s*(\d+\.?\d*)/i);
+  const repeatIn = repeatMatch ? Number(repeatMatch[1]) : undefined;
+
   return {
     product: productType,
     productType,
@@ -49,6 +54,8 @@ function parseText(text: string): ParsedDocumentSpec {
     colors: colors ?? 4,
     material,
     variableData,
+    repeatIn,
+    across,
     notes: text.slice(0, 240),
     missingFields,
     confidence: missingFields.length === 0 ? 0.92 : 0.74,

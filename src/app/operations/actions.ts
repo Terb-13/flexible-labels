@@ -4,6 +4,8 @@ import { logout } from "@/app/auth/actions";
 import { getAppSession } from "@/lib/auth/session";
 import {
   approveQuote,
+  clockIn,
+  clockOut,
   createCompany,
   createJobFromQuote,
   rescheduleJob,
@@ -11,7 +13,7 @@ import {
 } from "@/lib/erp/store";
 import { loadCatalog, loadCompany } from "@/lib/pricing/catalog";
 import { calculateQuote } from "@/lib/pricing/engine";
-import type { CompanyType, QuoteSpec } from "@/types";
+import type { ClockActivity, CompanyType, QuoteSpec } from "@/types";
 
 async function requireEmployee() {
   const session = await getAppSession();
@@ -67,4 +69,30 @@ export async function generateJobTicketAction(quoteId: string) {
 export async function rescheduleJobAction(jobId: string, startedAt: string) {
   await requireEmployee();
   return rescheduleJob(jobId, startedAt);
+}
+
+export async function clockInAction(input: {
+  jobStepId: string;
+  equipmentId: string;
+  activity: ClockActivity;
+  delayReasonId?: string | null;
+  notes?: string | null;
+}) {
+  const session = await requireEmployee();
+  return clockIn({
+    ...input,
+    operatorId: session.userId,
+    delayReasonId: input.delayReasonId ?? null,
+    notes: input.notes ?? null,
+  });
+}
+
+export async function clockOutAction(input: {
+  clockId: string;
+  qtyGood?: number | null;
+  qtyWaste?: number | null;
+  notes?: string | null;
+}) {
+  await requireEmployee();
+  return clockOut(input);
 }

@@ -21,12 +21,21 @@ function asNumber(value: unknown, fallback = 0): number {
 }
 
 function mapEquipment(row: Record<string, unknown>): Equipment {
+  const stage = row.stage as Equipment["stage"];
+  const unit = row.run_speed_unit === "fpm" || stage === "printer"
+    ? "fpm"
+    : "labels_per_hour";
   return {
     id: String(row.id),
     name: String(row.name),
-    stage: row.stage as Equipment["stage"],
+    stage,
     cost_rate: asNumber(row.cost_rate),
     run_speed: asNumber(row.run_speed),
+    run_speed_unit: unit,
+    run_speed_fpm:
+      row.run_speed_fpm == null || row.run_speed_fpm === ""
+        ? null
+        : asNumber(row.run_speed_fpm),
     waste_percent: asNumber(row.waste_percent),
     capabilities: (row.capabilities ?? {}) as Equipment["capabilities"],
     setup_time_minutes: asNumber(row.setup_time_minutes),

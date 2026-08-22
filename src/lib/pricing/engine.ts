@@ -1,3 +1,8 @@
+import {
+  plannedPressHours,
+  productionFeet,
+  roundHours,
+} from "@/lib/erp/press-time";
 import type {
   Company,
   Equipment,
@@ -28,6 +33,8 @@ export function normalizeSpec(spec: QuoteSpec): QuoteSpec {
     colors: Number(spec.colors) || 1,
     finish: spec.finish,
     variableData: Boolean(spec.variableData),
+    repeatIn: Number(spec.repeatIn) || 0,
+    across: Number(spec.across) || 0,
   };
 }
 
@@ -131,12 +138,22 @@ function findDye(materials: Material[]): Material | null {
   );
 }
 
-function stepHours(equipment: Equipment, spec: QuoteSpec): number {
+function stepHours(equipment: Equipment, spec: QuoteSpec): {
+  hours: number;
+  productionFeet: number;
+} {
+  if (equipment.stage === "printer") {
+    const feet = productionFeet(spec.quantity, spec.across, spec.repeatIn);
+    const fpm = equipment.run_speed_fpm ?? 0;
+    return {
+      hours: plannedPressHours(equipment.setup_time_minutes, feet, fpm),
+      productionFeet: feet,
+    };
+  }
   const setupHours = equipment.setup_time_minutes / 60;
   const speed = equipment.run_speed > 0 ? equipment.run_speed : 1;
   const runHours = (spec.quantity / speed) * (1 + equipment.waste_percent / 100);
-  const vdpHours = spec.variableData && equipment.stage === "printer" ? 0.25 : 0;
-  return setupHours + runHours + vdpHours;
+  return { hours: setupHours + runHours, productionFeet: 0 };
 }
 
 /**
@@ -186,16 +203,19 @@ export function calculateQuote(
         wastePercent: 0,
       };
     }
-    const hours = stepHours(equipment, spec);
+    const timed = stepHours(equipment, spec);
     return {
       stage,
       equipmentId: equipment.id,
       equipmentName: equipment.name,
-      hours: Math.round(hours * 1000) / 1000,
-      cost: money(hours * equipment.cost_rate),
+      hours: roundHours(timed.hours),
+      cost: money(timed.hours * equipment.cost_rate),
       qualified: true,
       setupMinutes: equipment.setup_time_minutes,
       wastePercent: equipment.waste_percent,
+      productionFeet:
+        stage === "printer" ? roundHours(timed.productionFeet) : undefined,
+      runSpeedUnit: equipment.run_speed_unit,
     };
   });
 
@@ -225,6 +245,7 @@ export function calculateQuote(
   const actualMarginPercent =
     finalPrice > 0 ? Math.round((marginAmount / finalPrice) * 1000) / 10 : 0;
   const needsApproval = actualMarginPercent < company.target_margin_percent;
+  const printerLine = lines.find((l) => l.stage === "printer");
 
   return {
     materialCost,
@@ -247,6 +268,8 @@ export function calculateQuote(
     routeId: route?.id ?? "",
     lines,
     catalogSource: catalog.source,
+    productionFeet: printerLine?.productionFeet ?? 0,
+    plannedPressHours: printerLine?.hours ?? 0,
   };
 }
 

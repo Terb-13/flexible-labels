@@ -3,7 +3,14 @@ import { logoutOperations } from "@/app/operations/actions";
 import { OperationsClient } from "@/components/portal/operations-client";
 import { Button } from "@/components/ui/button";
 import { getAppSession } from "@/lib/auth/session";
-import { listCompanies, listEquipment, listJobs } from "@/lib/erp/store";
+import {
+  listClocks,
+  listCompanies,
+  listDelayReasons,
+  listEquipment,
+  listJobs,
+  listPlantShifts,
+} from "@/lib/erp/store";
 import { loadCatalog } from "@/lib/pricing/catalog";
 
 export default async function OperationsPage() {
@@ -12,12 +19,16 @@ export default async function OperationsPage() {
     redirect(session.role === "customer" ? "/portal" : "/operations/login");
   }
 
-  const [companies, equipment, jobs, catalog] = await Promise.all([
-    listCompanies(),
-    listEquipment(),
-    listJobs(),
-    loadCatalog(),
-  ]);
+  const [companies, equipment, jobs, catalog, clocks, reasons, shifts] =
+    await Promise.all([
+      listCompanies(),
+      listEquipment(),
+      listJobs(),
+      loadCatalog(),
+      listClocks(),
+      listDelayReasons(),
+      listPlantShifts(),
+    ]);
 
   return (
     <section className="pt-8 pb-20 px-5 md:px-8 bg-slate-50 min-h-screen">
@@ -32,8 +43,8 @@ export default async function OperationsPage() {
             </span>
           </div>
           <p className="text-slate-600 mt-1">
-            Pick a customer, enter product attributes, cost-plus from equipment and
-            materials, then write the job onto the calendar.
+            Press board, operator clocks, and customer-attribute estimating.
+            Press time is footage / EXAMPLE FPM — not published plant speeds.
           </p>
           <form action={logoutOperations} className="mt-3">
             <Button type="submit" variant="outline" size="sm">
@@ -44,9 +55,12 @@ export default async function OperationsPage() {
 
         <OperationsClient
           initialJobs={jobs}
+          initialClocks={clocks}
           equipment={equipment}
           companies={companies}
           materials={catalog.materials}
+          reasons={reasons}
+          shifts={shifts}
         />
       </div>
     </section>
