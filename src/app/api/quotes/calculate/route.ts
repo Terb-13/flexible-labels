@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { defaultDtcCompany, loadCatalog, loadCompany } from "@/lib/pricing/catalog";
-import { calculateQuote, normalizeSpec } from "@/lib/pricing/engine";
+import { calculateQuoteBreaks, normalizeSpec } from "@/lib/pricing/engine";
 import type { QuoteSpec } from "@/types";
 
 export async function POST(request: Request) {
@@ -11,7 +11,7 @@ export async function POST(request: Request) {
     ? ((await loadCompany(body.companyId)) ?? (await defaultDtcCompany()))
     : await defaultDtcCompany();
 
-  const breakdown = calculateQuote(spec, company, catalog);
+  const estimate = calculateQuoteBreaks(spec, company, catalog);
   return NextResponse.json({
     spec,
     company: {
@@ -22,6 +22,11 @@ export async function POST(request: Request) {
       target_margin_percent: company.target_margin_percent,
       discount_percent: company.discount_percent,
     },
-    breakdown,
+    breakdown: estimate.primary,
+    breaks: estimate.breaks,
+    grouped: estimate.grouped,
+    quantities: estimate.quantities,
+    pricedQuantity: estimate.pricedQuantity,
+    viable: estimate.viable,
   });
 }

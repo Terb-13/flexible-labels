@@ -21,12 +21,13 @@ export default async function QuotePage() {
         <div className="p-8 text-sm text-slate-500">Loading quote builder…</div>
       }
     >
-      <QuotePageClient
-        materials={catalog.materials}
-        companies={locked ? [locked] : companies}
-        lockedCompany={locked}
-        loggedIn={session.role === "customer"}
-      />
+        <QuotePageClient
+          materials={catalog.materials}
+          equipment={catalog.equipment}
+          companies={locked ? [locked] : companies}
+          lockedCompany={locked}
+          loggedIn={session.role === "customer"}
+        />
     </Suspense>
   );
 }

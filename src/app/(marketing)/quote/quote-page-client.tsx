@@ -2,15 +2,17 @@
 
 import { useSearchParams } from "next/navigation";
 import { EstimatorWorkspace } from "@/components/portal/estimator-workspace";
-import type { Company, Material } from "@/types";
+import type { Company, Equipment, Material } from "@/types";
 
 export default function QuotePageClient({
   materials,
+  equipment,
   companies,
   lockedCompany,
   loggedIn,
 }: {
   materials: Material[];
+  equipment: Equipment[];
   companies: Company[];
   lockedCompany: Company | null;
   loggedIn: boolean;
@@ -26,18 +28,21 @@ export default function QuotePageClient({
             ONLINE QUOTING
           </div>
           <h1 className="heading-font text-4xl md:text-5xl tracking-tighter font-semibold mt-1">
-            Pick a customer, enter the specs, save the quote.
+            {lockedCompany
+              ? "Tell us what you need. We’ll price it."
+              : "Pick a customer, then walk the estimate."}
           </h1>
           <p className="text-slate-600 mt-3">
-            Choose or add the company first. Then enter product attributes only —
-            including repeat and across for press footage. No reseller toggle
-            and no discount field on the estimate.
+            {lockedCompany
+              ? "Seven steps — product through estimate. Type and discount come from your account, not this form."
+              : "Customer first. Then product, material, size, colors, specs, and quantity breaks. No reseller toggle and no discount field on the estimate."}
           </p>
         </div>
         <EstimatorWorkspace
           enableCheckout
           initialProductSlug={product}
           materials={materials}
+          equipment={equipment}
           companies={companies}
           lockedCompany={lockedCompany}
           loggedIn={loggedIn}

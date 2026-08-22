@@ -117,10 +117,15 @@ function hydrateQuote(row: SavedQuote): SavedQuote {
     row.quote_number ||
     row.spec?.quoteNumber ||
     `Q-${row.id.replace(/-/g, "").slice(0, 5).toUpperCase()}`;
+  const qty_breaks =
+    row.qty_breaks?.length ? row.qty_breaks : row.spec?.qtyBreaks ?? [];
+  const grouped = row.grouped ?? Boolean(row.spec?.grouped);
   return {
     ...row,
     quote_number,
-    spec: { ...row.spec, quoteNumber: quote_number },
+    qty_breaks,
+    grouped,
+    spec: { ...row.spec, quoteNumber: quote_number, qtyBreaks: qty_breaks, grouped },
   };
 }
 
@@ -128,11 +133,23 @@ export async function listQuotes(): Promise<SavedQuote[]> {
   const client = await writer();
   if (!client) return localListQuotes().map(hydrateQuote);
 
-  const { data, error } = await client
+  let data: unknown[] | null = null;
+  let { data: firstData, error } = await client
     .from("quotes")
-    .select("id, company_id, spec, breakdown, status, needs_approval, order_id, created_at")
+    .select("id, company_id, spec, breakdown, status, needs_approval, order_id, created_at, qty_breaks, grouped")
     .order("created_at", { ascending: false })
     .limit(50);
+  data = firstData;
+
+  if (error && /qty_breaks|grouped/.test(error.message ?? "")) {
+    const retry = await client
+      .from("quotes")
+      .select("id, company_id, spec, breakdown, status, needs_approval, order_id, created_at")
+      .order("created_at", { ascending: false })
+      .limit(50);
+    data = retry.data;
+    error = retry.error;
+  }
 
   if (error || !data) return localListQuotes().map(hydrateQuote);
   return (data as SavedQuote[]).map(hydrateQuote);
@@ -154,34 +171,56 @@ export async function saveQuote(input: {
     : "approved";
   const quote_number = input.spec.quoteNumber || newQuoteNumber();
   const spec: QuoteSpec = { ...input.spec, quoteNumber: quote_number };
+  const qty_breaks = spec.qtyBreaks?.filter((n) => Number(n) > 0).slice(0, 7) ?? [];
+  const grouped = Boolean(spec.grouped);
   const quote: SavedQuote = {
     id: randomUUID(),
     company_id: input.companyId,
-    spec,
+    spec: { ...spec, qtyBreaks: qty_breaks, grouped },
     breakdown: input.breakdown,
     status,
     needs_approval: input.breakdown.needsApproval,
     order_id: null,
     created_at: new Date().toISOString(),
     quote_number,
+    qty_breaks,
+    grouped,
   };
 
   const client = await writer();
   if (!client) return localSaveQuote(quote);
 
-  const { data, error } = await client
+  const base = {
+    id: quote.id,
+    company_id: quote.company_id,
+    created_by: input.createdBy ?? null,
+    spec: quote.spec,
+    breakdown: quote.breakdown,
+    status: quote.status,
+    needs_approval: quote.needs_approval,
+  };
+
+  let data: unknown = null;
+  let { data: firstRow, error } = await client
     .from("quotes")
     .insert({
-      id: quote.id,
-      company_id: quote.company_id,
-      created_by: input.createdBy ?? null,
-      spec: quote.spec,
-      breakdown: quote.breakdown,
-      status: quote.status,
-      needs_approval: quote.needs_approval,
+      ...base,
+      qty_breaks: quote.qty_breaks ?? [],
+      grouped: quote.grouped ?? false,
     })
-    .select("id, company_id, spec, breakdown, status, needs_approval, order_id, created_at")
+    .select("id, company_id, spec, breakdown, status, needs_approval, order_id, created_at, qty_breaks, grouped")
     .single();
+  data = firstRow;
+
+  if (error && /qty_breaks|grouped/.test(error.message ?? "")) {
+    const retry = await client
+      .from("quotes")
+      .insert(base)
+      .select("id, company_id, spec, breakdown, status, needs_approval, order_id, created_at")
+      .single();
+    data = retry.data;
+    error = retry.error;
+  }
 
   if (error || !data) {
     throw new Error(error?.message ?? "Could not save quote");
@@ -205,7 +244,7 @@ export async function approveQuote(quoteId: string): Promise<SavedQuote> {
     .from("quotes")
     .update({ status: "approved", needs_approval: false })
     .eq("id", quoteId)
-    .select("id, company_id, spec, breakdown, status, needs_approval, order_id, created_at")
+    .select("id, company_id, spec, breakdown, status, needs_approval, order_id, created_at, qty_breaks, grouped")
     .single();
 
   if (error || !data) throw new Error(error?.message ?? "Could not approve quote");

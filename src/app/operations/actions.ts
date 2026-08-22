@@ -12,7 +12,7 @@ import {
   saveQuote,
 } from "@/lib/erp/store";
 import { loadCatalog, loadCompany } from "@/lib/pricing/catalog";
-import { calculateQuote } from "@/lib/pricing/engine";
+import { calculateQuote, calculateQuoteBreaks } from "@/lib/pricing/engine";
 import type { ClockActivity, CompanyType, QuoteSpec } from "@/types";
 
 async function requireEmployee() {
@@ -47,10 +47,25 @@ export async function saveQuoteAction(input: {
   const company = await loadCompany(input.companyId);
   if (!company) throw new Error("Select a customer first");
   const catalog = await loadCatalog();
-  const breakdown = calculateQuote(input.spec, company, catalog);
+  const estimate = calculateQuoteBreaks(input.spec, company, catalog);
+  const breakdown = estimate.primary ?? calculateQuote(input.spec, company, catalog);
+  const spec = {
+    ...input.spec,
+    quantity: estimate.pricedQuantity || input.spec.quantity,
+    qtyBreaks: estimate.quantities,
+    grouped: estimate.grouped,
+    breakSnapshots: estimate.breaks.map((b) => ({
+      quantity: b.quantity,
+      finalPrice: b.breakdown.finalPrice,
+      perUnit: b.breakdown.finalPrice / Math.max(b.quantity, 1),
+      totalCost: b.breakdown.totalCost,
+      routeName: b.breakdown.routeName,
+      viable: b.viable,
+    })),
+  };
   return saveQuote({
     companyId: company.id,
-    spec: input.spec,
+    spec,
     breakdown,
     createdBy: session.userId,
   });
