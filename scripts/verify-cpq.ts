@@ -168,6 +168,7 @@ const seededGaps = fillExampleCatalogGaps({
 assert.equal(seededGaps.materials, EXAMPLE_CATALOG.materials);
 assert.equal(seededGaps.routes, EXAMPLE_CATALOG.routes);
 assert.ok(seededGaps.materials.some((m) => m.name === "Matte BOPP"));
+assert.ok(seededGaps.materials.some((m) => m.name === "Gloss BOPP"));
 assert.ok(seededGaps.materials.some((m) => m.name === "UV Vinyl"));
 assert.ok(seededGaps.materials.some((m) => m.name === "Gloss PET"));
 assert.ok(seededGaps.materials.some((m) => m.name === "Foil Laminate"));
