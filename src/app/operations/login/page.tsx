@@ -18,12 +18,9 @@ export default async function OperationsLoginPage({
         </div>
         <div className="font-semibold text-xl">Operations</div>
         <div className="text-sm text-slate-600 mt-1">
-          Sign in to estimate jobs and view the plant calendar.
+          Sign in to estimate jobs.
         </div>
         <DoorLoginForm door="employee" next={dest} allowDemo={isDemoLoginAllowed()} />
-        <div className="mt-4 text-xs text-slate-500">
-          For the plant team.
-        </div>
       </div>
     </section>
   );

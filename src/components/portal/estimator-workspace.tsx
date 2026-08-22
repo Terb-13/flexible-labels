@@ -259,6 +259,7 @@ export function EstimatorWorkspace({
         />
       ) : (
         <div className="space-y-4">
+        {mode === "employee" && (
         <SpecPaste
           mode={mode}
           onApply={(next) => {
@@ -272,6 +273,7 @@ export function EstimatorWorkspace({
             setStep(ready ? 6 : 0);
           }}
         />
+        )}
         <EstimateWizard
           spec={spec}
           onChange={applySpec}
@@ -285,7 +287,6 @@ export function EstimatorWorkspace({
           onArtwork={setArtworkUrl}
           loading={loading}
           breaks={publicBreaks}
-          layouts={mode === "public" ? [] : estimate.layouts}
           viable={estimate.viable}
           mode={mode}
           busy={busy}

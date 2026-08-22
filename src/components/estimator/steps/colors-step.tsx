@@ -15,11 +15,13 @@ export function ColorsStep({
   artworkUrl,
   onChange,
   onArtwork,
+  mode = "public",
 }: {
   spec: QuoteSpec;
   artworkUrl: string | null;
   onChange: (patch: Partial<QuoteSpec>) => void;
   onArtwork: (url: string | null) => void;
+  mode?: "public" | "employee";
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -63,7 +65,9 @@ export function ColorsStep({
         {STEP_TITLES[3]}
       </h2>
       <p className="mt-2 font-mono text-xs text-slate-500 max-w-xl">
-        {STEP_SUBTITLES[3]}
+        {mode === "employee"
+          ? STEP_SUBTITLES[3]
+          : "Upload artwork to extract colors, or enter how many you need."}
       </p>
       <div className="mt-8 grid lg:grid-cols-[1fr_300px] gap-6">
         <div>
@@ -169,7 +173,7 @@ export function ColorsStep({
           </div>
           <div className="rounded-2xl border border-slate-200 bg-white p-4">
             <div className="mb-2 font-mono text-[10px] uppercase tracking-wider text-slate-400">
-              Ink stations
+              {mode === "employee" ? "Ink stations" : "Colors"}
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
@@ -199,26 +203,30 @@ export function ColorsStep({
                 />
               </div>
             </div>
-            <div className="mt-3 flex gap-2">
-              <Pill
-                on={Boolean(spec.whitePlate)}
-                onClick={() => onChange({ whitePlate: !spec.whitePlate })}
-                className="flex-1 py-2 text-center font-mono text-xs"
-              >
-                {spec.whitePlate ? "✓" : "+"} White plate
-              </Pill>
-              <Pill
-                on={Boolean(spec.varnish)}
-                onClick={() => onChange({ varnish: !spec.varnish })}
-                className="flex-1 py-2 text-center font-mono text-xs"
-              >
-                {spec.varnish ? "✓" : "+"} Varnish
-              </Pill>
-            </div>
-            <div className="mt-3 flex items-center justify-between rounded-2xl bg-navy px-4 py-3 text-white">
-              <span className="font-mono text-xs text-slate-300">Total stations</span>
-              <span className="heading-font text-2xl">{stations}</span>
-            </div>
+            {mode === "employee" && (
+              <>
+                <div className="mt-3 flex gap-2">
+                  <Pill
+                    on={Boolean(spec.whitePlate)}
+                    onClick={() => onChange({ whitePlate: !spec.whitePlate })}
+                    className="flex-1 py-2 text-center font-mono text-xs"
+                  >
+                    {spec.whitePlate ? "✓" : "+"} White plate
+                  </Pill>
+                  <Pill
+                    on={Boolean(spec.varnish)}
+                    onClick={() => onChange({ varnish: !spec.varnish })}
+                    className="flex-1 py-2 text-center font-mono text-xs"
+                  >
+                    {spec.varnish ? "✓" : "+"} Varnish
+                  </Pill>
+                </div>
+                <div className="mt-3 flex items-center justify-between rounded-2xl bg-navy px-4 py-3 text-white">
+                  <span className="font-mono text-xs text-slate-300">Total stations</span>
+                  <span className="heading-font text-2xl">{stations}</span>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
