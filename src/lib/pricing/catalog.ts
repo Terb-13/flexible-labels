@@ -105,7 +105,7 @@ export async function loadCatalog(): Promise<PricingCatalog> {
   return {
     equipment: (equipmentRes.data as Record<string, unknown>[]).map(mapEquipment),
     materials: materials.length ? materials : EXAMPLE_CATALOG.materials,
-    routes,
+    routes: routes.length ? routes : EXAMPLE_CATALOG.routes,
     source: "supabase",
   };
 }
