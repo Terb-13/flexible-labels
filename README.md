@@ -47,8 +47,9 @@ npm run db:seed
 - `supabase/migrations/002_erp_estimating.sql` — `discount_percent`, equipment, materials, production_routes, route_steps, job_steps, quote↔order links, calendar columns on `schedule_jobs`
 - `supabase/migrations/003_press_floor.sql` — `run_speed_unit` / `run_speed_fpm`, quote/job `repeat_in` + `across` + `production_feet`, `delay_reasons`, `shop_floor_clocks`, `plant_shifts`
 - `supabase/migrations/004_cpq_qty_breaks.sql` — `quotes.qty_breaks` + `quotes.grouped` (wizard capture; still priced by `calculateQuote`)
+- `supabase/migrations/005_fix_profiles_rls_recursion.sql` — `public.is_employee()` + recreate "Employees read all profiles" so a reset cannot restore the profiles RLS loop
 
-Apply 002 (already in production) then **003** and **004**. Do not rewrite or re-apply 001/002.
+Apply 002 (already in production) then **003**, **004**, and **005**. Do not rewrite or re-apply 001/002. 005 is already live as `fix_profiles_rls_recursion`.
 
 Press-floor v1 is a shop-floor scheduler + operator clocks. Out of scope: JDF/press-counter hookup, changeover optimizer, inventory/material holds, payroll, multi-plant, auto-reschedule of the whole plant, invented plant dollars, buyer email.
 
