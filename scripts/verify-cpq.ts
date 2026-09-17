@@ -109,7 +109,7 @@ const tooWide = calculateQuote(
   EXAMPLE_DTC_COMPANY,
   EXAMPLE_CATALOG
 );
-assert.equal(tooWide.viable, true, "labels press has no max-width lock in EXAMPLE stubs");
+assert.equal(tooWide.viable, false, "EXAMPLE 12in web stub cannot run 40in labels");
 
 const signWide = calculateQuote(
   {
@@ -208,7 +208,7 @@ EXAMPLE Sign board 4 x 2, 5000 qty, 2 colors`);
 assert.equal(rfp[0].parsed.product, "Signs");
 assert.equal(rfp[0].ready, true);
 
-const incomplete = parseRfpDocument("EXAMPLE Label substrate 2.25 x 3.5, 10000");
+const incomplete = parseRfpDocument("2.25 x 3.5, 10000 units of unknown stock");
 assert.equal(incomplete[0].ready, false);
 assert.ok(incomplete[0].missing.includes("Product"));
 
