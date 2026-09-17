@@ -1,11 +1,11 @@
 import type { DelayReason, PlantShift } from "@/types";
 
 /**
- * EXAMPLE shop-floor reference data. Not Flexible Label’s real delay
- * taxonomy or published plant shift policy.
+ * EXAMPLE shop-floor reference data. Not a Summit Graphics shift policy
+ * or published delay taxonomy.
  */
 export const EXAMPLE_FLOOR_DISCLAIMER =
-  "EXAMPLE plant window — not a published Flexible Label shift policy.";
+  "EXAMPLE plant window — not a published Summit Graphics shift policy.";
 
 export const EXAMPLE_DELAY_REASONS: DelayReason[] = [
   {

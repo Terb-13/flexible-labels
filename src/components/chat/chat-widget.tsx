@@ -9,10 +9,10 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 const QUICK_REPLIES = [
-  "Material recommendation for beverage labels in refrigeration?",
-  "Quote estimate for 10,000 2x3 roll labels",
-  "Current status of order FLG-48219?",
-  "Do you support variable data and QR codes?",
+  "How do I quote packaging or kits?",
+  "Quote estimate for labels",
+  "Do you do serialized electronics labels?",
+  "Where do I sign in as a customer?",
 ];
 
 export function ChatWidget({
@@ -26,7 +26,7 @@ export function ChatWidget({
     {
       role: "assistant",
       content:
-        "Hi! I'm the FLG assistant. Ask about materials, quotes, products, lead times, or order status.",
+        "Hi — this is the Summit demo assistant. Ask about product types or start a self-serve quote. Numbers are EXAMPLE stubs.",
     },
   ]);
   const [input, setInput] = useState("");
@@ -67,9 +67,9 @@ export function ChatWidget({
             <Bot className="text-white w-4 h-4" />
           </div>
           <div>
-            <div className="font-semibold">FLG Assistant</div>
+            <div className="font-semibold">Summit assistant</div>
             <div className="text-xs text-teal">
-              Online • Backed by real production data
+              Demo • EXAMPLE catalog only
             </div>
           </div>
         </div>

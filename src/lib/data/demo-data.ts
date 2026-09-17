@@ -10,137 +10,97 @@ import type {
 
 export const DEMO_COMPANY: Company = {
   id: "00000000-0000-4000-8000-000000000001",
-  name: "Acme Brands",
-  margin_percent: 32,
+  name: "EXAMPLE Buyer (DTC)",
+  margin_percent: 25,
   is_reseller: false,
-  target_margin_percent: 28,
+  target_margin_percent: 20,
   discount_percent: 0,
 };
 
 export const DEMO_RESELLER: Company = {
   id: "00000000-0000-4000-8000-000000000002",
-  name: "Print Partners",
-  margin_percent: 18,
+  name: "EXAMPLE Buyer (Reseller)",
+  margin_percent: 20,
   is_reseller: true,
-  target_margin_percent: 22,
-  discount_percent: 5,
+  target_margin_percent: 15,
+  discount_percent: 10,
 };
 
-/** Other tenants — never shown in the Acme portal. */
-const APEX_ID = "00000000-0000-4000-8000-000000000011";
-const HORIZON_ID = "00000000-0000-4000-8000-000000000012";
-const DELTA_ID = "00000000-0000-4000-8000-000000000013";
-const PINNACLE_ID = "00000000-0000-4000-8000-000000000014";
-const METRO_ID = "00000000-0000-4000-8000-000000000015";
-const SUMMIT_ID = "00000000-0000-4000-8000-000000000016";
-const TITAN_ID = "00000000-0000-4000-8000-000000000017";
+/** Other tenants — never shown in the EXAMPLE Buyer portal. */
+const NORTHLINE_ID = "00000000-0000-4000-8000-000000000011";
+const HARBOR_ID = "00000000-0000-4000-8000-000000000012";
+const RIDGE_ID = "00000000-0000-4000-8000-000000000013";
 
 export const PRODUCTS: Product[] = [
   {
     id: "1",
-    slug: "roll-labels",
-    name: "Roll Labels",
-    categoryLabel: "PRIMARY PACKAGING",
+    slug: "packaging-kits",
+    name: "Packaging / Kits",
+    categoryLabel: "PACKAGING",
     description:
-      "High-speed flexo and digital. Prime labels, tamper-evident, linerless.",
-    tags: ["BOPP • PET • Paper", "Up to 10 colors"],
-    idealFor: "Food & beverage, CPG, industrial, pharma.",
-    image: "/images/rolls.jpg",
-    aiPrompt: "Roll Labels - BOPP or PET for beverage or CPG",
+      "Custom cartons, device kits, inserts, and assembly — design through pack-out.",
+    tags: ["Cartons • Kits • Inserts"],
+    idealFor: "Telecom, electronics, wireless distributors.",
+    image: "/images/tape.jpg",
+    aiPrompt: "Packaging / Kits - cartons, inserts, device kits",
   },
   {
     id: "2",
-    slug: "die-cut-stickers",
-    name: "Custom Die-Cut Stickers",
-    categoryLabel: "PRODUCT & PROMO",
+    slug: "labels",
+    name: "Labels",
+    categoryLabel: "LABELS",
     description:
-      "Any shape or size. Kiss-cut or through-cut on dozens of materials.",
-    tags: ["Vinyl • Poly • Kraft • Clear"],
-    idealFor: "Retail packaging, electronics, events, product branding.",
-    image: "/images/hero.jpg",
-    aiPrompt: "Custom Die-Cut Stickers - any shape, short or long run",
+      "Roll labels, barcodes, and product labels. Process is the production route.",
+    tags: ["Process = route"],
+    idealFor: "Product ID, compliance, food & beverage, industrial.",
+    image: "/images/rolls.jpg",
+    aiPrompt: "Labels - roll labels and barcodes",
   },
   {
     id: "3",
-    slug: "bumper-stickers",
-    name: "Bumper Stickers",
-    categoryLabel: "OUTDOOR & PROMO",
+    slug: "signs",
+    name: "Signs",
+    categoryLabel: "SIGNS",
     description:
-      "Heavy-duty 3–4 mil vinyl with UV laminate. Weatherproof for years.",
-    tags: ["UV laminate • Removable or permanent"],
-    idealFor: "Vehicles, political, events, outdoor equipment branding.",
-    image: "/images/bumper.jpg",
-    aiPrompt: "Bumper Stickers - 3-4 mil vinyl with UV protection",
+      "Facility, safety, tow-away, and identification signs for industrial and property sites.",
+    tags: ["Facility • Safety • Property"],
+    idealFor: "Towing, property management, industrial operations.",
+    image: "/images/facility.jpg",
+    aiPrompt: "Signs - industrial and property signage",
   },
   {
     id: "4",
-    slug: "magnets",
-    name: "Custom Magnets",
-    categoryLabel: "REUSABLE & RETAIL",
+    slug: "decals",
+    name: "Decals",
+    categoryLabel: "DECALS",
     description:
-      "Vehicle magnets, fridge magnets, and industrial strength options.",
-    tags: ['0.020" or 0.030" • Full color'],
-    idealFor: "Vehicles, retail displays, calendars, industrial equipment.",
-    image: "/images/magnets.jpg",
-    aiPrompt: "Custom Magnets - vehicle or fridge strength",
+      "Durable decals for equipment, vehicles, and outdoor use.",
+    tags: ["Durable • Outdoor"],
+    idealFor: "Wastewater, industrial, fleet, property.",
+    image: "/images/bumper.jpg",
+    aiPrompt: "Decals - durable outdoor and equipment",
   },
   {
     id: "5",
-    slug: "packaging-tape",
-    name: "Printed Packaging Tape",
-    categoryLabel: "BRANDED SHIPPING",
+    slug: "electronic-serialized",
+    name: "Electronic / Serialized",
+    categoryLabel: "ELECTRONIC",
     description:
-      "Custom 2\" and 3\" tape with your logo and message. Kraft or white.",
-    tags: ["Up to 3 colors • 1,000+ yard rolls"],
-    idealFor: "E-commerce, fulfillment centers, branded unboxing experience.",
-    image: "/images/tape.jpg",
-    aiPrompt: "Printed Packaging Tape - custom logo tape",
-  },
-  {
-    id: "6",
-    slug: "foil",
-    name: "Foil Embossing & Specialty",
-    categoryLabel: "PREMIUM FINISHES",
-    description:
-      "Hot foil, blind emboss, soft-touch, high-build varnish, spot UV.",
-    tags: ["Metallic & matte foils"],
-    idealFor: "Spirits, cosmetics, premium CPG, awards & certificates.",
-    image: "/images/facility.jpg",
-    aiPrompt: "Foil Embossing and specialty finishes",
-  },
-  {
-    id: "7",
-    slug: "variable-data",
-    name: "Variable Data / QR / Serialized",
-    categoryLabel: "DATA & COMPLIANCE",
-    description:
-      "Sequential numbering, QR codes, barcodes, batch coding at full production speed.",
-    tags: ["Serialization • UID • Pharma ready"],
-    idealFor: "Medical devices, traceability, promotions, asset tracking.",
+      "Serialized labels, activation cards, and electronics-kit identification.",
+    tags: ["Serialization • UID"],
+    idealFor: "Mobile devices, wireless, asset tracking.",
     image: "/images/prepress.jpg",
-    aiPrompt: "Variable data, QR codes, serialized labels",
-  },
-  {
-    id: "8",
-    slug: "parking-decals",
-    name: "Parking Decals & Permits",
-    categoryLabel: "VEHICLE & ACCESS",
-    description:
-      "Durable window decals, hang tags, and serialized permits. Tamper-evident options.",
-    tags: ["Static cling • Serial numbers • UV stable"],
-    idealFor: "Universities, apartments, municipalities, corporate fleets.",
-    image: "/images/bumper.jpg",
-    aiPrompt: "Parking decals and permits - serialized",
+    aiPrompt: "Electronic / Serialized - serialized labels and activation cards",
   },
 ];
 
 export const DEMO_ORDERS: Order[] = [
   {
     id: "o1",
-    order_number: "FLG-48302",
+    order_number: "SG-1001",
     company_id: DEMO_COMPANY.id,
-    description: "Acme Classic Sparkling 12oz",
-    quantity: 62500,
+    description: "EXAMPLE Buyer device kit pack-out",
+    quantity: 2500,
     status: "On Press",
     ship_by: "Mar 10",
     progress: 55,
@@ -149,10 +109,10 @@ export const DEMO_ORDERS: Order[] = [
   },
   {
     id: "o2",
-    order_number: "FLG-48102",
-    company_id: HORIZON_ID,
-    description: "Horizon Foods Jar Labels",
-    quantity: 41000,
+    order_number: "SG-1002",
+    company_id: NORTHLINE_ID,
+    description: "Northline carton run",
+    quantity: 1200,
     status: "Printing",
     ship_by: "Mar 12",
     progress: 64,
@@ -161,11 +121,11 @@ export const DEMO_ORDERS: Order[] = [
   },
   {
     id: "o3",
-    order_number: "FLG-48219",
+    order_number: "SG-1003",
     company_id: DEMO_COMPANY.id,
-    description: "Acme Spring Refresh 12oz",
-    quantity: 53000,
-    status: "Rewind / Inspection",
+    description: "EXAMPLE Buyer serialized labels",
+    quantity: 8000,
+    status: "Finishing",
     ship_by: "Mar 18",
     progress: 87,
     total_amount: null,
@@ -173,60 +133,24 @@ export const DEMO_ORDERS: Order[] = [
   },
   {
     id: "o4",
-    order_number: "FLG-47851",
-    company_id: DELTA_ID,
-    description: "Delta ChemGuard Safety",
-    quantity: 27200,
-    status: "Finishing Line",
-    ship_by: "Mar 15",
-    progress: 71,
-    total_amount: null,
-    completed_at: null,
-  },
-  {
-    id: "o5",
-    order_number: "FLG-47988",
-    company_id: PINNACLE_ID,
-    description: "Pinnacle Promo Die-Cuts",
-    quantity: 8200,
+    order_number: "SG-1004",
+    company_id: HARBOR_ID,
+    description: "Harbor facility signs",
+    quantity: 40,
     status: "Proof Approved",
-    ship_by: "Mar 11",
+    ship_by: "Mar 15",
     progress: 42,
     total_amount: null,
     completed_at: null,
   },
   {
-    id: "o6",
-    order_number: "FLG-48341",
-    company_id: METRO_ID,
-    description: "Metro Fleet UV Bumpers",
-    quantity: 9800,
-    status: "Finishing Line",
-    ship_by: "Mar 14",
-    progress: 78,
-    total_amount: null,
-    completed_at: null,
-  },
-  {
-    id: "o7",
-    order_number: "FLG-48407",
-    company_id: SUMMIT_ID,
-    description: "Summit Pharma Tamper Vials",
-    quantity: 18400,
-    status: "Rewind / Inspection",
-    ship_by: "Mar 16",
-    progress: 91,
-    total_amount: null,
-    completed_at: null,
-  },
-  {
-    id: "o8",
-    order_number: "FLG-48422",
-    company_id: TITAN_ID,
-    description: "Titan Branded Tape 3in",
-    quantity: 14500,
+    id: "o5",
+    order_number: "SG-1005",
+    company_id: RIDGE_ID,
+    description: "Ridge equipment decals",
+    quantity: 600,
     status: "Prepress",
-    ship_by: "Mar 13",
+    ship_by: "Mar 14",
     progress: 28,
     total_amount: null,
     completed_at: null,
@@ -236,149 +160,71 @@ export const DEMO_ORDERS: Order[] = [
 export const DEMO_HISTORY: Order[] = [
   {
     id: "h1",
-    order_number: "FLG-47721",
-    company_id: APEX_ID,
-    description: "Apex Brewing 16oz Roll Labels - Matte BOPP",
-    quantity: 62000,
+    order_number: "SG-0901",
+    company_id: NORTHLINE_ID,
+    description: "Northline insert cards",
+    quantity: 4000,
     status: "Completed",
     ship_by: "Feb 12, 2026",
     progress: 100,
-    total_amount: 4280,
+    total_amount: 100,
     completed_at: "2026-02-12",
   },
   {
     id: "h2",
-    order_number: "FLG-47588",
-    company_id: PINNACLE_ID,
-    description: "Pinnacle Retail Die-Cut Stickers - Matte Vinyl",
-    quantity: 14500,
+    order_number: "SG-0902",
+    company_id: DEMO_COMPANY.id,
+    description: "EXAMPLE Buyer carton family",
+    quantity: 1800,
     status: "Completed",
     ship_by: "Jan 28, 2026",
     progress: 100,
-    total_amount: 1920,
+    total_amount: 200,
     completed_at: "2026-01-28",
   },
   {
     id: "h3",
-    order_number: "FLG-47402",
-    company_id: METRO_ID,
-    description: "Metro City Fleet Bumper Stickers - UV Vinyl",
-    quantity: 8200,
+    order_number: "SG-0903",
+    company_id: HARBOR_ID,
+    description: "Harbor tow-away signs",
+    quantity: 24,
     status: "Completed",
     ship_by: "Jan 9, 2026",
     progress: 100,
-    total_amount: 1350,
+    total_amount: 50,
     completed_at: "2026-01-09",
-  },
-  {
-    id: "h4",
-    order_number: "FLG-47266",
-    company_id: HORIZON_ID,
-    description: "Horizon Foods 4oz Jar Labels - Gloss BOPP",
-    quantity: 39000,
-    status: "Completed",
-    ship_by: "Dec 19, 2025",
-    progress: 100,
-    total_amount: 2610,
-    completed_at: "2025-12-19",
-  },
-  {
-    id: "h5",
-    order_number: "FLG-47119",
-    company_id: SUMMIT_ID,
-    description: "Summit Pharma Tamper-Evident Vials",
-    quantity: 22500,
-    status: "Completed",
-    ship_by: "Nov 26, 2025",
-    progress: 100,
-    total_amount: 3740,
-    completed_at: "2025-11-26",
-  },
-  {
-    id: "h6",
-    order_number: "FLG-46981",
-    company_id: DELTA_ID,
-    description: "Delta ChemGuard Chemical Safety Rolls",
-    quantity: 31000,
-    status: "Completed",
-    ship_by: "Oct 15, 2025",
-    progress: 100,
-    total_amount: 2450,
-    completed_at: "2025-10-15",
-  },
-  {
-    id: "h7",
-    order_number: "FLG-46840",
-    company_id: TITAN_ID,
-    description: "Titan Logistics 3in Branded Packaging Tape",
-    quantity: 12800,
-    status: "Completed",
-    ship_by: "Sep 25, 2025",
-    progress: 100,
-    total_amount: 980,
-    completed_at: "2025-09-25",
-  },
-  {
-    id: "h8",
-    order_number: "FLG-46755",
-    company_id: DEMO_COMPANY.id,
-    description: "Acme Brands Foil Embossed Die-Cuts",
-    quantity: 7600,
-    status: "Completed",
-    ship_by: "Feb 27, 2026",
-    progress: 100,
-    total_amount: 1580,
-    completed_at: "2026-02-27",
   },
 ];
 
 export const DEMO_INVOICES: Invoice[] = [
   {
     id: "i1",
-    invoice_number: "INV-24091",
+    invoice_number: "INV-EX-101",
     company_id: DEMO_COMPANY.id,
-    amount: 1840,
+    amount: 100,
     issued_at: "Feb 11",
     due_at: "Mar 12",
     status: "Pending",
   },
   {
     id: "i2",
-    invoice_number: "INV-23944",
+    invoice_number: "INV-EX-102",
     company_id: DEMO_COMPANY.id,
-    amount: 720,
+    amount: 200,
     issued_at: "Jan 28",
     due_at: "Feb 27",
     status: "Paid",
-  },
-  {
-    id: "i3",
-    invoice_number: "INV-24012",
-    company_id: DEMO_COMPANY.id,
-    amount: 3150,
-    issued_at: "Feb 3",
-    due_at: "Mar 4",
-    status: "Overdue",
-  },
-  {
-    id: "i4",
-    invoice_number: "INV-24105",
-    company_id: DEMO_COMPANY.id,
-    amount: 940,
-    issued_at: "Feb 19",
-    due_at: "Mar 21",
-    status: "Pending",
   },
 ];
 
 export const DEMO_PROOF: Proof = {
   id: "p1",
   company_id: DEMO_COMPANY.id,
-  title: "Spring Refresh 2026",
-  brand: "ACME",
-  product_name: "Classic Sparkling 12oz",
-  proof_number: "PRF-2841",
-  material: "Matte BOPP • Permanent adhesive • 6 colors",
+  title: "EXAMPLE kit proof",
+  brand: "EXAMPLE",
+  product_name: "Device kit carton",
+  proof_number: "PRF-EX-1",
+  material: "EXAMPLE Kit board / carton",
   status: "Awaiting your review",
   image_url: "/images/prepress.jpg",
 };
@@ -387,30 +233,30 @@ export const DEMO_PROOF_COMMENTS: ProofComment[] = [
   {
     id: "c1",
     proof_id: "p1",
-    author: "Jenna T.",
-    body: "Color looks slightly darker than last run.",
+    author: "Buyer",
+    body: "Please confirm insert fold matches the tray.",
     created_at: "Feb 28, 10:14am",
   },
   {
     id: "c2",
     proof_id: "p1",
     author: "Prepress",
-    body: "Adjusted saturation — new proof attached.",
+    body: "Updated fold diagram attached.",
     created_at: "Feb 28, 11:02am",
   },
 ];
 
 export const DEMO_KPIS: AccountKpis = {
-  ytdVolume: 142850,
-  ytdGrowthPercent: 18,
-  onTimePercent: 96,
-  openInvoicesAmount: 2780,
-  openInvoicesCount: 2,
-  overdueCount: 1,
-  activeOrders: 8,
-  inProduction: 5,
-  avgLeadTimeDays: 6.2,
-  leadTimeDelta: -0.8,
+  ytdVolume: 12000,
+  ytdGrowthPercent: 0,
+  onTimePercent: 0,
+  openInvoicesAmount: 100,
+  openInvoicesCount: 1,
+  overdueCount: 0,
+  activeOrders: 2,
+  inProduction: 2,
+  avgLeadTimeDays: 0,
+  leadTimeDelta: 0,
 };
 
 export const ORDER_TIMELINE_STAGES = [
@@ -427,43 +273,45 @@ export const MATERIAL_RECOMMENDATIONS: Record<
   string,
   { title: string; why: string }
 > = {
-  "beverage-fridge": {
-    title: "Matte BOPP + Permanent Acrylic",
-    why: "Best condensation resistance and premium appearance for refrigerated beverage.",
+  packaging: {
+    title: "EXAMPLE Kit board / carton",
+    why: "Template only — Summit will assign the real carton/kit stock.",
   },
-  outdoor: {
-    title: "3 mil Polyester + UV Laminate",
-    why: "3–5 year outdoor life. Excellent for bumper stickers and equipment.",
+  labels: {
+    title: "EXAMPLE Label substrate",
+    why: "Template only — process is the production route, not a plant rate.",
   },
-  industrial: {
-    title: "Chemical-Resistant Vinyl / PET",
-    why: "High-performance adhesive survives solvents and abrasion.",
+  signs: {
+    title: "EXAMPLE Sign board",
+    why: "Template only — wide-format stock is not a published Summit rate.",
+  },
+  decals: {
+    title: "EXAMPLE Decal vinyl",
+    why: "Template only — outdoor durability claims wait on Summit materials.",
   },
   default: {
-    title: "Premium Matte BOPP",
-    why: "Versatile, excellent print quality, cost-effective for most CPG and retail.",
+    title: "Ask for the product type",
+    why: "EXAMPLE catalog has names only until Summit provides stocks and rates.",
   },
 };
 
 export function getBotResponse(message: string): string {
   const m = message.toLowerCase();
-  if (m.includes("bumper") || m.includes("outdoor"))
-    return "Bumper stickers use 3-4 mil UV-stabilized vinyl with laminate. Excellent for 3-5 years outdoor. Want a quote for a specific size?";
-  if (m.includes("magnet"))
-    return "We offer 20 mil and 30 mil magnets. Vehicle magnets are 30 mil. Fridge and display are typically 20 mil. Tell me the application and I'll recommend the right weight.";
-  if (m.includes("tape") || m.includes("packaging"))
-    return "Printed packaging tape comes in 2\" and 3\" widths. We can print up to 3 colors on kraft or white. Lead time is usually 5 days. What quantity are you looking at?";
-  if (m.includes("material") || m.includes("recommend"))
-    return m.includes("beverage") || m.includes("refrigerat")
-      ? "Matte BOPP + permanent acrylic adhesive is ideal for refrigerated beverages."
-      : "BOPP for most CPG, polyester for durability and heat, vinyl for outdoor. Give me environment and quantity.";
+  if (m.includes("packag") || m.includes("kit") || m.includes("carton"))
+    return "Packaging and kits are a self-serve quote type in this demo. Share size, quantity, and whether you need inserts or assembly.";
+  if (m.includes("sign"))
+    return "Signs are on the quote door. Finished size and quantity are enough to start an EXAMPLE estimate.";
+  if (m.includes("decal"))
+    return "Decals are a quote type here. Tell me size, quantity, and indoor vs outdoor.";
+  if (m.includes("serial") || m.includes("electronic") || m.includes("telecom"))
+    return "Electronic / serialized work is a demo product type. No plant rates are loaded — estimates are EXAMPLE stubs.";
+  if (m.includes("label"))
+    return "Labels use process = route in this demo. Start a quote with size, colors, and quantity.";
   if (m.includes("quote") || m.includes("price") || m.includes("cost"))
-    return "Share dimensions, quantity, material, and application and I can help you start a quote.";
+    return "Use Get a quote for a self-serve EXAMPLE estimate. Numbers are stubs until Summit loads plant rates.";
   if (m.includes("lead") || m.includes("turn"))
-    return "Standard is 5–7 business days from approved proof. Rush (2–3 days) is available.";
-  if (m.includes("status") || m.includes("48219"))
-    return "Order FLG-48219 is currently in Finishing. Expected ship March 11.";
-  if (m.includes("variable") || m.includes("qr"))
-    return "Full variable data and QR at production speeds with very little added cost.";
-  return "Happy to help. Tell me dimensions, quantity, application, and environment and I'll give you an immediate recommendation or quote.";
+    return "Lead times are not published in this demo. Ask your Summit contact after the quote is saved.";
+  if (m.includes("status"))
+    return "Sign in to the customer portal to see orders on your account only.";
+  return "This demo adds a self-serve quote door. Tell me product type, size, and quantity — or open Get a quote.";
 }

@@ -1,6 +1,12 @@
-# Flexible Label Group
+# Summit Graphics — Sirvoce estimator demo
 
-Next.js 15 app for the Flexible Label marketing site, customer portal, and a light operations estimating loop. Live site: [flexible-labels.vercel.app](https://flexible-labels.vercel.app). Existing vendors only: **Vercel + Supabase**.
+Next.js 15 app for **Summit Graphics**: marketing site, **self-serve customer quote door**, customer portal, and a light operations estimating loop.
+
+Intended GitHub repo: [https://github.com/Terb-13/summit-graphics](https://github.com/Terb-13/summit-graphics)
+
+Live brochure (call-only, buyer UAT fail): [summitgraphics.org](https://summitgraphics.org). This demo adds the missing quote door.
+
+Patterned from [Terb-13/flexible-labels](https://github.com/Terb-13/flexible-labels) two-door architecture. **Vendors: Vercel + Supabase only.** No Clerk. No Stripe.
 
 ## Two login doors
 
@@ -16,42 +22,35 @@ Production auth is **Supabase Auth + `profiles.role`**. Create a `profiles` row 
 ## Estimating loop
 
 1. Employee signs in at `/operations/login`.
-2. Pick the **buyer customer** first (the account the quote is for — not a plant; there is one plant). Add one if needed (`name`, type via `is_reseller`, margin, discount). There is no `customers` table.
+2. Pick the **buyer customer** first (the account the quote is for — one plant, no plant picker).
 3. Two estimator doors, same `calculateQuote` engine:
-   - **Operations (employee):** pick the buyer customer, then walk Product → Material → Size → Colors → Specs → Quantity → Estimate. Last step shows margin, cost stack, and the auto-chosen production route (press → finish → ship). No plant/site picker.
-   - **Customer (`/quote` guest + `/portal`):** Product → Material → Size → Colors → Quantity → sell price. Guests skip the EXAMPLE customer dropdown and price under standard DTC terms. Logged-in portal stays locked to that customer record. Public calculate responses are sell price only.
-4. `POST /api/quotes/calculate` still calls `calculateQuote` (once per break, or once on the summed qty when “Group these together” is on). Employee callers get the full stack. Customer callers get sell prices only. It matches a production route (`printer → seamer → finisher → shipping`), qualifies equipment, and cost-plus prices from:
-   - equipment: `cost_rate`, `run_speed`, `waste_percent`, `setup_time_minutes`
-   - materials: substrate + dye
-   - company: `is_reseller`, `margin_percent`, `target_margin_percent`, `discount_percent`
+   - **Operations (employee):** buyer → Product → Material → Size → Colors → Specs → Quantity → Estimate. Last step shows margin, cost stack, and the auto-chosen production route.
+   - **Customer (`/quote` guest + `/portal`):** Product → Material → Size → Colors → Quantity → **sell price only**. Guests price under standard DTC terms. Logged-in portal stays locked to that customer. Public calculate responses are sell price only.
+4. `POST /api/quotes/calculate` calls `calculateQuote`. Employee callers get the full stack. Customer callers get sell prices only.
 5. Save quote → approve if below target margin → **Generate job ticket** writes `orders`, `schedule_jobs`, and `job_steps`.
-6. Press time uses lineal feet and EXAMPLE FPM, not label-count / unitless speed:
-   - `production_feet = (quantity / across) * (repeat_in / 12)`
-   - `planned_press_hours = setup_time_minutes/60 + production_feet / run_speed_fpm`
-7. Job windows snap to the EXAMPLE Mon–Fri plant shift and do not overlap another block on the same press.
-8. Employees clock setup / run / delay on `/operations`. One open clock per press. Delay requires a reason. The owner board shows ON PRESS NOW plus planned vs actual and delay hours.
 
-## EXAMPLE rates
+Labels use **process = route**. Packaging/kits, signs, decals, and electronic/serialized have their own EXAMPLE routes.
 
-Seeded machine and material numbers are **EXAMPLE**. They are not Flexible Label’s real plant rates. Replace them in Supabase before treating quotes as production numbers.
+## EXAMPLE rates — not Summit plant dollars
+
+Seeded machine and material numbers are **EXAMPLE engine stubs**. They are **not** Summit Graphics plant rates and they are **not** copied Flexible Label figures. Replace them in Supabase before treating quotes as production numbers.
 
 ```bash
 npm run db:seed
 ```
 
-`scripts/seed-demo.ts` upserts one DTC company, one reseller company, EXAMPLE presses/seamer/finisher/shipping, EXAMPLE substrates + dye, and three production routes.
+`scripts/seed-demo.ts` upserts two EXAMPLE buyer companies, EXAMPLE equipment (label / wide-format / carton / decal / serialized / kit / die / ship), EXAMPLE materials (including die / tool / other templates), product→equipment map stubs, and per-type routes.
 
 ## Schema
 
 - `supabase/migrations/001_initial.sql` — companies, profiles, orders, quotes, schedule_jobs
-- `supabase/migrations/002_erp_estimating.sql` — `discount_percent`, equipment, materials, production_routes, route_steps, job_steps, quote↔order links, calendar columns on `schedule_jobs`
-- `supabase/migrations/003_press_floor.sql` — `run_speed_unit` / `run_speed_fpm`, quote/job `repeat_in` + `across` + `production_feet`, `delay_reasons`, `shop_floor_clocks`, `plant_shifts`
-- `supabase/migrations/004_cpq_qty_breaks.sql` — `quotes.qty_breaks` + `quotes.grouped` (wizard capture; still priced by `calculateQuote`)
-- `supabase/migrations/005_fix_profiles_rls_recursion.sql` — `public.is_employee()` + recreate "Employees read all profiles" so a reset cannot restore the profiles RLS loop
+- `supabase/migrations/002_erp_estimating.sql` — equipment, materials, production_routes, route_steps, job_steps
+- `supabase/migrations/003_press_floor.sql` — FPM / clocks / plant shifts
+- `supabase/migrations/004_cpq_qty_breaks.sql` — qty breaks
+- `supabase/migrations/005_fix_profiles_rls_recursion.sql` — `public.is_employee()`
+- `supabase/migrations/006_summit_material_kinds.sql` — `die` / `tool` / `other` material kinds
 
-Apply 002 (already in production) then **003**, **004**, and **005**. Do not rewrite or re-apply 001/002. 005 is already live as `fix_profiles_rls_recursion`.
-
-Press-floor v1 is a shop-floor scheduler + operator clocks. Out of scope: JDF/press-counter hookup, changeover optimizer, inventory/material holds, payroll, multi-plant, auto-reschedule of the whole plant, invented plant dollars, buyer email.
+Out of scope: inventory, PO, GL, VMI, payroll, Clerk, Stripe, invented plant dollars.
 
 ## Local
 
@@ -61,7 +60,7 @@ npm install
 npm run dev
 ```
 
-Without Supabase keys, calculate uses the EXAMPLE catalog and quote/job writes stay in the local process so the estimator → Gantt loop can be previewed.
+Without Supabase keys, calculate uses the EXAMPLE catalog and quote/job writes stay in the local process.
 
 ```bash
 npm run verify:erp
@@ -73,8 +72,12 @@ npm run build
 
 ## Environment
 
+See `.env.example`. Required for live auth and persistence:
+
 ```
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
 ```
+
+Optional AI keys are unused by the rule-based RFP parser. Do not commit secrets.

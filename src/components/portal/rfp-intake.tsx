@@ -28,7 +28,7 @@ export function RfpIntake({
       <Textarea
         className="mt-4"
         rows={6}
-        placeholder='ITEM 1 — Roll labels 2.25 x 3.5 Matte BOPP, 10,000 and 25,000, 4 color process'
+        placeholder='ITEM 1 — Labels 2.25 x 3.5 EXAMPLE Label substrate, 10,000 and 25,000, 4 color process'
         value={text}
         onChange={(e) => setText(e.target.value)}
       />

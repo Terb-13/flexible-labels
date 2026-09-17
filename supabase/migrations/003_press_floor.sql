@@ -1,6 +1,6 @@
 -- Press-floor v1: footage/FPM press hours, operator clocks, plant shifts.
--- EXAMPLE delay reasons and Mon–Fri windows below are not Flexible Label’s
--- real plant policy. Do not treat seeded FPM as published press speeds.
+-- EXAMPLE delay reasons and Mon–Fri windows below are not Summit Graphics
+-- plant policy. Do not treat seeded FPM as published press speeds.
 -- 001 and 002 stay as applied — this file is additive only.
 
 create type public.run_speed_unit as enum ('fpm', 'labels_per_hour');
@@ -48,7 +48,7 @@ create table if not exists public.plant_shifts (
   weekday smallint not null check (weekday between 0 and 6),
   start_time time not null,
   end_time time not null,
-  notes text not null default 'EXAMPLE plant window — not a published Flexible Label shift policy.',
+  notes text not null default 'EXAMPLE plant window — not a published Summit Graphics shift policy.',
   unique (weekday)
 );
 
@@ -99,11 +99,11 @@ on conflict (id) do nothing;
 -- EXAMPLE Mon–Fri 07:00–15:00. No overtime rules.
 insert into public.plant_shifts (id, weekday, start_time, end_time, notes)
 values
-  ('66666666-6666-4000-8000-000000000001', 1, '07:00', '15:00', 'EXAMPLE plant window — not a published Flexible Label shift policy.'),
-  ('66666666-6666-4000-8000-000000000002', 2, '07:00', '15:00', 'EXAMPLE plant window — not a published Flexible Label shift policy.'),
-  ('66666666-6666-4000-8000-000000000003', 3, '07:00', '15:00', 'EXAMPLE plant window — not a published Flexible Label shift policy.'),
-  ('66666666-6666-4000-8000-000000000004', 4, '07:00', '15:00', 'EXAMPLE plant window — not a published Flexible Label shift policy.'),
-  ('66666666-6666-4000-8000-000000000005', 5, '07:00', '15:00', 'EXAMPLE plant window — not a published Flexible Label shift policy.')
+  ('66666666-6666-4000-8000-000000000001', 1, '07:00', '15:00', 'EXAMPLE plant window — not a published Summit Graphics shift policy.'),
+  ('66666666-6666-4000-8000-000000000002', 2, '07:00', '15:00', 'EXAMPLE plant window — not a published Summit Graphics shift policy.'),
+  ('66666666-6666-4000-8000-000000000003', 3, '07:00', '15:00', 'EXAMPLE plant window — not a published Summit Graphics shift policy.'),
+  ('66666666-6666-4000-8000-000000000004', 4, '07:00', '15:00', 'EXAMPLE plant window — not a published Summit Graphics shift policy.'),
+  ('66666666-6666-4000-8000-000000000005', 5, '07:00', '15:00', 'EXAMPLE plant window — not a published Summit Graphics shift policy.')
 on conflict (id) do nothing;
 
 alter table public.delay_reasons enable row level security;

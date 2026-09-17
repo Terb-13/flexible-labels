@@ -14,7 +14,7 @@ export default function OperationsLayout({
           <Link href="/operations" className="flex items-center gap-2">
             <LogoMark className="w-8 h-8" />
             <span className="font-semibold text-sm heading-font">
-              FLG Operations
+              Summit Operations
             </span>
           </Link>
         </div>

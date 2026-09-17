@@ -1,18 +1,15 @@
 export type UserRole = "customer" | "employee";
 
 export type ProductCategory =
-  | "roll-labels"
-  | "die-cut-stickers"
-  | "bumper-stickers"
-  | "magnets"
-  | "packaging-tape"
-  | "foil"
-  | "variable-data"
-  | "parking-decals";
+  | "packaging-kits"
+  | "labels"
+  | "signs"
+  | "decals"
+  | "electronic-serialized";
 
 export type CompanyType = "dtc" | "reseller";
 export type EquipmentStage = "printer" | "seamer" | "finisher" | "shipping";
-export type MaterialKind = "substrate" | "dye";
+export type MaterialKind = "substrate" | "dye" | "die" | "tool" | "other";
 export type JobStatus = "scheduled" | "running" | "done";
 export type JobStepStatus = "pending" | "running" | "done";
 export type QuoteStatus = "draft" | "pending_approval" | "approved" | "sent";

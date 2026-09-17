@@ -38,8 +38,8 @@ import { useToast } from "@/components/ui/toaster";
 
 export const DEFAULT_SPEC: QuoteSpec = {
   ...EMPTY_WIZARD_SPEC,
-  product: "Roll Labels",
-  material: "Matte BOPP",
+  product: "Labels",
+  material: "EXAMPLE Label substrate",
   widthIn: 2.25,
   heightIn: 3.5,
   quantity: 10000,

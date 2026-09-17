@@ -14,10 +14,9 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title:
-    "Flexible Label Group | Custom Labels, Stickers & Specialty Products Since 1951 | Memphis, TN",
+  title: "Summit Graphics | Packaging, labels, signs, and decals",
   description:
-    "75 years of precision label and sticker manufacturing in Memphis. Real-time visibility, instant proofs, practical AI tools.",
+    "Self-serve quote demo for Summit Graphics. Packaging, labels, signs, decals, and serialized print. EXAMPLE rates only.",
 };
 
 export default function RootLayout({

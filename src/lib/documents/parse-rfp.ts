@@ -3,14 +3,11 @@ import { EXAMPLE_MATERIALS } from "@/lib/data/example-catalog";
 import type { ParsedDocumentSpec, RfpIntakeItem } from "@/types";
 
 const PRODUCT_ALIASES: [RegExp, string][] = [
-  [/bumper/i, "Bumper Stickers"],
-  [/magnet/i, "Custom Magnets"],
-  [/tape/i, "Printed Packaging Tape"],
-  [/foil|emboss/i, "Foil Embossing & Specialty"],
-  [/parking|permit|decal/i, "Parking Decals & Permits"],
-  [/variable|serial|qr/i, "Variable Data / QR / Serialized"],
-  [/die[- ]?cut|sticker/i, "Custom Die-Cut Stickers"],
-  [/roll\s*label|pressure[- ]sensitive|prime label/i, "Roll Labels"],
+  [/packag|kit|carton|insert/i, "Packaging / Kits"],
+  [/sign|tow-away|facility/i, "Signs"],
+  [/decal/i, "Decals"],
+  [/serial|electronic|activation|telecom/i, "Electronic / Serialized"],
+  [/label|barcode|sticker/i, "Labels"],
 ];
 
 function matchProduct(text: string): string | undefined {
@@ -28,11 +25,14 @@ function matchMaterial(text: string): string | undefined {
   for (const name of names) {
     if (lower.includes(name.toLowerCase())) return name;
   }
-  if (lower.includes("vinyl")) return "UV Vinyl";
-  if (lower.includes("pet") || lower.includes("poly")) return "Gloss PET";
-  if (lower.includes("foil")) return "Foil Laminate";
-  if (lower.includes("gloss") && lower.includes("bopp")) return "Gloss BOPP";
-  if (lower.includes("bopp") || lower.includes("matte")) return "Matte BOPP";
+  if (lower.includes("carton") || lower.includes("kit") || lower.includes("board"))
+    return "EXAMPLE Kit board / carton";
+  if (lower.includes("sign")) return "EXAMPLE Sign board";
+  if (lower.includes("decal") || lower.includes("vinyl")) return "EXAMPLE Decal vinyl";
+  if (lower.includes("serial") || lower.includes("electronic"))
+    return "EXAMPLE Serialized media";
+  if (lower.includes("label") || lower.includes("substrate"))
+    return "EXAMPLE Label substrate";
   return undefined;
 }
 
@@ -86,7 +86,7 @@ export function parseSpecText(text: string): ParsedDocumentSpec {
   return {
     product,
     productType: product,
-    type: "Prime / pressure-sensitive",
+    type: "Industrial / facility",
     widthIn,
     heightIn,
     quantity,

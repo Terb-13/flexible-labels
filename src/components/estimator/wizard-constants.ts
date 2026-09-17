@@ -13,7 +13,7 @@ export const STEP_LABELS = [
 export const STEP_TITLES = [
   "What are we making?",
   "Choose your material",
-  "Label dimensions",
+  "Finished size",
   "Artwork & Colors",
   "Specifications & Options",
   "How many do you need?",
@@ -84,7 +84,7 @@ export const COLOR_METHODS: { id: ColorMethod; label: string; desc: string }[] =
 
 export const EMPTY_WIZARD_SPEC: QuoteSpec = {
   product: "",
-  type: "Prime / pressure-sensitive",
+  type: "Industrial / facility",
   material: "",
   widthIn: 0,
   heightIn: 0,

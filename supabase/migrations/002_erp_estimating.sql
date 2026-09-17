@@ -1,6 +1,6 @@
 -- Light ERP estimating loop: equipment, materials, routes, job steps, quote↔order.
 -- EXAMPLE machine/material rates are loaded by scripts/seed-demo.ts — they are not
--- Flexible Label’s real plant rates.
+-- Summit Graphics plant rates.
 
 alter table public.companies
   add column if not exists discount_percent numeric(5,2) not null default 0;
@@ -19,7 +19,7 @@ create table if not exists public.equipment (
   waste_percent numeric(6,2) not null default 0,
   capabilities jsonb not null default '{}',
   setup_time_minutes numeric(8,2) not null default 0,
-  notes text not null default 'EXAMPLE rate — not a published Flexible Label machine rate',
+  notes text not null default 'EXAMPLE stub — not a Summit Graphics plant rate',
   active boolean not null default true,
   created_at timestamptz not null default now()
 );
@@ -31,7 +31,7 @@ create table if not exists public.materials (
   cost_per_sqin numeric(12,6) not null default 0,
   cost_per_unit numeric(12,4) not null default 0,
   attributes jsonb not null default '{}',
-  notes text not null default 'EXAMPLE cost — not a published Flexible Label material cost',
+  notes text not null default 'EXAMPLE stub — not a Summit Graphics material cost',
   active boolean not null default true,
   created_at timestamptz not null default now()
 );

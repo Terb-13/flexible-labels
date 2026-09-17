@@ -128,7 +128,7 @@ export function PortalDashboard({
       prev.map((i) => (i.id === inv.id ? { ...i, status: "Paid" as const } : i))
     );
     setPayModal(null);
-    toast(`Payment successful — ${formatCurrency(inv.amount)} received`, true);
+    toast(`Demo only — no Stripe. Marked paid in this session (${formatCurrency(inv.amount)}).`, true);
   }
 
   function reorder(order: Order) {
@@ -136,7 +136,7 @@ export function PortalDashboard({
     const newOrder: Order = {
       ...order,
       id: `o-${Date.now()}`,
-      order_number: `FLG-${47000 + Math.floor(Math.random() * 999)}`,
+      order_number: `SG-${1000 + Math.floor(Math.random() * 900)}`,
       status: "Reorder - Awaiting Proof",
       ship_by: newShip,
       progress: 5,

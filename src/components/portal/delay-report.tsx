@@ -60,7 +60,7 @@ export function DelayReport({
       <div className="bg-white border rounded-3xl p-6">
         <h3 className="font-semibold mb-1">Hours by delay reason</h3>
         <p className="text-xs text-slate-500 mb-4">
-          EXAMPLE reason codes — not a published Flexible Label delay taxonomy.
+          EXAMPLE reason codes — not a published Summit Graphics delay taxonomy.
         </p>
         <ul className="space-y-2 text-sm">
           {report.byReason.map((row) => (

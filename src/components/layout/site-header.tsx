@@ -22,10 +22,10 @@ export function SiteHeader() {
             <LogoMark />
             <div>
               <div className="font-semibold tracking-tighter text-xl leading-none heading-font">
-                Flexible Label Group
+                Summit Graphics
               </div>
               <div className="text-[10px] text-slate-500 font-medium -mt-0.5">
-                EST 1951 • MEMPHIS
+                PACKAGING · PRINT · LABELS
               </div>
             </div>
           </Link>
