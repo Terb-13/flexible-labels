@@ -1,4 +1,4 @@
--- Flexible Label Group — Supabase schema
+-- Summit Graphics — Supabase schema (two-door + quotes)
 -- Run in Supabase SQL editor or via CLI: supabase db push
 
 create type public.user_role as enum ('customer', 'employee');

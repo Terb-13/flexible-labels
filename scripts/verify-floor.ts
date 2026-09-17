@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import {
   EXAMPLE_CATALOG,
   EXAMPLE_DTC_COMPANY,
+  EXAMPLE_ENGINE_STUB_FPM,
   EXAMPLE_EQUIPMENT,
   EXAMPLE_FPM_DISCLAIMER,
   EXAMPLE_RATE_DISCLAIMER,
@@ -34,25 +35,30 @@ assert.equal(productionFeet(quantity, 0, repeatIn), 0);
 assert.equal(productionFeet(quantity, across, 0), 0);
 assert.equal(plannedPressHours(15, expectedFeet, 0), 0);
 
-const digital = EXAMPLE_EQUIPMENT.find((e) => e.name === "EXAMPLE Digital Press");
-assert.ok(digital);
-assert.equal(digital.run_speed_unit, "fpm");
-assert.equal(digital.run_speed_fpm, 150);
-assert.ok(digital.notes?.includes("EXAMPLE"));
+const press = EXAMPLE_EQUIPMENT.find((e) => e.name === "EXAMPLE Label process press");
+assert.ok(press);
+assert.equal(press.run_speed_unit, "fpm");
+assert.equal(press.run_speed_fpm, EXAMPLE_ENGINE_STUB_FPM);
+assert.ok(press.notes?.includes("EXAMPLE"));
 assert.ok(EXAMPLE_FPM_DISCLAIMER.includes("EXAMPLE"));
 assert.ok(EXAMPLE_RATE_DISCLAIMER.includes("EXAMPLE"));
 assert.ok(EXAMPLE_FLOOR_DISCLAIMER.includes("EXAMPLE"));
 assert.ok(EXAMPLE_EQUIPMENT.every((eq) => eq.notes?.includes("EXAMPLE")));
 assert.ok(EXAMPLE_DELAY_REASONS.every((r) => r.name.includes("EXAMPLE")));
+assert.ok(!JSON.stringify(EXAMPLE_EQUIPMENT).includes("85"));
+assert.ok(!JSON.stringify(EXAMPLE_EQUIPMENT).includes("150"));
 
-const pressHours = plannedPressHours(15, expectedFeet, 150);
-assert.equal(roundHours(pressHours), roundHours(15 / 60 + expectedFeet / 150));
+const pressHours = plannedPressHours(10, expectedFeet, EXAMPLE_ENGINE_STUB_FPM);
+assert.equal(
+  roundHours(pressHours),
+  roundHours(10 / 60 + expectedFeet / EXAMPLE_ENGINE_STUB_FPM)
+);
 
 const quote = calculateQuote(
   {
-    product: "Roll Labels",
-    type: "Prime / pressure-sensitive",
-    material: "Matte BOPP",
+    product: "Labels",
+    type: "Industrial / facility",
+    material: "EXAMPLE Label substrate",
     widthIn: 2.25,
     heightIn: 3.5,
     quantity,
@@ -70,7 +76,7 @@ assert.equal(quote.catalogSource, "example");
 const open: ShopFloorClock = {
   id: "clock-1",
   job_step_id: "step-1",
-  equipment_id: digital.id,
+  equipment_id: press.id,
   operator_id: null,
   activity: "run",
   started_at: new Date().toISOString(),
@@ -85,7 +91,7 @@ assert.throws(
   () =>
     assertCanClockIn({
       clocks: [open],
-      equipmentId: digital.id,
+      equipmentId: press.id,
       activity: "run",
     }),
   ClockError
@@ -95,7 +101,7 @@ assert.throws(
   () =>
     assertCanClockIn({
       clocks: [],
-      equipmentId: digital.id,
+      equipmentId: press.id,
       activity: "delay",
       delayReasonId: null,
     }),
@@ -104,7 +110,7 @@ assert.throws(
 
 assertCanClockIn({
   clocks: [],
-  equipmentId: digital.id,
+  equipmentId: press.id,
   activity: "delay",
   delayReasonId: EXAMPLE_DELAY_REASONS[0].id,
 });
@@ -119,12 +125,12 @@ assert.equal(first.end.getHours(), 9);
 const second = allocateShiftWindow(saturday3am, 2, [first], EXAMPLE_PLANT_SHIFTS);
 assert.ok(second.start.getTime() >= first.end.getTime());
 
-const press = EXAMPLE_EQUIPMENT.find((e) => e.stage === "printer")!;
+const printer = EXAMPLE_EQUIPMENT.find((e) => e.stage === "printer")!;
 function fakeStep(id: string, hours: number): JobStep {
   return {
     id,
     job_id: "job",
-    equipment_id: press.id,
+    equipment_id: printer.id,
     route_step_id: null,
     planned_hours: hours,
     actual_hours: null,
@@ -149,7 +155,7 @@ const jobA: ScheduleJob = {
   name: "A",
   quantity: "10000",
   company_id: EXAMPLE_DTC_COMPANY.id,
-  material: "Matte BOPP",
+  material: "EXAMPLE Label substrate",
   due_date: "2026-08-28",
   quote_id: null,
   order_id: null,
@@ -170,9 +176,9 @@ const jobB: ScheduleJob = {
   job_number: "J-2",
   steps: placedB.steps.map((s) => ({ ...s, job_id: "job-b" })),
 };
-assert.equal(stepsOverlapOnEquipment([jobA, jobB], press.id), false);
+assert.equal(stepsOverlapOnEquipment([jobA, jobB], printer.id), false);
 
 console.log("Press-floor checks passed.");
 console.log(
-  `${expectedFeet.toFixed(1)} ft / EXAMPLE 150 fpm → ${pressHours.toFixed(2)} h`
+  `${expectedFeet.toFixed(1)} ft / EXAMPLE ${EXAMPLE_ENGINE_STUB_FPM} fpm → ${pressHours.toFixed(2)} h`
 );

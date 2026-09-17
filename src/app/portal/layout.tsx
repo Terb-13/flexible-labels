@@ -19,7 +19,7 @@ export default async function PortalLayout({
             <Link href="/" className="flex items-center gap-2">
               <LogoMark className="w-8 h-8" />
               <span className="font-semibold text-sm heading-font">
-                Flexible Label Group
+                Summit Graphics
               </span>
             </Link>
             <div className="flex items-center gap-3 text-sm">

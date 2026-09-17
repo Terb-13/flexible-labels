@@ -1,6 +1,7 @@
 /**
  * Seed EXAMPLE companies, equipment, materials, and production routes.
- * All rates are labeled EXAMPLE — they are not Flexible Label’s real plant costs.
+ * All rates are labeled EXAMPLE — they are not Summit Graphics plant costs.
+ * Do not copy Flexible Label dollar amounts.
  *
  *   npx tsx scripts/seed-demo.ts
  *
@@ -128,7 +129,7 @@ async function main() {
   if (shiftError) throw shiftError;
 
   console.log("Seeded EXAMPLE companies, equipment, materials, routes, delay reasons, and plant shifts.");
-  console.log("These rates and FPM values are EXAMPLE only — replace them in Supabase before go-live.");
+  console.log("These values are EXAMPLE stubs only — not Summit plant rates. Replace before go-live.");
 }
 
 main().catch((err) => {

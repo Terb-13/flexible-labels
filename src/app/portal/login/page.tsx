@@ -17,7 +17,7 @@ export default async function PortalLoginPage({
         </div>
         <div className="font-semibold text-xl">Customer portal</div>
         <div className="text-sm text-slate-600 mt-1">
-          Sign in to review proofs, track orders, and pay invoices.
+          Sign in to review proofs, track orders, and saved quotes.
         </div>
         <DoorLoginForm door="customer" next={dest} />
         <div className="mt-4 text-xs text-slate-500">

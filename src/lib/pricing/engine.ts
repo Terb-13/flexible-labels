@@ -71,8 +71,8 @@ export function normalizeSpec(spec: QuoteSpec): QuoteSpec {
   const heightIn = Number(spec.heightIn) || 0;
   return {
     ...spec,
-    product: spec.product || spec.productType || "Roll Labels",
-    type: spec.type || "Prime / pressure-sensitive",
+    product: spec.product || spec.productType || "Labels",
+    type: spec.type || "Industrial / facility",
     material: spec.material,
     widthIn: Number(spec.widthIn) || 0,
     heightIn,

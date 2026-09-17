@@ -3,9 +3,11 @@ import type { Material, PricingCatalog } from "@/types";
 
 export function materialGroup(name: string): string {
   const n = name.toLowerCase();
-  if (n.includes("foil")) return "Specialty";
-  if (n.includes("vinyl")) return "Durable / outdoor";
-  if (n.includes("bopp") || n.includes("pet")) return "Film";
+  if (n.includes("kit") || n.includes("carton")) return "Packaging";
+  if (n.includes("label")) return "Labels";
+  if (n.includes("sign")) return "Signs";
+  if (n.includes("decal") || n.includes("vinyl")) return "Decals";
+  if (n.includes("serial")) return "Electronic";
   return "Other";
 }
 
@@ -109,7 +111,7 @@ export function groupedMaterials(materials: Material[]): {
   group: string;
   items: Material[];
 }[] {
-  const order = ["Film", "Durable / outdoor", "Specialty", "Other"];
+  const order = ["Packaging", "Labels", "Signs", "Decals", "Electronic", "Other"];
   const map = new Map<string, Material[]>();
   for (const material of materials) {
     const group = materialGroup(material.name);

@@ -24,21 +24,23 @@ export default function ContactPage() {
               LET&apos;S GET STARTED
             </div>
             <h1 className="heading-font text-4xl font-semibold tracking-tighter mt-1">
-              Tell us about your project
+              Quote it here, or call
             </h1>
             <p className="text-slate-600 mt-2">
-              A specialist will respond within 2 business hours.
+              Self-serve quote is the new door. The published number on
+              summitgraphics.org is 940-301-3585.
             </p>
 
             {submitted ? (
               <div className="mt-7 border border-emerald-200 bg-emerald-50 text-emerald-800 p-6 rounded-3xl">
-                <div className="font-semibold text-lg">Thank you. Request received.</div>
+                <div className="font-semibold text-lg">Request received (demo).</div>
                 <div className="mt-2 text-sm">
-                  A production specialist will contact you within 2 business hours.
+                  This form does not send mail. Use Get a quote to save an
+                  EXAMPLE estimate.
                 </div>
                 <div className="mt-4 flex gap-3">
                   <Button asChild className="bg-emerald-800 hover:bg-emerald-900">
-                    <Link href="/portal">Open Portal</Link>
+                    <Link href="/quote">Get a quote</Link>
                   </Button>
                 </div>
               </div>
@@ -79,7 +81,7 @@ export default function ContactPage() {
                   />
                 </div>
                 <Button type="submit" variant="cta" className="w-full h-12">
-                  Request Quote & Consultation
+                  Send a note
                 </Button>
               </form>
             )}
@@ -87,14 +89,18 @@ export default function ContactPage() {
 
           <div className="lg:pt-10">
             <div className="text-sm px-1">
-              <div className="font-semibold mb-1">Next steps</div>
+              <div className="font-semibold mb-1">Prefer self-serve?</div>
               <ul className="space-y-2 text-slate-600">
                 <li className="flex gap-x-2">
-                  <span className="text-teal mt-1">→</span> Try the full Customer Portal
+                  <span className="text-teal mt-1">→</span>
+                  <Link href="/quote" className="underline">
+                    Get a quote
+                  </Link>
+                  {" "}on the customer door
                 </li>
                 <li className="flex gap-x-2">
-                  <span className="text-teal mt-1">→</span> Receive a formal quote
-                  within hours
+                  <span className="text-teal mt-1">→</span> Sign in at /portal/login
+                  — customers never see Operations
                 </li>
               </ul>
             </div>

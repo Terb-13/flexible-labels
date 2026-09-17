@@ -129,9 +129,9 @@ export function mapCompany(row: Record<string, unknown>): Company {
   return {
     id: String(row.id),
     name: String(row.name),
-    margin_percent: asNumber(row.margin_percent, 32),
+    margin_percent: asNumber(row.margin_percent, 25),
     is_reseller: Boolean(row.is_reseller),
-    target_margin_percent: asNumber(row.target_margin_percent, 28),
+    target_margin_percent: asNumber(row.target_margin_percent, 20),
     discount_percent: asNumber(row.discount_percent, 0),
   };
 }

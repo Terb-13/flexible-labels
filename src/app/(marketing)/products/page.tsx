@@ -6,16 +6,15 @@ export default function ProductsPage() {
       <div className="max-w-screen-xl mx-auto">
         <div className="mb-9">
           <div className="text-teal font-semibold text-sm tracking-widest">
-            OUR FULL CATALOG
+            PRODUCT TYPES
           </div>
           <h1 className="heading-font text-4xl md:text-5xl tracking-tighter font-semibold mt-1">
-            Exactly what your project needs.
-            <br />
-            No compromises.
+            Packaging, labels, signs, decals, serialized.
           </h1>
           <p className="text-slate-600 mt-3 max-w-2xl">
-            Every category below is produced in our Memphis facility with the same
-            75-year standard of precision. Speak with a specialist about any line.
+            These are the Summit types from buyer UAT and summitgraphics.org.
+            Start a quote from any card. Prices are EXAMPLE until plant rates
+            are loaded in Supabase.
           </p>
         </div>
 

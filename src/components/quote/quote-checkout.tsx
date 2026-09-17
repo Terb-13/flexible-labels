@@ -115,8 +115,8 @@ export function QuoteCheckout({
               </span>
             </div>
             <p className="text-sm text-slate-600">
-              We’ll save this as a quote on your account. Payment is confirmed
-              after review.
+              We’ll save this as a quote on your account. No Stripe and no card
+              charge — payment stays off this demo.
             </p>
             <div className="mt-6 flex gap-3">
               <Button variant="outline" className="flex-1" onClick={() => setStep("review")}>

@@ -1,11 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import {
-  Check,
-  Eye,
-  RefreshCw,
-  UserRound,
-} from "lucide-react";
+import { Check, FileText, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function HomePage() {
@@ -20,37 +15,34 @@ export default function HomePage() {
                 <div className="w-2 h-2 bg-cta rounded-full" />
               </div>
               <span className="font-medium text-slate-700">
-                Trusted by procurement & brand teams across North America
+                Packaging, labels, signs, and decals — now with a self-serve quote
               </span>
             </div>
 
             <h1 className="heading-font text-5xl md:text-6xl tracking-tighter leading-[1.05] font-semibold text-navy">
-              Stop chasing your label supplier.
+              Stop calling for every quote.
               <br />
-              Get control instead.
+              Price it yourself.
             </h1>
             <p className="mt-5 text-xl text-slate-600 max-w-[42ch]">
-              75-year Memphis manufacturer with modern tools that give you speed,
-              clarity, and the right material the first time.
+              Summit Graphics produces custom packaging, labels, signs, decals,
+              and serialized print. This demo adds a customer quote door the
+              live brochure site does not have.
             </p>
 
             <div className="flex flex-wrap gap-3 mt-8">
+              <Button asChild variant="cta" size="lg" className="rounded-2xl">
+                <Link href="/quote">Get a quote</Link>
+              </Button>
               <Button asChild variant="outline" size="lg" className="rounded-2xl border-2 border-navy">
-                <Link href="/products">Browse Products</Link>
+                <Link href="/products">Browse products</Link>
               </Button>
             </div>
 
             <div className="mt-6 flex items-center gap-x-5 text-sm">
               <div className="flex items-center text-slate-500">
                 <Check className="text-teal mr-1.5 w-4 h-4" />
-                <span>Real Memphis manufacturing</span>
-              </div>
-              <div className="text-slate-400 hidden sm:block">•</div>
-              <div className="text-slate-500 text-sm">
-                Lead time:{" "}
-                <span className="font-semibold text-slate-700">
-                  5–7 business days
-                </span>
+                <span>Self-serve sell price — no employee tools on this door</span>
               </div>
             </div>
           </div>
@@ -59,7 +51,7 @@ export default function HomePage() {
             <div className="relative rounded-3xl overflow-hidden shadow-2xl ring-1 ring-slate-900/5">
               <Image
                 src="/images/hero.jpg"
-                alt="High-quality custom roll labels produced by Flexible Label Group"
+                alt="Summit Graphics packaging and print work"
                 width={800}
                 height={500}
                 className="w-full h-auto object-cover aspect-[16/10]"
@@ -69,10 +61,10 @@ export default function HomePage() {
               <div className="absolute bottom-5 left-5 bg-white/95 backdrop-blur px-4 py-2 rounded-2xl shadow flex items-center gap-x-3 text-sm">
                 <div>
                   <div className="font-semibold text-sm tracking-tight">
-                    Spring 2026 run
+                    Quote in the browser
                   </div>
                   <div className="text-xs text-slate-600">
-                    48,500 labels • On schedule
+                    EXAMPLE rates until Summit loads plant numbers
                   </div>
                 </div>
               </div>
@@ -84,24 +76,20 @@ export default function HomePage() {
       <div className="mt-14 border-y border-slate-200 bg-white">
         <div className="max-w-screen-xl mx-auto px-5 md:px-8 py-5">
           <div className="flex flex-wrap justify-center md:justify-between items-center gap-x-8 gap-y-4 text-sm">
-            <div className="flex items-center gap-x-2">
-              <span className="font-semibold text-xl text-navy">75</span>
-              <span className="text-slate-600">years in continuous production</span>
-            </div>
-            <div className="trust-pill px-4 py-1 rounded-full text-xs font-medium flex items-center gap-x-1.5 text-slate-700 border border-slate-100">
-              <UserRound className="text-teal w-3.5 h-3.5" />
-              <span>
-                <strong>78%</strong> women-owned
-              </span>
+            <div className="trust-pill px-4 py-1 rounded-full text-xs font-medium border border-slate-100">
+              PACKAGING · KITS
             </div>
             <div className="trust-pill px-4 py-1 rounded-full text-xs font-medium border border-slate-100">
-              HUBZONE CERTIFIED
+              LABELS · PROCESS = ROUTE
             </div>
             <div className="trust-pill px-4 py-1 rounded-full text-xs font-medium border border-slate-100">
-              MADE IN MEMPHIS, TN
+              SIGNS
             </div>
             <div className="trust-pill px-4 py-1 rounded-full text-xs font-medium border border-slate-100">
-              AI-ENABLED OPERATIONS
+              DECALS
+            </div>
+            <div className="trust-pill px-4 py-1 rounded-full text-xs font-medium border border-slate-100">
+              ELECTRONIC / SERIALIZED
             </div>
           </div>
         </div>
@@ -110,30 +98,30 @@ export default function HomePage() {
       <div className="max-w-screen-xl mx-auto px-5 md:px-8 pt-14">
         <div className="text-center mb-8">
           <div className="uppercase tracking-[1.5px] text-xs font-semibold text-teal">
-            WHAT THIS MEANS FOR YOU
+            WHAT THIS DEMO ADDS
           </div>
           <h2 className="heading-font text-3xl md:text-4xl tracking-tighter font-semibold mt-2">
-            The old way wastes your time.
+            The live site is call-only.
             <br />
-            The better way gives it back.
+            Buyers need a quote door.
           </h2>
         </div>
 
         <div className="grid md:grid-cols-2 gap-5">
           {[
             {
-              icon: RefreshCw,
-              title: "Right material. First time.",
-              body: "No more guessing substrates. Our AI + real press experts recommend the exact construction that performs on your line and in your environment.",
-              href: "/products",
-              cta: "Explore all products →",
+              icon: FileText,
+              title: "Self-serve quote",
+              body: "Pick packaging, labels, signs, decals, or serialized work. See a sell price. No plant rates or employee chrome on this door.",
+              href: "/quote",
+              cta: "Start a quote →",
             },
             {
               icon: Eye,
-              title: "Full visibility. Real control.",
-              body: "See exactly where every order is on the floor. Know your ship date. Approve or request changes instantly.",
+              title: "Customer portal",
+              body: "Sign in to track quotes and orders on your account. Operations stays on a separate employee door.",
               href: "/portal/login",
-              cta: "Sign in to track orders →",
+              cta: "Customer sign in →",
             },
           ].map((card) => (
             <div
@@ -160,28 +148,28 @@ export default function HomePage() {
         <div className="bg-navy text-white rounded-3xl px-8 py-10 md:py-12 md:px-12">
           <div className="max-w-xl">
             <div className="uppercase text-teal tracking-[1.5px] text-sm font-semibold mb-1">
-              THE SIMPLE PLAN
+              HOW A QUOTE WORKS
             </div>
             <h3 className="text-3xl md:text-4xl tracking-tight font-semibold leading-tight">
-              How we remove the friction from label buying.
+              Attributes in. Sell price out.
             </h3>
           </div>
           <div className="grid md:grid-cols-3 gap-7 mt-9">
             {[
               {
                 step: "1",
-                title: "Tell us what you need",
-                body: "Use our AI or a specialist. Get an accurate quote and material recommendation in minutes.",
+                title: "Choose the product",
+                body: "Packaging/kits, labels, signs, decals, or electronic/serialized.",
               },
               {
                 step: "2",
-                title: "Approve your proof online",
-                body: "Review high-resolution proofs. Comment or approve directly. No PDF back-and-forth.",
+                title: "Enter size and quantity",
+                body: "Customer door shows material names only — never cost stacks.",
               },
               {
                 step: "3",
-                title: "Track it to your dock",
-                body: "Watch every stage in real time. Know the exact ship date before anyone asks.",
+                title: "Save the quote",
+                body: "No card rail. EXAMPLE numbers until Summit replaces the catalog.",
               },
             ].map((item) => (
               <div key={item.step} className="flex gap-4">

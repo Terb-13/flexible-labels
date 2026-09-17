@@ -50,7 +50,7 @@ export function SpecPaste({
           <Textarea
             className="mt-2"
             rows={3}
-            placeholder='e.g. "18,000 matte BOPP roll labels 2.25 x 3.5, 4 colors"'
+            placeholder='e.g. "18,000 EXAMPLE Label substrate labels 2.25 x 3.5, 4 colors"'
             value={text}
             onChange={(e) => setText(e.target.value)}
           />

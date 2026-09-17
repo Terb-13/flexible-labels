@@ -5,13 +5,11 @@ export function SiteFooter() {
     <footer className="bg-navy text-white/70 text-sm px-5 md:px-8 py-9">
       <div className="max-w-screen-xl mx-auto flex flex-col md:flex-row gap-y-3 items-center justify-between">
         <div className="flex items-center gap-x-2 text-xs md:text-sm">
-          <span>© Flexible Label Group</span>
+          <span>© Summit Graphics</span>
           <span className="hidden md:inline">•</span>
-          <span>Memphis, Tennessee</span>
+          <span>Sirvoce estimator demo</span>
         </div>
         <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs">
-          <span>Since 1951</span>
-          <span>Women-Owned • HubZone Certified</span>
           <Link href="/about" className="hover:text-white">
             About
           </Link>
@@ -21,8 +19,11 @@ export function SiteFooter() {
           <Link href="/capabilities" className="hover:text-white">
             Capabilities
           </Link>
+          <Link href="/quote" className="hover:text-white">
+            Get a quote
+          </Link>
         </div>
-        <div className="text-xs">901-555-0123 • sales@flexiblelabelgroup.com</div>
+        <div className="text-xs">940-301-3585 • summitgraphics.org</div>
       </div>
     </footer>
   );

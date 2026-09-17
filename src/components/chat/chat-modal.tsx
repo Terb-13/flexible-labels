@@ -70,9 +70,9 @@ export function ChatModal({
               <Bot className="w-4 h-4" />
             </div>
             <div>
-              <div className="font-semibold">FLG Assistant</div>
+              <div className="font-semibold">Summit assistant</div>
               <div className="text-[10px] text-white/60">
-                Real answers from 75 years of production experience
+                Demo answers — EXAMPLE catalog only
               </div>
             </div>
           </div>

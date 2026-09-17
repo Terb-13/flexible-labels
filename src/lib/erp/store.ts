@@ -468,7 +468,7 @@ export async function createJobFromQuote(quoteId: string): Promise<ScheduleJob> 
     s.job_id = jobId;
   });
 
-  const orderNumber = `FLG-${47000 + Math.floor(Math.random() * 999)}`;
+  const orderNumber = `SG-${1000 + Math.floor(Math.random() * 900)}`;
   const jobNumber = `J-${3000 + Math.floor(Math.random() * 900)}`;
   const due = new Date(ended.getTime() + 2 * 24 * 3600 * 1000);
 

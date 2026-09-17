@@ -30,9 +30,9 @@ import {
 import type { QuoteSpec } from "../src/types";
 
 const base: QuoteSpec = {
-  product: "Roll Labels",
-  type: "Prime / pressure-sensitive",
-  material: "Matte BOPP",
+  product: "Labels",
+  type: "Industrial / facility",
+  material: "EXAMPLE Label substrate",
   widthIn: 2.25,
   heightIn: 3.5,
   quantity: 10000,
@@ -62,8 +62,8 @@ const family = calculateQuoteBreaks(grouped, EXAMPLE_DTC_COMPANY, EXAMPLE_CATALO
 assert.equal(separate.breaks.length, 2);
 assert.equal(family.breaks.length, 1);
 assert.equal(family.pricedQuantity, 35000);
-assert.equal(separate.breaks[0].breakdown.routeName, "Digital short-run");
-assert.equal(family.primary?.routeName, "Flexo production");
+assert.equal(separate.breaks[0].breakdown.routeName, "EXAMPLE Labels short-run (process = route)");
+assert.equal(family.primary?.routeName, "EXAMPLE Labels production (process = route)");
 assert.notEqual(
   separate.breaks[0].breakdown.finalPrice,
   family.primary?.finalPrice,
@@ -105,37 +105,43 @@ assert.ok(
 );
 
 const tooWide = calculateQuote(
-  { ...base, widthIn: 40 },
+  { ...base, widthIn: 40, product: "Labels" },
   EXAMPLE_DTC_COMPANY,
   EXAMPLE_CATALOG
 );
-assert.equal(tooWide.viable, false);
+assert.equal(tooWide.viable, false, "EXAMPLE 12in web stub cannot run 40in labels");
 
-const rollMats = materialsForProduct("Roll Labels", EXAMPLE_CATALOG).map((m) => m.name);
-assert.ok(rollMats.includes("Matte BOPP"));
-assert.ok(!rollMats.includes("UV Vinyl"));
-const bumperMats = materialsForProduct("Bumper Stickers", EXAMPLE_CATALOG).map(
-  (m) => m.name
+const signWide = calculateQuote(
+  {
+    ...base,
+    product: "Signs",
+    material: "EXAMPLE Sign board",
+    widthIn: 60,
+  },
+  EXAMPLE_DTC_COMPANY,
+  EXAMPLE_CATALOG
 );
-assert.ok(bumperMats.includes("UV Vinyl"));
+assert.equal(signWide.viable, false);
+
+const labelMats = materialsForProduct("Labels", EXAMPLE_CATALOG).map((m) => m.name);
+assert.ok(labelMats.includes("EXAMPLE Label substrate"));
+assert.ok(!labelMats.includes("EXAMPLE Decal vinyl"));
+const decalMats = materialsForProduct("Decals", EXAMPLE_CATALOG).map((m) => m.name);
+assert.ok(decalMats.includes("EXAMPLE Decal vinyl"));
 const publicByProduct = publicMaterialsByProduct(EXAMPLE_CATALOG);
-assert.ok(publicByProduct["Roll Labels"].includes("Matte BOPP"));
-assert.ok(publicByProduct["Roll Labels"].length > 0);
+assert.ok(publicByProduct.Labels.includes("EXAMPLE Label substrate"));
+assert.ok(publicByProduct.Labels.length > 0);
 const publicMats = toPublicMaterials(EXAMPLE_CATALOG.materials);
 assert.ok(publicMats.every((m) => m.cost_per_sqin === 0 && m.cost_per_unit === 0));
 assert.ok(
-  materialsForProduct("Roll Labels", { materials: publicMats, equipment: [] })
-    .length > 0
+  materialsForProduct("Labels", { materials: publicMats, equipment: [] }).some(
+    (m) => m.name === "EXAMPLE Label substrate"
+  )
 );
 assert.ok(
-  materialsForProduct("Roll Labels", { materials: publicMats, equipment: [] })
-    .some((m) => m.name === "Matte BOPP")
-);
-assert.ok(
-  materialsForProduct("Bumper Stickers", {
-    materials: publicMats,
-    equipment: [],
-  }).some((m) => m.name === "UV Vinyl")
+  materialsForProduct("Decals", { materials: publicMats, equipment: [] }).some(
+    (m) => m.name === "EXAMPLE Decal vinyl"
+  )
 );
 
 const liveShapeEmptyMaterials = {
@@ -144,21 +150,18 @@ const liveShapeEmptyMaterials = {
   source: "supabase" as const,
 };
 const liveShapeNames = publicMaterialsByProduct(liveShapeEmptyMaterials);
-assert.deepEqual(publicPickerMaterialsByProduct()["Roll Labels"], [
-  "Matte BOPP",
-  "Gloss BOPP",
-  "Gloss PET",
-  "Foil Laminate",
+assert.deepEqual(publicPickerMaterialsByProduct().Labels, [
+  "EXAMPLE Label substrate",
 ]);
-assert.ok(liveShapeNames["Roll Labels"].includes("Matte BOPP"));
-assert.ok(liveShapeNames["Bumper Stickers"].includes("UV Vinyl"));
+assert.ok(liveShapeNames.Labels.includes("EXAMPLE Label substrate"));
+assert.ok(liveShapeNames.Decals.includes("EXAMPLE Decal vinyl"));
 assert.ok(
-  materialsForProduct("Roll Labels", liveShapeEmptyMaterials).some(
-    (m) => m.name === "Matte BOPP"
+  materialsForProduct("Labels", liveShapeEmptyMaterials).some(
+    (m) => m.name === "EXAMPLE Label substrate"
   )
 );
-assert.ok(toPublicMaterials([]).some((m) => m.name === "Gloss PET"));
-assert.ok(publicPickerMaterials().some((m) => m.name === "Foil Laminate"));
+assert.ok(toPublicMaterials([]).some((m) => m.name === "EXAMPLE Sign board"));
+assert.ok(publicPickerMaterials().some((m) => m.name === "EXAMPLE Kit board / carton"));
 assert.ok(publicPickerMaterials().every((m) => m.cost_per_sqin === 0));
 
 const seededGaps = fillExampleCatalogGaps({
@@ -168,11 +171,10 @@ const seededGaps = fillExampleCatalogGaps({
 });
 assert.equal(seededGaps.materials, EXAMPLE_CATALOG.materials);
 assert.equal(seededGaps.routes, EXAMPLE_CATALOG.routes);
-assert.ok(seededGaps.materials.some((m) => m.name === "Matte BOPP"));
-assert.ok(seededGaps.materials.some((m) => m.name === "Gloss BOPP"));
-assert.ok(seededGaps.materials.some((m) => m.name === "UV Vinyl"));
-assert.ok(seededGaps.materials.some((m) => m.name === "Gloss PET"));
-assert.ok(seededGaps.materials.some((m) => m.name === "Foil Laminate"));
+assert.ok(seededGaps.materials.some((m) => m.name === "EXAMPLE Label substrate"));
+assert.ok(seededGaps.materials.some((m) => m.kind === "die"));
+assert.ok(seededGaps.materials.some((m) => m.kind === "tool"));
+assert.ok(seededGaps.materials.some((m) => m.kind === "other"));
 assert.notEqual(seededGaps.source, "example");
 
 const redPixels = Array.from({ length: 80 }, () => ({
@@ -193,20 +195,20 @@ assert.ok(colors[0].hex.startsWith("#"));
 assert.ok(Number(colors[0].pct) > Number(colors[1].pct));
 
 const parsed = parseSpecText(
-  "18,000 matte BOPP roll labels 2.25 x 3.5, 4 color process"
+  "18,000 EXAMPLE Label substrate labels 2.25 x 3.5, 4 color process"
 );
-assert.equal(parsed.product, "Roll Labels");
-assert.equal(parsed.material, "Matte BOPP");
+assert.equal(parsed.product, "Labels");
+assert.equal(parsed.material, "EXAMPLE Label substrate");
 assert.equal(parsed.widthIn, 2.25);
 assert.equal(parsed.quantity, 18000);
 assert.ok(!parsed.missingFields.includes("quantity"));
 
-const rfp = parseRfpDocument(`ITEM 1 — Bumper stickers
-UV Vinyl 4 x 2, 5000 qty, 2 colors`);
-assert.equal(rfp[0].parsed.product, "Bumper Stickers");
+const rfp = parseRfpDocument(`ITEM 1 — Facility signs
+EXAMPLE Sign board 4 x 2, 5000 qty, 2 colors`);
+assert.equal(rfp[0].parsed.product, "Signs");
 assert.equal(rfp[0].ready, true);
 
-const incomplete = parseRfpDocument("Matte BOPP 2.25 x 3.5, 10000");
+const incomplete = parseRfpDocument("2.25 x 3.5, 10000 units of unknown stock");
 assert.equal(incomplete[0].ready, false);
 assert.ok(incomplete[0].missing.includes("Product"));
 
@@ -263,6 +265,8 @@ assert.ok(
 
 assert.ok(!JSON.stringify(EXAMPLE_CATALOG).includes("Fortis"));
 assert.ok(!JSON.stringify(EXAMPLE_CATALOG).includes("Novi"));
+assert.ok(!JSON.stringify(EXAMPLE_CATALOG).includes("Matte BOPP"));
+assert.ok(!JSON.stringify(EXAMPLE_CATALOG).includes("cost_rate\":85"));
 
 console.log("CPQ quantity-break and artwork checks passed.");
 console.log(
